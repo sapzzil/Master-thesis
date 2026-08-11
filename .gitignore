@@ -216,3 +216,47 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ============================================================
+# 학위논문 프로젝트 전용 규칙
+# ============================================================
+
+# 원문 PDF — Google Drive로 관리 (용량)
+01_자료원문/**/*.pdf
+01_자료원문/**/*.PDF
+
+# 데이터 스냅샷 (대용량, 별도 백업)
+data/
+**/*.parquet
+**/*.feather
+**/*.h5
+**/*.csv.gz
+
+# 모델 가중치·체크포인트
+**/*.pt
+**/*.pth
+**/*.ckpt
+**/*.safetensors
+checkpoints/
+models/pretrained/
+
+# 실험 산출물 (결과 표·그림은 커밋, 로그는 제외)
+**/logs/
+**/wandb/
+**/mlruns/
+**/*.log
+
+# 문서 임시파일
+~$*.docx
+~$*.xlsx
+~$*.pptx
+.DS_Store
+Thumbs.db
+
+# 비밀정보 — KRX/DART API 키 절대 커밋 금지
+.env
+*.key
+secrets.*
+
+# 로컬 헬퍼 스크립트 (자격증명 붙여넣기 사고 방지)
+*.bat
