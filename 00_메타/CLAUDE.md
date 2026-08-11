@@ -29,7 +29,7 @@
 
 ## 저장 위치
 - 로컬 작업 폴더: `D:\study\hanyang\논문`
-- Git 원격 저장소: **[ ] 미확인 — 세션 시작 시 git status/remote -v로 확인 후 채울 것**
+- Git 원격 저장소: **https://github.com/sapzzil/Master-thesis.git** (main 브랜치)
 - 원문 자료(대용량 PDF) 백업: Google Drive — https://drive.google.com/drive/folders/1q2ttJf_bvtBT82e5B2dWdOkBQkg4gCjf ("학위 논문" 폴더, 쓰기 권한 확인됨)
   - PDF를 다운로드하면 로컬 `01_자료원문/`에 저장하는 동시에, 이 Drive 폴더의 같은 하위구조로도 업로드할 것
   - 완성된 논문 초안(docx)은 이 Drive 폴더에 최종본만 올려서 지도교수 공유용으로 사용
