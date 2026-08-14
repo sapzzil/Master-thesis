@@ -23,10 +23,77 @@
   **각 환경마다 처음부터 학습**시켜 NMAE·CRPS로 평가
 - 발견: 단순 선형/AR이 견고, Transformer·전역 attention은 국소 충격에 취약
 
-### 우리와의 결정적 차이 (= 공백)
-1. **사전학습 TSFM(TimesFM/Chronos/Moirai/TTM)을 전혀 다루지 않음** — 논문 전체에 언급 없음(확인됨)
-2. **합성 임계점이 실제 주가의 어디쯤인지 대조하는 실험 없음** — 순수 벤치마크
-3. 저자들이 Limitations에서 "사전학습 모델도 같은 취약점을 물려받는가"를 **미해결 과제로 명시**
+> ⚠️ **2026-08-12 원문 정독 및 교차검증 완료.** 아래는 초록 기반 1차 판단을 원문으로 검증한 결과.
+
+### 우리와의 결정적 차이 (= 공백) — 원문 검증 완료
+1. ✅ **[참] 사전학습 TSFM을 전혀 다루지 않음.**
+   전체 문서를 `TimesFM|Chronos|Moirai|Lag-Llama|TTM|TimeGPT|Kronos`로 검색 → **0건**.
+   `zero-shot`, `pretrain`도 0건. `foundation model`은 딱 1회이며 Related Work에서
+   **ProbTS(타 툴킷)를 설명하는 문장**이지 저자 실험과 무관
+   → 평가 모델: Naive, AR(1), HAR, VAR, DLinear, PatchTST, iTransformer, Autoformer,
+     FEDformer, NonstationaryTransformer, TimeXer / DeepAR, TimeGrad, TSFlow, TimeMCL,
+     RATD, QuantileFormer (전부 각 환경에서 from-scratch 학습)
+2. ✅ **[참] 합성 임계점 ↔ 실제 주가 위치 대조 실험 없음**
+3. ❌ **[거짓 — 정정] "저자들이 Limitations에서 사전학습 모델 취약점 상속을 미해결 과제로 명시"**
+   **그런 문장은 존재하지 않음.** Limitations 전문에 foundation/pretrained 언급 자체가 없음.
+   실제 Limitations 4개 항목: (1) 호가창 등 실시장 미시구조 미반영 (2) 정준 DGP만 사용,
+   대안 DGP(stochastic volatility 등) 미검토 (3) 고정 horizon만, 다중스텝·온라인적응·
+   decision-aware 평가 미포함 (4) 15개 모델에 그침, 계산비용이 "very large models"의
+   진단 세밀도를 제한할 수 있음
+   → **1차 정찰 서브에이전트의 환각이었음. 이 근거는 논문에서 사용 금지.**
+
+### ⚠️ 추가 발견 — "파괴 임계점" 서사의 약점
+**Table 2(NMAE_σ)에서는 난이도를 올려도 성능이 무너지지 않음.** 오히려 값이 **작아짐**.
+- Case 3 AR(1): L1 0.7704 → L2 0.5634 → L5 0.5036
+- Case 1 AR(1): L1 0.7970 → L5 0.7942 (거의 무변화)
+- 원인: NMAE_σ는 분모가 테스트셋 표준편차인 **정규화 지표**. 난이도↑ → 분모↑ → 지표는 개선처럼 보임
+- 비non-naive 모델 값은 전부 0.50~0.90 범위, 발산 사례 없음
+
+**반면 Table 3(CRPS)에서는 진짜로 무너짐:**
+- RATD Case 4: L1 0.9902 → L2 **2.2090** → L3 2.2031
+- RATD Case 6 L4(Heavy-tailed events): **2.3690**
+- TimeGrad Case 5 L4: 1.5418
+- 저자 Finding 6: "RATD performs well on smooth volatility processes but degrades on
+  discontinuous mechanisms (Cases 4 & 6)"
+
+→ **결론: 임계점 서사는 점 예측이 아니라 확률 예측/캘리브레이션 축에서 세워야 함.**
+
+### 실험 설정 (원문 확인, 우리 실험 설계에 그대로 사용)
+- 패널 N=50 시계열, T_total=2,000 스텝
+- 엄격한 시간순 분할 60% train / 20% val / 20% test, z-score는 train 통계로만
+- Rolling one-step-ahead, **H=1**, lookback **L=96**
+- 지표: NMAE_σ (변동성 정규화 MAE), CRPS_sum (정규화), 확률예측은 **S=100 몬테카를로 샘플**
+- 학습곡선: n ∈ {100,200,300,400,600,800,1000,1200}
+
+### 코드 (좋은 소식)
+- https://github.com/jiazeee/FinStressTS — **MIT 라이선스** (2차 사용 자유)
+- Python 100%, 8 commits, Issues 0건 (TSFM 관련 논의 전무)
+- **모델 삽입이 쉬운 구조**: 합성 생성기(`finprobts/synthetic/`)와 모델(`finprobts/models/`) 분리.
+  README "Add a Model" 절 — `BaseProbForecastModel`의 `fit`/`predict`/`save`/`load`만 구현하면 등록
+  → **zero-shot TSFM은 `fit`을 no-op으로 둔 얇은 어댑터로 통합 가능**
+- example config에 `task.context_length: 96 / prediction_length: 1` 확인
+- 30개 환경은 `presets.py`에 프로그래밍적으로 정의되고 `manifest.json`에 기록되는 방식
+
+### ⚠️ 선점 위험: **중간**
+- FinStressTS + TSFM 결합 연구는 **아직 없음** (검색 8회+, 미발견)
+- 그러나 **KDD 2026이 2026-08-09~13 제주 개최** — 발표 직후라 인용 축적 시작 시점
+- 진입장벽이 매우 낮음(어댑터 1개) → 저자 본인 또는 제3자가 곧 할 수 있음
+- 인접 영역이 이미 뜨거움:
+  - [Brini, Forecasting RV with TSFM (2607.05291, 2026-07)](https://arxiv.org/pdf/2607.05291)
+    — **9개 TSFM(Chronos-Bolt/Moirai2.0/Moirai-MoE/Lag-Llama/TimesFM2.5/Toto/Sundial/TTM)을
+    실제 50자산 실현변동성에 zero-shot 적용**. 합성 통제는 없음
+  - [Rahimikia, Re(Visiting) (2511.18578)](https://arxiv.org/abs/2511.18578) — 합성데이터를 쓰긴 하나
+    **자체 모델 재학습용 augmentation**이지 기성 TSFM 실패 진단이 아님
+- → **속도가 유일한 방어책. 저자 향후계획 확인(이메일/레포 모니터링) 권장**
+
+### ⚠️ 기술 리스크 (파일럿으로 최우선 확인)
+**TTM·Moirai-MoE는 컨텍스트가 512로 고정**되어 있다는 보고(Brini 논문 각주).
+FinStressTS는 L=96 → **패딩 처리 방식이 결과를 왜곡할 수 있음.**
+TimesFM(최대 16K, 짧은 입력 처리 가능), Moirai(임의 길이 설계)는 제약 없어 보이나
+Chronos는 512 토큰 부근 성능 포화 특성 있음. **직접 실험으로 검증 필요.**
+
+RTX 3080 10GB 실측 사례는 확인 불가. 다만 파라미터 규모(TTM <1M, Chronos-Bolt-S 48M,
+Chronos-Bolt-B 205M, Moirai2.0-S 11M, TimesFM2.5 200M)상 zero-shot 추론은 무리 없어 보임.
 
 → **인용 필수. 서론에 명시적 차별화 문장 필요.**
 
