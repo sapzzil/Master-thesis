@@ -1,14 +1,19 @@
 # 검증로그 — 하위갈래 B (확률예측 평가론)
 
-> 검증일: 2026-08-15
+> 검증일: 2026-08-15 (1차) / 2026-09-23 (2차 공식 PDF 전수 대조 갱신)
 > 검증 대상: `02_요약정리/하위갈래B_확률예측_평가론.md`
 > 대조 원문(로컬 사본):
-> - `01_자료원문/GneitingRaftery2007_JASA_ScoringRules.md` (이하 **GR07**)
-> - `01_자료원문/GneitingBalabdaouiRaftery2007_JRSSB_CalibrationSharpness.md` (이하 **GBR07**)
-> - `01_자료원문/2606.03184_FinStressTS_Synthetic_Benchmark.md` (이하 **FinStressTS**)
+> - `01_자료원문/GneitingRaftery2007_JASA_ScoringRules.pdf`
+> - `01_자료원문/GneitingBalabdaouiRaftery2007_JRSSB_CalibrationSharpness.pdf`
+> - `01_자료원문/2606.03184_FinStressTS_Synthetic_Benchmark.pdf`
+> - `01_자료원문/2402.02592_Moirai_Unified_Training_Universal_TSF_Transformers.pdf`
+> - `01_자료원문/2502.18834_FinTSB_Financial_Time_Series_Benchmark.pdf`
 > 검증자: 요약 작성자와 독립된 별도 에이전트. 원문 텍스트에 존재하지 않는 내용은 "원문에 없음"으로 명시함.
 >
-> **페이지 번호 판정 방법**: 두 원문 사본 모두 러닝 헤드(예: `370 Journal of the American Statistical Association, March 2007`, `Probability Forecasts 253`)가 각 페이지 시작 지점에 그대로 추출되어 있어, 헤드 사이 구간으로 페이지를 확정했다. 아래 "실제 페이지"는 이 기준이다.
+> **★ 2026-09-23 2차 갱신 완료 사항**:
+> 1. Moirai 부록 C.1(p.19) 공식 PDF 대조를 통해 pinball loss와 CRPS 적분 등가식의 1차 출처 및 $K=9$ 분위수 wQL 근사식 수식 완벽 확인.
+> 2. 누락 논문이었던 **`FinTSB` (2502.18834, 18개 금융 벤치마크 평가론)** 공식 PDF 전수 확인 및 하위갈래 B 본문 매핑 완료.
+> 3. 상세 검증 내용은 `02_요약정리/검증로그_공식PDF_2차전수대조.md` 참조.
 
 ---
 

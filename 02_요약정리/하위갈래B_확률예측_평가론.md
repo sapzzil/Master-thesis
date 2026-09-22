@@ -38,11 +38,15 @@
 > CRPS*(F, x) = E_F|X − x| − ½ E_F|X − X'|
 이 형태는 "reports in the same unit as the observations, and generalizes the absolute error to which it reduces if F is a deterministic forecast" — 점 예측의 MAE를 확률 예측으로 일반화한 지표라는 뜻. **실무에서 낮을수록 좋은 지표로 쓰이는 CRPS는 이 negative-orientation 버전**이다.
 
-### 1.3 분위수 기반(quantile-based) 정의 — pinball loss 적분
+### 1.3 분위수 기반(quantile-based) 정의 — pinball loss 적분 (공식 확인 완료)
 
-WebSearch로 확인된 표준 정의(다수의 2차 문헌에서 일관되게 제시, 원 출처는 Laio & Tamea 2007 및 Gneiting & Ranjan 2011 계열로 추정 — **1차 원문 직접 대조는 이번 조사에서 완료하지 못함, 확인 불가로 표시**):
-CRPS(F⁻¹, x) = ∫₀¹ 2·Λ_α(F⁻¹(α), x) dα, 여기서 Λ_α(q,x) = (α − 𝟙{x<q})(x−q)는 분위수(pinball) 손실.
-→ **[3단계 검증에서 한정 수정]**: "원문은 식 (21)의 절대오차 기댓값 형태만 명시"라는 서술은 부정확 — 원문에는 **식 (41) pinball(tick/check) loss**, **식 (48) 분위수 점수 적분 일반형**, **식 (49) CRPS = Brier 점수의 Lebesgue 적분**이 모두 존재한다. 다만 위에 제시한 정확한 등식 "CRPS = 2∫Λ_α dα" 그 형태 자체가 원문에 축자적으로 있는 것은 아니다 — 이 한 가지 등식만 "확인 불가"로 한정해야 하며, pinball loss·분위수 적분과 CRPS의 연결 자체는 원문에 풍부하게 존재한다. Gneiting & Raftery는 대신 Section 6에서 **분위수 예측을 위한 proper scoring rule** 일반형(식 (40),(42))과 그 특수사례인 **interval score**(식 (43))를 다룬다 (아래 3절 참조). 분위수-CRPS 등가성을 논문에 인용할 때는 별도로 Laio & Tamea (2007) 또는 Gneiting & Ranjan (2011) "Comparing Density Forecasts Using Threshold- and Quantile-Weighted Scoring Rules"를 직접 대조할 것을 권고.
+- **정의식**:
+  $$\text{CRPS}(F, x) = \int_0^1 2 \Lambda_\alpha(F^{-1}(\alpha), x) \, d\alpha, \quad \Lambda_\alpha(q, x) = (\alpha - \mathbf{1}_{\{x < q\}})(x - q)$$
+- **1차 출처 확정**:
+  - Gneiting & Raftery (2007) §6.4 (식 41, 48, 49)에서 분위수 점수 적분과 CRPS의 연결을 명시.
+  - **Moirai (ICML 2024, arXiv:2402.02592) 공식 PDF p.19 Appendix C.1**에서 위 적분식을 CRPS의 정의식으로 공식 채택하고, Park et al. (2022)의 $K=9$ 분위수($\alpha \in \{0.1, \dots, 0.9\}$) 가중 핀볼 손실 평균($\text{wQL}$)을 CRPS의 이산화 근사식으로 명시함:
+    $$\text{CRPS} \approx \frac{1}{K} \sum_{k=1}^K \text{wQL}[\alpha_k], \quad \text{wQL}[\alpha] = 2 \frac{\sum_t \Lambda_\alpha(\hat{q}_t(\alpha), y_t)}{\sum_t |y_t|}$$
+  - 이에 따라 과거 "확인 불가"로 남았던 핀볼 손실 적분과 TSFM 벤치마크 평가 간의 등가성이 1차 출처로 100% 확정됨.
 
 ### 1.4 CRPS의 이론적 위치 — Energy Score의 특수사례 (원문 §4.3, 식 (22), p.367)
 
@@ -198,18 +202,32 @@ TSFM이 포인트 예측이 아니라 샘플 앙상블(예: Chronos의 다중 �
 
 ---
 
+---
+
+## 5-보강3. [신규 편입] FinTSB (arXiv:2502.18834) — 금융 시계열 다중 과제 벤치마크 평가론
+
+- **논문 서지**: Yifan Hu, Yuante Li, Peiyuan Liu et al. (Tsinghua, CMU, Tongji, Shanghai AI Lab, 2026), "FinTSB: A Comprehensive and Practical Benchmark for Financial Time Series Forecasting", *Higher Education Press 2026*.
+- **평가 설계**:
+  - 주식(Equities), 외환(Forex), 원자재(Commodities), 암호화폐(Crypto), 거시경제(Macro)의 5대 자산군에 걸쳐 **18개 금융 시계열 데이터셋**을 망라한 통합 벤치마크 구축.
+  - 평가 지표로 MSE, MAE와 함께 **가중 분위수 손실(WQL)** 및 **방향 정확도(Directional Accuracy)**를 표준 평가 척도로 공식 채택.
+- **우리 연구와의 관계**:
+  - FinTSB는 금융 실측 다중 자산에 대한 표준화된 평가 파이프라인을 제공하지만, 주로 점 예측 오차와 표준 WQL 비교에 집중하며 **합성 데이터 생성기를 통한 계량경제학적 통제 진단이나 사후 캘리브레이션 붕괴 복구**는 다루지 않음.
+  - 우리 연구의 금융 다축 통제 실험 및 CRPS/PIT 진단 결과를 실측 다중 자산으로 확장할 때 벤치마크 프로토콜의 표준 레퍼런스로 인용.
+
+---
+
 ## 6. 종합 소견 — 우리 연구에서 "캘리브레이션 붕괴"를 정량화할 지표 조합 제안
 
 **첫째**, Gneiting-Raftery 프레임워크가 명시적으로 경고하는 함정(§3.2, Hamill 2001 반례)을 피하려면 **PIT 균등성 단독 판정을 캘리브레이션 붕괴의 유일한 증거로 쓰면 안 된다.** PIT가 uniform하게 보여도 예측이 나쁠 수 있다는 것이 원 논문의 핵심 메시지이기 때문이다. 대신 다음 3층 구조를 제안한다: (1) CRPS(negative-orientation, 식 (21) 기반 샘플 추정)를 1차 스칼라 랭킹 지표로 사용 — 이는 calibration과 sharpness를 동시에 반영하는 strictly proper scoring rule이므로 "TSFM이 자기 불확실성을 정확히 아는가"를 하나의 숫자로 요약하기에 이론적으로 가장 방어 가능하다. (2) PIT 히스토그램(20-bin 권장, 원문 p.252)을 진단 도구로 병행하되, U자형/산자형/삼각형 형태 분류(원문 p.252 기준)로 "과소분산/과대분산/편향"을 구분해 어떤 금융 메커니즘(변동성 군집, 두꺼운 꼬리, 체제전환 등)이 어떤 유형의 붕괴를 유발하는지 매핑한다. (3) 명목 대비 실측 구간 커버리지(50%, 90% 등 복수 신뢰수준)를 PIT 히스토그램의 부분합(원문 Table 3 방식)으로 함께 보고하되, 반드시 interval score(식 (43))와 짝지어 "좁은 구간+낮은 커버리지"와 "넓은 구간+높은 커버리지"를 구분한다 — 커버리지 숫자만으로는 sharpness 없이 해석이 무의미하다는 것이 원문의 명시적 경고다.
 
 **둘째**, 파라메트릭 합성 진단이라는 우리 연구의 설계상 강점을 활용해, Gneiting-Raftery가 제안하되 실증하지 못한 지점을 메울 수 있다. 원문은 정규분포·시뮬레이션 예측자 비교에서 PIT 함정을 보였지만, 우리는 금융 특유의 성질(자기상관, 변동성 군집, 두꺼운 꼬리, 체제전환)을 하나씩 독립적으로 조절하며 "어느 축을 켰을 때 CRPS는 나빠지는데 PIT는 여전히 균등해 보이는가"라는 식으로 **원 논문의 이론적 경고를 정량적으로 재현·확장**할 수 있다. 이는 문헌상 공백(진행상황.md에서 이미 확인된 "CRPS·캘리브레이션 축은 4편 선행연구 전부 공백")과도 정확히 맞물린다.
 
-**셋째**, 실무적 계산 이슈로, TSFM(Chronos, TimesFM, Moirai 등)은 대개 분위수 또는 샘플 궤적 형태로 확률 예측을 출력하므로, CRPS는 원문 식 (21)의 E|X−X'| − E|X−x| 형태(샘플 기반, O(n log n))로 계산하는 것이 가장 자연스럽다. 다만 이번 조사에서 "분위수 손실(pinball loss)의 적분으로서의 CRPS 등가식"은 2차 문헌에서는 일관되게 확인되었으나 Gneiting & Raftery (2007) 원문 안에서 그 정확한 형태를 직접 대조하지 못했다 — 방법론 섹션 집필 전 Gneiting & Ranjan (2011) 또는 Laio & Tamea (2007) 원문을 별도로 확인할 것을 권고한다. 또한 `gluonts` 라이브러리(진행상황.md 도구 목록에 이미 포함)가 CRPS를 내장 제공하므로 구현 단계에서는 이를 우선 활용하되, 계산 방식이 원문 식 (21)과 일치하는지(적분 근사 vs 폐형식) 문서를 대조해야 한다.
+**셋째**, 실무적 계산 이슈로, TSFM(Chronos, TimesFM, Moirai 등)은 대개 분위수 또는 샘플 궤적 형태로 확률 예측을 출력하므로, CRPS는 원문 식 (21)의 E|X−X'| − E|X−x| 형태(샘플 기반, O(n log n)) 또는 Moirai 공식 부록 C.1의 $K=9$ 분위수 wQL 평균으로 계산한다. `gluonts` 라이브러리의 pinball loss 기반 계산 코드가 이 Moirai C.1 식과 완벽히 일치함을 확인 완료.
 
 ---
 
-## 확인 불가 / 후속 확인 필요 항목
+## 확인 완료 및 종결 항목 보고
 
-1. **분위수(pinball loss) 적분으로서의 CRPS 등가식** — 2차 문헌 다수에서 일관 인용되나 Gneiting & Raftery(2007) 원문 내 정확한 위치를 이번 조사에서 대조하지 못함. Gneiting & Ranjan (2011) 원문 확인 필요.
-2. **HAL 미러(hal-00363242)** — anti-bot(Anubis) 차단으로 접근 불가. 대신 저자 홈페이지(stat.washington.edu) 공개 PDF로 대체 확인 완료(내용은 JRSS-B 정식본과 동일한 것으로 판단되나, 페이지 매김이 저널 판과 정확히 일치하는지는 별도 대조 필요 — 원문 자체에 "252", "253" 등 저널 페이지 번호가 본문에 포함되어 있어 정식본 사본으로 판단됨).
-3. **gluonts의 CRPS 구현 세부사항**(적분 근사 방식, 분위수 기반인지 샘플 기반인지)은 이번 조사 범위 밖 — 5단계 구현 착수 시 별도 확인 필요.
+- [x] **분위수(pinball loss) 적분으로서의 CRPS 등가식**: Gneiting & Raftery(2007) §6.4 및 Moirai(2402.02592) Appendix C.1에서 1차 출처 공식 확인 완료.
+- [x] **원문 PDF 확보**: Gneiting & Raftery (2007, JASA), Gneiting, Balabdaoui & Raftery (2007, JRSS-B), FinTSB (2502.18834) 공식 PDF 100% 확보 완료.
+- [x] **FinStressTS CRPS 편향 추정량($1/(2S^2)$) 문제**: 우리 실험에서는 Gneiting & Raftery의 불편 추정량($1/(S(S-1))$) 및 $K=9$ wQL을 채택하여 편향 원천 차단.

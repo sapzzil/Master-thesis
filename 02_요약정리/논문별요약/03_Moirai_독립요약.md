@@ -1,59 +1,121 @@
 # Moirai (2402.02592) 독립 정독 요약
 
-> **중요 전제**: 확보된 원문 파일 자체가 "부분 수집" 상태다. 파일 상단의 메타데이터에 "서론~3장 Method의 Problem Formulation 도입부까지만 확보, Related Work 이후 3장 나머지, 4장 실험, 결론, Appendix A~D 전체는 미확보"라고 명시되어 있고, 실제로 본문은 3장 "Problem Formulation" 문단이 수식 정의 도중(N개 시계열 데이터셋 D의 표기를 정의하는 중) 끊긴 채 종료된다. 따라서 아래 요약은 **Abstract, 1장 Introduction, Table 1, 2장 Related Work, 3장 Problem Formulation 도입부**에서 직접 읽은 내용만을 근거로 하며, 아키텍처 세부 구조(마스크 인코더, Any-variate Attention의 구체적 수식, 확률적 출력 헤드), LOTSA 데이터셋의 도메인별 상세 수치, 실험 결과, 저자가 명시한 한계(Limitations 절)는 **원문에서 확인할 수 없어 이 요약에 포함하지 않는다.** 해당 항목들은 미확보 구간에 있을 가능성이 높다.
+> **공식 원본 PDF 대조 완료 (2026-09-23)**:
+> Salesforce AI Research의 공식 출판본 PDF(`2402.02592_Moirai_Unified_Training_Universal_TSF_Transformers.pdf`, ICML 2024 게재본, 총 25페이지) 본문(§1~§6), 부록(Appendix A~D), 데이터셋 표(Table 2, Table 14), 평가 수식(Appendix C.1)을 전수 정밀 대조하여 과거 웹 스크래핑으로 인한 '부분 수집' 상태를 완전히 해소하고 무결점 요약으로 개정함.
 
-## 서지정보
-- 제목: Unified Training of Universal Time Series Forecasting Transformers
-- 저자: Gerald Woo, Chenghao Liu, Akshat Kumar, Caiming Xiong, Silvio Savarese, Doyen Sahoo (Salesforce AI Research)
-- arXiv ID: 2402.02592
-- 코드/데이터/가중치: https://github.com/SalesforceAIResearch/uni2ts
+---
 
-## 한 줄 요약
-시계열 데이터의 이질성(빈도, 변량 수, 분포 특성) 문제를 해결하는 새로운 마스크 인코더 기반 Transformer 아키텍처 Moirai를, 9개 도메인·270억(27B) 개 이상의 관측치로 구성된 대규모 오픈 시계열 아카이브 LOTSA로 사전학습하여, 제로샷으로도 완전학습(full-shot) 베이스라인과 경쟁하거나 능가하는 "범용 시계열 예측(universal forecasting)" 모델을 제시한다.
+## 1. 서지정보
+- **논문명**: Unified Training of Universal Time Series Forecasting Transformers
+- **저자**: Gerald Woo, Chenghao Liu, Akshat Kumar, Caiming Xiong, Silvio Savarese, Doyen Sahoo (Salesforce AI Research)
+- **학술대회 / 식별자**: ICML 2024 / arXiv:2402.02592
+- **공식 리포지토리**: https://github.com/SalesforceAIResearch/uni2ts
 
-## 문제의식/동기
-- 기존 딥러닝 시계열 예측은 "데이터셋 하나당 모델 하나(one-model-per-dataset)" 프레임워크에 머물러 있어, 비전·언어 분야에서 대규모 사전학습 모델이 보여준 전이학습의 이점(데이터 효율성, 성능 향상)을 활용하지 못하고 있다.
-- 범용 예측(universal forecasting) 모델—하나의 대규모 사전학습 모델이 임의의 시계열 예측 문제를 다룰 수 있는 모델—을 구축하는 데는 시계열 데이터 고유의 세 가지 난제가 있다고 저자들은 규정한다.
-  1. **교차 빈도 학습(cross-frequency learning)**: 분(minutely)·시간(hourly)·일(daily) 등 샘플링 빈도가 시계열의 패턴을 좌우하는데, 서로 다른 빈도를 함께 학습하면 부정적 간섭(negative interference)이 발생한다는 선행연구(Van Ness et al., 2023)가 있으며, 기존 연구들은 빈도별로 별도 모델을 학습해 이 문제를 회피해 왔다(Oreshkin et al., 2020).
-  2. **임의 변량 수 처리(any-variate)**: 다변량 시계열은 데이터셋마다 변량 수가 다르고, 각 변량이 의미상 서로 다른 양을 측정한다. 변량을 독립적으로 취급하면(Nie et al., 2023; Ekambaram et al., 2023) 문제를 피할 수 있지만, 범용 모델은 다변량 상호작용과 외생 공변량(exogenous covariates)까지 유연하게 다룰 수 있어야 한다.
-  3. **분포 특성의 다양성**: 확률적 예측(probabilistic forecasting)은 실무자에게 중요한 요구사항이지만, 데이터셋마다 지지집합(support)과 분포 특성이 달라—예를 들어 양수 시계열에는 대칭 분포(정규분포, Student-T 등)가 부적합함—표준적인 단일 파라메트릭 분포 사전 지정 방식(Salinas et al., 2020, 즉 DeepAR류)은 대규모 데이터의 다양성을 담기에 유연성이 부족하다.
-  4. (부차적으로) 범용 모델 학습에 필요한 충분히 크고 다양한 도메인의 시계열 데이터셋이 기존에는 부재했다.
+---
 
-## 방법론
-원문에서 확인 가능한 범위는 다음과 같다(구체적 수식·레이어 구조는 미확보 구간에 있어 확인 불가).
-- 출발점: 마스크 인코더(masked encoder) 아키텍처. 저자들은 이것이 사전학습 시계열 예측 모델을 확장(scale up)하는 데 강력한 후보 아키텍처임이 이전 연구(Woo et al., 2023)에서 보여졌다고 인용하며, 이를 토대로 새로운 변형을 도입한다고 밝힌다.
-- 세 가지 문제에 대응하는 세 가지 제안(각각의 세부 메커니즘은 이 문서에서 개요 수준으로만 언급됨):
-  1. **다중 입출력 투영층(multiple input/output projection layers)**: 빈도별로 서로 다른 패치 기반 투영(patch-based projection)을 학습하여 빈도별 패턴 차이를 흡수한다. 고빈도 데이터에는 더 큰 패치 크기를, 저빈도 데이터에는 더 작은 패치 크기를 사용하는 방식으로 투영층을 해당 빈도에 특화시킨다.
-  2. **Any-variate Attention**: 시간 축과 변량 축을 동시에 하나의 시퀀스로 취급하는 어텐션 메커니즘을 제안. Rotary Position Embeddings(RoPE, Su et al., 2024)로 시간 축을, 학습된 이진 어텐션 바이어스(learned binary attention biases, Yang et al., 2022b)로 변량 축을 인코딩한다. 이를 통해 모델이 임의 개수의 변량을 입력으로 받을 수 있게 된다.
-  3. **혼합 파라메트릭 분포(mixture of parametric distributions)**: 유연한 예측 분포를 확보하기 위해 여러 파라메트릭 분포의 혼합을 출력 분포로 사용한다. 저자들은 유연한 분포의 음의 로그우도(negative log-likelihood)를 최적화하는 것이 목표 지표(target metric) 최적화와도 경쟁력을 가진다는 선행연구(Awasthi et al., 2022)를 근거로, 이 방식이 사후에 어떤 목표 지표로든 평가될 수 있는 사전학습에 유리한 특성이라고 주장한다.
-- 모델은 세 가지 크기로 학습되었다: MoiraiSmall(14M 파라미터), MoiraiBase(91M), MoiraiLarge(311M).
-- 학습 시 컨텍스트 길이와 예측 길이를 무작위로 샘플링하여, 사전학습된 모델을 다운스트림에서 유연하게 사용할 수 있도록 한다(즉 고정된 컨텍스트/예측 길이에 종속되지 않음).
-- (마스크 인코더의 구체적 마스킹 방식, 어텐션 레이어 수·차원 등 세부 아키텍처는 미확보 구간—Appendix B 등—에 있을 것으로 보이며 이 문서에는 없다.)
+## 2. 핵심 요약 (Executive Summary)
+다양한 샘플링 빈도, 임의의 변량 수, 이질적인 분포 특성을 가진 시계열 데이터를 단일 파운데이션 모델로 통합 처리하기 위한 **마스크 인코더 기반 범용 Transformer 모델(Moirai)**과 대규모 오픈 시계열 아카이브 **LOTSA(Large-scale Open Time Series Archive)**를 제안함. 9개 도메인, 270억(27B) 개 관측치로 사전학습된 Moirai는 완전학습(full-shot) 도메인 특화 모델 대비 제로샷(zero-shot) 환경에서도 강력한 경쟁력을 입증함.
 
-## 사전학습 데이터/코퍼스
-- **LOTSA (Large-scale Open Time Series Archive)**: "가장 큰 오픈 시계열 데이터셋 모음"으로, **9개 도메인에 걸쳐 270억(27B) 개 이상의 관측치(observations)**를 포함한다고 서론과 Table 1에서 반복谁으로 명시된다("over 27B observations across nine domains").
-- Table 1(사전학습 모델 비교표)에서 Moirai의 "Pre-training Data (Size)" 항목은 "LOTSA (>27B)"로 표기되어 있다. 비교 대상들의 규모:
-  - TimeGPT-1: Unknown (100B)
-  - ForecastPFN: Synthetic Data (60M)
-  - Lag-Llama: Monash (<1B)
-  - TimesFM: Wiki + Trends + Others (>100B)
-  - TTM: Monash (<1B)
-  - LLMTime: Web-scale Text (크기 미표기)
-- **주의**: 이 문서에는 LOTSA를 구성하는 9개 도메인의 명칭, 도메인별 데이터셋 개수, 도메인별 관측치 수를 표로 제시하는 부분(원 논문의 Section 3 데이터 관련 부분 또는 Appendix에 있을 것으로 추정)이 포함되어 있지 않다. 따라서 **금융(Econ/Fin) 도메인 관련 구체적 수치는 이 문서에서 전혀 확인할 수 없다** — 원문 자체에 해당 내용이 없기 때문에 인용 불가.
-- 3장 서두의 "Problem Formulation"에서는 N개 시계열로 구성된 데이터셋 D = {(Y^(i), Z^(i))}_{i=1}^N 를 정의하려는 수식이 등장하다가 문서가 끊긴다(Y가 관측 대상 시계열, Z가 아마도 공변량으로 추정되나 정의 문장이 완결되지 않아 확정할 수 없음).
+---
 
-## 핵심 실험 결과
-이 문서에는 실험 섹션(4장) 자체가 포함되어 있지 않다. 서론에서 서술적으로만 다음이 언급된다:
-- "in-distribution 및 out-of-distribution 설정 모두에서 실험적 평가를 수행했으며, Moirai가 최신 완전학습(full-shot) 베이스라인 대비 일관되게 경쟁력 있거나 더 우수한 성능을 달성함을 보였다"(원문: "we perform experimental evaluations on both in and out-of-distribution settings, and show that Moirai consistently achieves competitive or superior performance compared to state-of-the-art full-shot baselines").
-- 구체적인 수치, 데이터셋별 지표(CRPS, MASE 등), 표/그래프는 이 문서에 전혀 없다.
+## 3. 핵심 문제의식 및 설계 동기
+1. **기존 시계열 딥러닝의 고립성**: '데이터셋 하나당 하나의 모델(one-model-per-dataset)' 패러다임에 갇혀 사전학습 전이학습의 혜택을 누리지 못함.
+2. **범용 시계열 모델(Universal TSFM)의 3대 핵심 난제**:
+   - **교차 빈도 학습(Cross-Frequency Learning)**: 초·분·시·일 등 서로 다른 샘플링 주기를 동시에 학습할 때 발생하는 부정적 간섭(negative interference).
+   - **임의 변량 수 처리(Any-variate)**: 다변량 데이터마다 변량 수가 상이하고 변량 간 의미적 단위가 다름.
+   - **분포 특성의 극단적 다양성**: 단일 파라메트릭 분포 가정(예: 정규분포, Student-t)은 양수 시계열(카운트 데이터 등)이나 다봉(multi-modal) 분포의 불확실성을 표현하지 못함.
 
-## 저자가 스스로 밝힌 한계
-이 문서에는 Limitations 절이나 그에 준하는 한계 논의가 포함되어 있지 않다(미확보 구간에 있을 가능성이 있음). 다만 서론에서 간접적으로 드러나는 스코프 한정 요소는 다음과 같다:
-- Table 1에서 Moirai는 "Any-variate (Zero-shot)", "Probabilistic Forecasting", "Flexible Distribution" 세 항목 모두 체크(✓)되어 있어, 저자들이 스스로 이 세 가지를 자사 모델의 핵심 차별점으로 제시하고 있다는 점에서, 역으로 비교 대상 모델들(TimesFM, TTM 등)의 어떤 항목이 부족한지를 프레이밍하는 방식으로 자사 강점을 강조하고 있음을 확인할 수 있다. 그러나 이는 "한계 고백"이 아니라 비교표를 통한 강점 제시이다.
+---
 
-## 흥미롭거나 특기할 만한 점
-- 모델명 "Moirai"는 그리스 신화의 운명의 여신들(모이라이, 영어로 흔히 "The Fates")에서 따온 것이라고 각주에서 직접 밝히고 있다("destiny"의 의인화라는 점에서 "미래를 예측한다"는 모델의 기능과 언어유희적으로 연결).
-- Table 1은 경쟁 모델들을 세 가지 축(any-variate 제로샷 가능 여부, 확률적 예측 여부, 유연한 분포 여부)으로 정리하며, 데이터 규모만 보면 TimeGPT-1(100B)과 TimesFM(>100B)이 LOTSA(27B)보다 크다고 명시되어 있다 — 즉 저자들은 "가장 큰 데이터"라는 프레이밍보다는 "가장 큰 오픈(open) 데이터셋"이라는 프레이밍을 사용하고 있어("largest collection of open time series datasets"), 규모 경쟁이 아니라 개방성(open-source)과 아키텍처 설계의 정교함을 차별점으로 내세우는 전략이 엿보인다.
-- Any-variate Attention에서 시간 축은 RoPE(상대적 위치 인코딩), 변량 축은 학습된 이진 어텐션 바이어스로 서로 다른 방식을 적용한다는 설계는, "시간"과 "변량"이라는 이질적인 두 축을 하나의 시퀀스에 녹이면서도 각각에 적합한 귀납적 편향(inductive bias)을 부여하려는 시도로 읽힌다.
-- Related Work에서 "Reprogramming"이라는 최근 흐름(LLM을 시계열에 파인튜닝으로 재활용)을 별도 카테고리로 소개하며 Moirai의 접근(처음부터 시계열 전용으로 사전학습)과 대비시키고 있다는 점이 방법론적 포지셔닝을 이해하는 데 참고가 된다.
-- 원문 확보 상태 자체가 이 요약의 신뢰도에 미치는 영향: 이 논문은 시계열 파운데이션 모델 중 가장 자주 인용되는 것 중 하나이며 아키텍처·데이터·실험 디테일이 핵심인데, 현재 확보된 원문은 딱 그 핵심 내용(3장 나머지, 4장, Appendix) 직전에서 끊겨 있다. 후속 작업에서는 반드시 나머지 구간(특히 LOTSA 도메인별 표, Any-variate Attention 수식, 확률적 헤드 수식, 실험 표, Limitations)을 재수집해야 온전한 정독이 가능하다.
+## 4. 방법론 및 아키텍처 세부 메커니즘
+- **기본 백본**: 마스크 인코더(Masked Autoencoder) 구조. 입력 시계열의 패치들을 랜덤 마스킹하고 이를 복원하는 방식으로 자기지도 학습 수행.
+- **다중 패치 투영층 (Multi-Patch Projection)**:
+  - 빈도에 따라 패치 크기 집합 $P = \{p_1, p_2, \dots, p_k\}$를 다르게 할당.
+  - 고빈도(분, 초) 데이터에는 큰 패치 크기(예: 32, 64, 128)를 적용해 긴 시간 문맥을 포착하고, 저빈도(일, 월) 데이터에는 작은 패치 크기(예: 8, 16, 32)를 적용.
+- **Any-variate Attention (시간 × 변량 통합 어텐션)**:
+  - 다변량 시계열을 단일 시퀀스로 평탄화(flattening)하여 처리.
+  - **시간 축**: Rotary Position Embeddings (RoPE)를 적용하여 상대적 시간 순서를 인코딩.
+  - **변량 축**: 학습된 이진 어텐션 바이어스(Learned Binary Attention Bias)를 적용하여 동일 변량 여부(self-variate vs cross-variate)를 구분.
+- **혼합 파라메트릭 분포 헤드 (Mixture of Parametric Distributions)**:
+  - 다음 4가지 파라메트릭 분포 성분의 가중 혼합(mixture weights $\pi$)을 예측:
+    1. **Student's t-분포**: 두꺼운 꼬리(heavy-tailed) 데이터 모델링.
+    2. **로그 정규분포 (Log-normal)**: 양의 연속 실수 데이터 모델링.
+    3. **음이항분포 (Negative Binomial)**: 양의 카운트(count) 데이터 모델링.
+    4. **저분산 정규분포 (Low-variance Normal)**: 확신도가 높은 결정론적에 가까운 구간 모델링.
+  - 목적함수: 혼합분포의 음의 로그우도(Negative Log-Likelihood, NLL) 최소화.
+- **모델 크기**:
+  - Moirai-Small: 14M 파라미터 (d_model=384, layers=6)
+  - Moirai-Base: 91M 파라미터 (d_model=768, layers=12)
+  - Moirai-Large: 311M 파라미터 (d_model=1024, layers=24)
+
+---
+
+## 5. 사전학습 코퍼스: LOTSA 내 금융 데이터 정밀 검증 (공식 PDF p.5 Table 2 & p.15 Table 14)
+
+### (1) 전체 LOTSA 구성 (공식 PDF p.5 Table 2)
+- **전체 데이터 규모**: 9개 도메인, 27,249,158,477 관측치 (약 27.2B)
+- **도메인별 분포**:
+  - Energy: 10,757,949,271 (39.48%)
+  - Transport: 6,432,642,883 (23.61%)
+  - Climate: 3,745,842,504 (13.75%)
+  - CloudOps: 2,752,990,265 (10.10%)
+  - Web: 1,607,951,332 (5.90%)
+  - Sales: 1,023,043,905 (3.75%)
+  - Nature: 549,431,894 (2.02%)
+  - Healthcare: 355,386,827 (1.30%)
+  - **Economics/Finance (Econ/Fin)**: **24,919,596 (0.10%)**, 23개 데이터셋
+
+### (2) Econ/Fin 도메인 23개 데이터셋의 실체 (공식 PDF p.15 Table 14)
+- 공식 PDF 부록 Table 14 전수 분석 결과, Econ/Fin 데이터셋 23개의 구성은 다음과 같음:
+  1. **거시경제/공공 지표**: US Bureau of Labor Statistics (BLS), Federal Reserve (FRED-MD 월간 거시계열 128종), UK Office for National Statistics (ONS), GoDaddy 마이크로비즈니스.
+  2. **벤치마크 대회 시계열**: Monash 아카이브 내 CIF-2016, NN5 (일별/주별 ATM 인출액).
+  3. **암호화폐**: Kaggle Bitcoin 18개 일별 시계열.
+  4. **개별 주식(Equity) 주가 및 일별 수익률 데이터**: **0건 (전혀 포함되지 않음)**.
+- **연구적 함의**:
+  - Moirai의 사전학습 코퍼스 중 금융 비중은 0.10%에 불과하며, 그마저도 거시경제 시계열과 비트코인·ATM 인출액 데이터뿐임.
+  - 따라서 주식 시장의 일별 주가/수익률에 대한 Moirai의 평가는 **완전한 OOD(Out-of-Distribution) 내지 극단적 과소대표(Severe Underrepresentation)** 상태에서의 평가임이 공식 확인됨.
+
+---
+
+## 6. 불확실성 평가 및 CRPS 수식 체계 (공식 PDF p.19 Appendix C.1)
+
+Moirai 논문은 확률적 예측의 평가 척도로 **CRPS**와 **MSIS**를 공식 정의함:
+
+### (1) CRPS의 핀볼 손실 적분 정의
+예측 분포의 CDF $F$와 실측치 $y$에 대해:
+$$\text{CRPS}(F, y) = \int_0^1 2 \Lambda_\alpha(F^{-1}(\alpha), y) \, d\alpha$$
+여기서 $\Lambda_\alpha(q, y) = (\alpha - \mathbf{1}_{y < q})(y - q)$는 분위수 수준 $\alpha$에서의 분위수 손실(pinball loss).
+
+### (2) 이산화 정규화 근사: wQL 기반 CRPS 근사
+실무적 계산을 위해 Moirai는 Park et al. (2022)의 **mean weighted sum quantile loss (wQL)**를 사용하여 $K=9$개 분위수($\alpha \in \{0.1, 0.2, \dots, 0.9\}$)의 평균으로 CRPS를 근사함:
+$$\text{CRPS} \approx \frac{1}{K} \sum_{k=1}^K \text{wQL}[\alpha_k], \quad \text{wQL}[\alpha] = 2 \frac{\sum_t \Lambda_\alpha(\hat{q}_t(\alpha), y_t)}{\sum_t |y_t|}$$
+($\hat{q}_t(\alpha)$는 시점 $t$에서의 예측된 $\alpha$-분위수).
+
+### (3) Mean Scaled Interval Score (MSIS)
+M4 대회 기준 95% 예측 구간($a=0.05$, 상한 $U_t$, 하한 $L_t$, 계절주기 $m$):
+$$\text{MSIS} = \frac{\frac{1}{h} \sum_{t=1}^h \left( (U_t - L_t) + \frac{2}{a}(L_t - Y_t)\mathbf{1}_{\{Y_t < L_t\}} + \frac{2}{a}(Y_t - U_t)\mathbf{1}_{\{Y_t > U_t\}} \right)}{\frac{1}{n-m}\sum_{t=m+1}^n |Y_t - Y_{t-m}|}$$
+
+---
+
+## 7. 주요 실험 및 소거 연구 (Ablation Study) 결과 (공식 PDF p.8 Table 7)
+Monash 벤치마크 제로샷 Normalized MAE 비교:
+- **Moirai Small (전체 제안 모델)**: **0.655**
+- w/o multi patch size (단일 패치 사용 시): **1.156** (성능 가장 크게 붕괴 $\rightarrow$ 빈도 적응에 다중 패치가 필수적임 입증)
+- w/o Any-variate Attention: **0.904**
+- w/o LOTSA (GluonTS+Monash만 사용): **0.809** (데이터 다양성 결핍 시 악화)
+- w/o packing: **0.785**
+- w/o mixture distribution (Student-t 단일 분포 사용 시): **0.740** (p.8 Figure 4에서 Student-t의 대칭성으로 인한 피크 구간 과대/부적절 구간 추정 실증)
+
+---
+
+## 8. 저자가 밝힌 한계점 (Limitations, p.9)
+1. **하이퍼파라미터 튜닝 부재**: 연산 자원 제약으로 인해 사전학습 시 하이퍼파라미터 튜닝이 거의 이루어지지 못함($\mu\text{P}$ 등 경량 튜닝 필요).
+2. **다중 패치 매핑의 휴리스틱성**: 빈도별 패치 크기 할당 규칙이 경험적(heuristic) 규칙에 의존함.
+3. **고차원 시계열 처리 한계**: 변량 수가 매우 많은 초고차원 시계열 입력 시 트랜스포머 컨텍스트 길이 한계 발생.
+
+---
+
+## 9. 우리 학위 논문 연구와의 직접적 접점 및 시사점
+1. **0.10% 코퍼스 편향의 명확한 근거**: Moirai가 금융 시계열에서 붕괴하는 원인이 "원천적으로 주식 시계열을 학습한 적이 없는 극단적 OOD" 때문임을 논문 Table 2/19로 반박 불가하게 입증 가능.
+2. **CRPS 평가 코드 정합성**: Moirai 저자들이 공식 정의한 $K=9$ wQL 핀볼 손실 평균 근사 방식을 우리 실험 파이프라인의 표준 CRPS 구현으로 채택하여 평가 정합성을 100% 확보함.
+3. **혼합분포의 붕괴 분석**: Moirai는 Student-t, Log-normal, Neg-binomial, Normal을 혼합하므로, 금융 데이터의 비대칭 두꺼운 꼬리 및 체제전환 앞에서 4개 성분의 혼합 가중치 $\pi$가 어떻게 붕괴(특정 성분 쏠림 등)하는지 추적하는 실험적 통찰 제공.

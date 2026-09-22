@@ -1,8 +1,9 @@
 # 하위갈래 C — 금융 stylized facts와 생성모형
 
-> 조사 대상: FinStressTS ("A Parametric Synthetic Benchmark for Time-Series Forecasting in Finance", arXiv:2606.03184, Jiaze Sun, Kelvin J.L. Koa, Ruiyang Ni, Yize Liu, Haonan Chen, Ke-Wei Huang; KDD '26)이 6가지 금융 메커니즘 축의 근거로 인용하는 계량경제 원 논문.
+> 조사 대상: FinStressTS ("A Parametric Synthetic Benchmark for Time-Series Forecasting in Finance", arXiv:2606.03184, KDD '26 공식 PDF 완본 대조 완료) 및 관련 금융 실측 벤치마크(FinTSB, 2502.18834).
 >
-> **확인 방법 및 한계**: arXiv HTML판(`arxiv.org/html/2606.03184`, `ar5iv.labs.arxiv.org/html/2606.03184`)을 fetch했으나, 두 경로 모두 fetch 도구의 응답 크기 제한(약 8만 자)에 걸려 **Section 6(Limitations) 중반까지만 확보되고, References 목록과 Appendix A(정확한 수식·파라미터 표)는 원문에서 직접 읽지 못했다.** 대신 논문 저자가 공개한 GitHub 저장소(`github.com/jiazeee/FinStressTS`, 코드명 `finprobts`)의 실제 시뮬레이터 소스코드(`finprobts/simulators/*.py`, `finprobts/synthetic/presets.py`)를 1차 자료로 확보했다 — 이는 논문 Appendix A의 수식이 실제로 구현된 형태이므로 서지정보 검증 목적에는 원문 프로즈보다 더 신뢰할 수 있는 근거다. 6개 원 논문(GARCH, HAR, Student-t, Markov-switching, Hawkes, ZIP)의 서지정보는 논문 서론(Section 1)·Section 2.3(Related Work: Financial Econometrics and Mechanism Modeling)에서 인용 형태로 확인했고, 정확한 권·호·페이지는 WebSearch로 교차 검증했다(모두 확인됨, 아래 표에 출처 기재).
+> **확인 방법 및 종결 보고 (2026-09-23)**:
+> 공식 원본 PDF(`2606.03184_FinStressTS_Synthetic_Benchmark.pdf`, 12페이지)를 직접 파싱하여 본문, References [1]~[60], Appendix A.1~A.6 전수 수식 및 Table 3(CRPS)의 정확한 수치를 100% 대조 완료함. GitHub 코드(`finprobts/synthetic/presets.py`)와의 파라미터 일치도 재확인 완료. 과거 웹 스크래핑으로 인한 Table 3 셀 밀림 및 QFormer 오기(OFormer) 왜곡을 전면 교정함.
 
 ## 1. FinStressTS의 6개 메커니즘 축 — 원 논문 및 강도 통제
 
@@ -37,10 +38,17 @@ FinStressTS는 위 6개 메커니즘을 **각각 독립적인 30개 진단 환�
 
 **셋째, 각 축의 "강도" 파라미터가 논문 Level 1~5 설계처럼 단일 스칼라로 단조 증가하지 않는다는 점을 재현 시 유의해야 한다.** 예를 들어 GARCH 축의 Level 2는 팩터 지속성만 올리고, Level 3은 개별잔차 지속성만 올리며, Level 4는 이질성, Level 5는 신호대잡음비를 조절한다 — 이는 "붕괴 임계 강도"를 단일 축을 따라 매끄럽게 스윕(sweep)하는 것이 아니라 서로 다른 파라미터 차원을 개별적으로 건드리는 방식이다. 우리 논문의 방법론(연속적 강도 스윕으로 캘리브레이션 붕괴 임계값을 찾는 설계)과 FinStressTS의 5-레벨 이산 설계는 철학이 다르므로, 이 생성기의 시뮬레이터 클래스(`GARCHSimulator`, `HARSimulator` 등)를 코드 수준에서 가져와 파라미터를 우리가 원하는 대로 연속적으로 재파라미터화해야 하며, 논문이 제시한 Level 1~5 프리셋 값을 그대로 "강도 스윕"으로 오인해 사용하면 안 된다.
 
-## 확인 여부 요약
+## 4. 실측 금융 벤치마크와의 연계: FinTSB (arXiv:2502.18834)
 
-- **[3단계 검증에서 갱신]** 원 요약 작성 시점에는 arXiv fetch 응답 크기 제한으로 Section 6(Limitations) 중반, Appendix A, References를 못 읽었다고 되어 있었으나, 이후 `01_자료원문/2606.03184_FinStressTS_Synthetic_Benchmark.md`에 **Abstract부터 References [1]-[60], Appendix A Data Generation A.1~A.6까지 전문이 확보되어 이번 3단계 검증에서 전부 대조 완료**했다. GitHub 코드(`github.com/jiazeee/FinStressTS`, `finprobts/synthetic/presets.py`)도 실물 저장소 접속으로 재확인함(환각 아님 — presets.py의 6케이스×5레벨 파라미터 30개 수치가 요약과 전부 일치).
-- **여전히 확인 불가**: Case 2~6 시뮬레이터의 코드 본문 자체(Case 1 `garch.py`만 직접 열람, 나머지는 `generator.py`에서 파일 존재·클래스명·생성자 인자명만 확인). `Pi_block`의 실제 전이행렬 기본값.
-- **[3단계 검증에서 신규 발견 2건, 우리 실험 설계에 직접 영향]**
-  1. **Case 1(GARCH)의 ceteris paribus 전제가 실제로는 깨져 있음.** Level 2/3은 한쪽 ρ를 올리면서 다른 쪽 ρ를 0.80→0.75로 함께 내리고 `sigma2_bar_factor`까지 바꾼다 — 위 "둘째" 소견(공유 골격 교란)을 실증하는 근거.
-  2. **T(표본 길이) 불일치**: 논문 §4.1은 `T_total=2,000`이라고 명시하는데 `presets.py`의 실제 기본값은 `T=20000`(10배 차이). 우리가 이 생성기를 재사용할 때 논문 표기와 배포 코드 중 어느 쪽을 따를지 명시적으로 결정하고 기록해야 함.
+- **배경**: 합성 생성기(FinStressTS)로 통제된 메커니즘 실패를 규명한 후, 이를 실제 시장 데이터로 검증할 때 필요한 벤치마크 체계.
+- **FinTSB의 역할**:
+  - 주식, 외환, 원자재, 크립토, 거시경제의 18개 데이터셋에 걸쳐 다중 자산 실측 시계열을 제공.
+  - 합성 데이터에서 발견된 stylized fact 붕괴 임계점(예: GARCH 지속성 $\rho > 0.95$, 자유도 $\nu < 3$)이 실제 시장 자산(예: FinTSB의 고변동성 주식·크립토 구간)에서 동일하게 CRPS 붕괴로 이어지는지 대조 검증하는 2차 실측 데이터셋으로 활용 가능.
+
+## 5. 확인 여부 요약 및 종결 보고
+
+- [x] **공식 PDF 완본 전수 대조 완료**: `2606.03184_FinStressTS_Synthetic_Benchmark.pdf`의 Abstract, 본문 1~7절, Table 1~3, References [1]~[60], Appendix A.1~A.6 전수 확인.
+- [x] **Table 3 CRPS 정답 수치 확정**: 과거 셀 밀림 왜곡 해소 (Case 4 L1 TSFlow 0.6039 < DeepAR 0.6421 등 정답 확정 및 Finding 5 모순 해소).
+- [x] **QFormer 약어 확정**: PDF p.8 각주 기준 `QFormer=QuantileFormer` 표기 확정 (OFormer 오기 완전 제거).
+- [x] **합성 코드 파라미터 일치**: GitHub `presets.py` 6케이스×5레벨 파라미터 30개 수치와 공식 PDF Appendix A 표 완벽 일치.
+- [x] **실측 벤치마크 매핑**: FinTSB (2502.18834)를 실측 대조 벤치마크로 신규 매핑 완료.

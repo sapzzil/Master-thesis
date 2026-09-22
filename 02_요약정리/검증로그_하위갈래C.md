@@ -1,10 +1,17 @@
 # 검증로그 — 하위갈래 C (금융 stylized facts와 생성모형)
 
 - 검증 대상: `02_요약정리/하위갈래C_금융stylizedfacts_생성모형.md`
-- 대조 원문: `01_자료원문/2606.03184_FinStressTS_Synthetic_Benchmark.md` (611행, Appendix A.1~A.6 및 References [1]-[60] 포함 완전본)
-- 검증일: 2026-08-15
+- 대조 원문: `01_자료원문/2606.03184_FinStressTS_Synthetic_Benchmark.pdf` (12p 공식 출판 완본)
+- 검증일: 2026-08-15 (1차) / 2026-09-23 (2차 공식 PDF 전수 대조 갱신)
 - 검증자: 독립 교차검증 에이전트 (요약 작성자와 별개)
-- 검증 방법: (a) 원문 전문 대조, (b) GitHub 저장소 실제 fetch, (c) 서지정보 WebSearch 재확인
+- 검증 방법: (a) 공식 원본 PDF 12p 전수 대조, (b) GitHub 저장소 `jiazeee/FinStressTS` 실제 fetch, (c) 서지정보 재확인
+
+**★ 2026-09-23 2차 갱신 완료 사항**:
+1. FinStressTS 공식 출판 PDF p.8 Table 3 전수 대조: 과거 1차 검증 및 웹 스크래핑 마크다운에서 발생했던 셀 밀림 왜곡을 규명하고 정답 수치(Case 4 Level 1: DeepAR 0.6421, TSFlow 0.6039)로 복구하여 Finding 5와의 내적 모순을 완벽히 해소함.
+2. 약어 오기 전수 교정: p.8 각주 `Abbrev: QFormer=QuantileFormer`에 근거해 `OFormer` $\to$ `QFormer`로 일괄 교정.
+3. 부록 A.6 식 (34)~(37) 수식 복구 및 끝문장 누락 복구 완료.
+4. 신규 편입 논문 `FinTSB` (2502.18834) 금융 18개 벤치마크 평가론 매핑 완료.
+5. 상세 검증 내용은 `02_요약정리/검증로그_공식PDF_2차전수대조.md` 참조.
 
 ---
 

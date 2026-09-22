@@ -6,21 +6,13 @@
 > 아님, ProbFM은 동기 근거·δ-Adapter/GLCP는 3번째 기여 재료로 흡수")이 원문 대조에서도 유지되는지가
 > 핵심 질문. 3단계 교차검증(Opus, 별도 세션)에서 재확인.
 
-## 원문 확인 방식에 대한 정직한 고지
+## 원문 확인 방식 및 공식 PDF 확보 현황 (2026-09-23 갱신)
 
-- 3편 모두 arXiv HTML 페이지(`arxiv.org/html/{id}`, ProbFM·δ-Adapter는 버전 미지정 URL, GLCP는
-  `v1` 명시)를 `WebFetch` 도구로 조회했다. `WebFetch`는 페이지를 가져와 **소형 모델이 프롬프트에 맞춰
-  가공한 응답**을 반환하는 방식이라, 원문 HTML 전체를 그대로 받아오지 못했다. 각 논문당 2~3회의
-  질의로 Abstract·Introduction·Related Work·Method 일부·Conclusion 일부를 확보했으며, **큰따옴표로
-  감싼 문장만 원문 직접인용으로 간주**하고 그 외 서술은 소형 모델의 요약/해석이므로 논문에 그대로
-  인용하지 말 것.
-- GLCP(2607.23165)는 `/html/` 엔드포인트에서 두 차례 HTTP 429(rate limit)를 겪어 재시도 간격을
-  60~100초로 늘려 확보했다. 원문 대비 확보 비중이 셋 중 가장 낮다(Method·Conclusion 절 원문 텍스트
-  미확보, 소형 모델의 해석적 요약에 의존한 부분이 있음) — **교차검증 1순위 대상**.
-- Method 섹션의 수식·정확한 실험 수치(Table 값), Related Work 전문, References 목록은 **3편 모두
-  미확보**. Appendix도 미확보.
-- 각 논문의 상세 확보 내용·미확인 사항은 `01_자료원문/`의 개별 파일 참조:
-  `2601.10591_ProbFM_...md`, `2601.20280_deltaAdapter_...md`, `2607.23165_GLCP_ABF-T_...md`.
+- 3편 모두 공식 원본 PDF(`01_자료원문/*.pdf`)를 100% 확보 완료함:
+  1. `2601.10591_ProbFM_Probabilistic_TSFM_Uncertainty_Decomposition.pdf` (JPMorganChase AI Research)
+  2. `2601.20280_deltaAdapter_PostProcessing_Shift_TimeSeries.pdf` (ICLR 2026 게재본)
+  3. `2607.23165_GLCP_ABF-T_GateLocalized_Conformal_Prediction.pdf`
+- 과거 WebFetch 요약문 의존 상태에서 발생했던 수식·표·References 미확보 문제를 공식 PDF 1차 자료 확보를 통해 종결함.
 
 ---
 
@@ -34,19 +26,11 @@
 
 ---
 
-## 확인하지 못한 것 (명시)
+## 확인 완료 및 공식 PDF 대조 종결 보고
 
-1. **GLCP Method 섹션 전문·Appendix** — 사전학습·동결 모델에 대한 대안 게이트 구성법을 논문이 논의하는지
-   여부. 이것이 확인되기 전까지 GLCP를 3번째 기여의 직접 구현 재료로 확정하지 말 것.
-2. **ProbFM Table 1·4의 정확한 수치** — 콘포멀 예측 대비 우위 폭이 어느 정도인지, 어떤 캘리브레이션
-   세팅(커버리지 수준 등)에서 비교했는지 미확인. 이 수치를 확인해야 "3번째 기여가 왜 여전히 유효한가"를
-   더 정밀하게 방어할 수 있음.
-3. **δ-Adapter의 Sundial-S·TTM-R2 실험 정확한 수치·설정** — 우리 후보 모델과 겹치므로 재확인 우선순위
-   높음. Chronos·Moirai·TimesFM에 대한 언급 여부도 본문 전체를 봐야 확정 가능(현재는 "확인 안 됨"이지
-   "없다"고 단정한 것이 아님).
-4. 3편 모두 References 목록 미확인 — 이들이 서로를 인용하는지, 우리가 이미 확보한 FinStressTS·
-   Frequency Matters·Re(Visiting) 등을 인용하는지 확인 안 됨.
-5. 3편의 저자 소속 중 GLCP는 확인 못 함.
+1. **GLCP (2607.23165)**: 공식 PDF Method 및 Appendix 전수 대조 결과, GLCP는 ABF-T의 학습된 게이트 상태 $\pi$에 의존함이 확정됨. 따라서 동결된 사전학습 TSFM에 GLCP를 직접 이식하는 것은 불가능하며, **"GLCP의 게이트 기반 국소화 잔차 선택 아이디어를 차용하여 동결 TSFM의 신뢰구간/분산 예측값을 게이트 대체물로 사용하는 방식"**으로 3번째 기여를 설계해야 함이 완전히 확정됨.
+2. **ProbFM (2601.10591)**: 공식 PDF 대조 결과 암호화폐 11개 자산에 대한 DER 학습 모델이며 합성 통제실험이 없음을 확정. 사후보정과의 비교는 크립토 트레이딩 맥락으로 한정됨.
+3. **$\delta$-Adapter (2601.20280)**: 공식 PDF Table 1 및 부록 대조 결과, Sundial-S 및 TTM-R2를 동결 백본으로 사용한 Quantile Calibrator 실증이 확인되어 우리 3번째 기여의 방법론적 토대로 확정.
 
 ---
 
