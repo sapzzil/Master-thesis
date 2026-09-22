@@ -17,7 +17,7 @@
 | 6 | **Zero-inflated Poisson(ZIP)**(`case6_zip_panel`, 간헐적/희소 활동) | 유동성이 낮은 자산·거래단위 데이터에서 장기간 무활동 구간과 간헐적 활동 폭발이 공존하는 현상(과잉 영행렬) | Lambert, D. (1992) "Zero-Inflated Poisson Regression, with an Application to Defects in Manufacturing." *Technometrics*, 34(1), 1–14. (FinStressTS는 이와 함께 Lesmond, Ogden, Trzcinka (1999) "A New Estimate of Transaction Costs"와 Andersen et al. (2007) "Roughing it up..."을 유동성·점프측정 맥락에서 병기 인용) | 이벤트 카운트 N_t가 "구조적 영(structural zero, 확률 π)"과 "활성상태 포아송(확률 1−π, Poisson(λ))"의 혼합분포를 따름: P(N=0)=π+(1−π)e^{−λ}; 시장공통 ZIP 점프과정을 패널로 확산 | `pi`(구조적 영 확률 — 희소성 강도), `lam`(활성 상태 조건부 도착강도), `jump_mean_abs`/`jump_sigma_log`(점프 크기) | Level 1(기준, π=0.70)→Level 2(희소사건, π=0.90↑)→Level 3(버스트형 사건, λ=0.60↑)→Level 4(두꺼운 꼬리 사건, jump_sigma_log=1.00)→Level 5(지속배경, phi=0.55↑)로 조절 |
 
 ### 표 출처 주석
-- 서지정보(권·호·페이지)는 각각 WebSearch로 재확인: Bollerslev(1986) *J. Econometrics* 31(3):307–327 (DOI 10.1016/0304-4076(86)90063-1); Engle(1982) *Econometrica* 50(4):987–1008; Corsi(2009) *J. Financial Econometrics* 7(2):174–196 (DOI 10.1093/jjfinec/nbp001); Bollerslev(1987) *Rev. Econ. Stat.* 69(3):542–547; Hamilton(1989) *Econometrica* 57(2):357–384; Hawkes(1971) *Biometrika* 58(1):83–90 (DOI 10.1093/biomet/58.1.83); Lambert(1992) *Technometrics* 34(1):1–14 (DOI 10.2307/1269547).
+- 서지정보(권·호·페이지)는 각각 WebSearch로 재확인: Bollerslev(1986) *J. Econometrics* 31(3):307–327 (DOI 10.1016/0304-4076(86)90063-1); Engle(1982) *Econometrica* 50(4):987–1007; Corsi(2009) *J. Financial Econometrics* 7(2):174–196 (DOI 10.1093/jjfinec/nbp001); Bollerslev(1987) *Rev. Econ. Stat.* 69(3):542–547; Hamilton(1989) *Econometrica* 57(2):357–384; Hawkes(1971) *Biometrika* 58(1):83–90 (DOI 10.1093/biomet/58.1.83); Lambert(1992) *Technometrics* 34(1):1–14 (DOI 10.2307/1269547).
 - FinStressTS 논문이 이 논문들을 인용하고 있다는 사실은 arXiv HTML판에서 직접 확인함 — 다만 **[3단계 검증에서 정정] 전부 Section 2.3에 있는 것은 아님**. Engle/Bollerslev(1986)/Corsi/Hamilton/Hawkes 인용은 Section 1(Introduction) 및 §3.2에서 확인되고, Bollerslev(1987)·Lambert(1992)의 정확한 인용 위치는 §2.3이 아니었다. 특히 zero-inflated(ZIP) 근거는 §2.3이 아니라 **Andersen et al.(2007)[2]**를 경유해 §1/§3.2에서 확인됨.
 - 정확한 수식·파라미터는 논문 Appendix A 프로즈가 아니라 저자 공개 GitHub 저장소(`github.com/jiazeee/FinStressTS`)의 실제 구현 코드(`finprobts/simulators/garch.py`, `har.py`, `heavy_tail.py`, `regime_switching.py`, `hawkes.py`, `zero_inflated.py`, `finprobts/synthetic/presets.py`)에서 직접 확인함. 이는 arXiv fetch가 응답 크기 제한으로 Appendix A 본문에 도달하지 못했기 때문에 채택한 대안 경로이며, 코드가 논문 저자 본인 저장소에 있고 논문과 동일한 6-case/5-level 구조를 정확히 반영하므로 신뢰도 높은 1차 자료로 판단.
 
@@ -38,12 +38,12 @@ FinStressTS는 위 6개 메커니즘을 **각각 독립적인 30개 진단 환�
 
 **셋째, 각 축의 "강도" 파라미터가 논문 Level 1~5 설계처럼 단일 스칼라로 단조 증가하지 않는다는 점을 재현 시 유의해야 한다.** 예를 들어 GARCH 축의 Level 2는 팩터 지속성만 올리고, Level 3은 개별잔차 지속성만 올리며, Level 4는 이질성, Level 5는 신호대잡음비를 조절한다 — 이는 "붕괴 임계 강도"를 단일 축을 따라 매끄럽게 스윕(sweep)하는 것이 아니라 서로 다른 파라미터 차원을 개별적으로 건드리는 방식이다. 우리 논문의 방법론(연속적 강도 스윕으로 캘리브레이션 붕괴 임계값을 찾는 설계)과 FinStressTS의 5-레벨 이산 설계는 철학이 다르므로, 이 생성기의 시뮬레이터 클래스(`GARCHSimulator`, `HARSimulator` 등)를 코드 수준에서 가져와 파라미터를 우리가 원하는 대로 연속적으로 재파라미터화해야 하며, 논문이 제시한 Level 1~5 프리셋 값을 그대로 "강도 스윕"으로 오인해 사용하면 안 된다.
 
-## 4. 실측 금융 벤치마크와의 연계: FinTSB (arXiv:2502.18834)
+## 4. 실측 금융 벤치마크와의 연계: FinTSB (arXiv:2502.18834) — [2026-09-23 27차 정정]
 
 - **배경**: 합성 생성기(FinStressTS)로 통제된 메커니즘 실패를 규명한 후, 이를 실제 시장 데이터로 검증할 때 필요한 벤치마크 체계.
-- **FinTSB의 역할**:
-  - 주식, 외환, 원자재, 크립토, 거시경제의 18개 데이터셋에 걸쳐 다중 자산 실측 시계열을 제공.
-  - 합성 데이터에서 발견된 stylized fact 붕괴 임계점(예: GARCH 지속성 $\rho > 0.95$, 자유도 $\nu < 3$)이 실제 시장 자산(예: FinTSB의 고변동성 주식·크립토 구간)에서 동일하게 CRPS 붕괴로 이어지는지 대조 검증하는 2차 실측 데이터셋으로 활용 가능.
+- **FinTSB의 실제 역할 (공식 PDF 13p 재대조 결과 정정)**:
+  - ⚠️ 과거 기록("주식·외환·원자재·크립토·거시경제 18개 데이터셋")은 오류. 실제로는 **중국 A주 시장 단일 자산군, 20개 데이터셋**(300종목×250거래일, 4개 움직임패턴×5개 하위셋)이며, 크립토·외환·원자재·거시경제는 전혀 포함되지 않음(저자 스스로 §6 Limitations에서 타 자산군 미검증을 한계로 명시). 상세: `하위갈래B_확률예측_평가론.md` 5-보강3 참조.
+  - 따라서 "FinTSB의 고변동성 주식·크립토 구간"이라는 표현에서 **크립토는 삭제** — FinTSB에 크립토 데이터셋 없음. 실측 대조에 쓴다면 "FinTSB의 고변동성(Volatility/Extreme 패턴) 중국 A주 구간"으로 한정해야 함.
 
 ## 5. 확인 여부 요약 및 종결 보고
 

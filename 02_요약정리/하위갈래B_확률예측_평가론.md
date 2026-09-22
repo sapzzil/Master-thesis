@@ -204,15 +204,17 @@ TSFM이 포인트 예측이 아니라 샘플 앙상블(예: Chronos의 다중 �
 
 ---
 
-## 5-보강3. [신규 편입] FinTSB (arXiv:2502.18834) — 금융 시계열 다중 과제 벤치마크 평가론
+## 5-보강3. [신규 편입, 2026-09-23 27차 재검수로 정정] FinTSB (arXiv:2502.18834) — 금융 시계열 평가 프로토콜 (⚠️ 아래 5-보강3 참고: 과거 버전은 사실관계 오류 다수)
 
-- **논문 서지**: Yifan Hu, Yuante Li, Peiyuan Liu et al. (Tsinghua, CMU, Tongji, Shanghai AI Lab, 2026), "FinTSB: A Comprehensive and Practical Benchmark for Financial Time Series Forecasting", *Higher Education Press 2026*.
-- **평가 설계**:
-  - 주식(Equities), 외환(Forex), 원자재(Commodities), 암호화폐(Crypto), 거시경제(Macro)의 5대 자산군에 걸쳐 **18개 금융 시계열 데이터셋**을 망라한 통합 벤치마크 구축.
-  - 평가 지표로 MSE, MAE와 함께 **가중 분위수 손실(WQL)** 및 **방향 정확도(Directional Accuracy)**를 표준 평가 척도로 공식 채택.
-- **우리 연구와의 관계**:
-  - FinTSB는 금융 실측 다중 자산에 대한 표준화된 평가 파이프라인을 제공하지만, 주로 점 예측 오차와 표준 WQL 비교에 집중하며 **합성 데이터 생성기를 통한 계량경제학적 통제 진단이나 사후 캘리브레이션 붕괴 복구**는 다루지 않음.
-  - 우리 연구의 금융 다축 통제 실험 및 CRPS/PIT 진단 결과를 실측 다중 자산으로 확장할 때 벤치마크 프로토콜의 표준 레퍼런스로 인용.
+- **논문 서지**: Yifan Hu, Yuante Li, Peiyuan Liu et al. (Tsinghua, CMU, Tongji, Shanghai AI Lab, 2026), "FinTSB: A Comprehensive and Practical Benchmark for Financial Time Series Forecasting", *Front. Comput. Sci. 2026* (ICAIF 2025 Workshop Best Paper).
+- **평가 설계 (공식 PDF 13페이지 전수 재대조로 정정, 2026-09-23 27차)**:
+  - ⚠️ **과거 기록("주식·외환·원자재·크립토·거시경제 5대 자산군, 18개 데이터셋, WQL/방향정확도")은 사실이 아님 — 실제 PDF 어디에도 crypto/forex/commodity/macro 언급이 없음(grep 전수 검색 결과 0건).**
+  - 실제로는 **중국 A주(A-share) 주식시장만** 대상으로 함(원문 §6 Limitations: "FinTSB has been validated mainly on the Chinese A-share market... generalizability to other... asset classes remains to be explored" — 저자 스스로 타 자산군 미검증을 한계로 명시).
+  - **총 20개 데이터셋**(18개 아님) — 4가지 움직임 패턴(Uptrends/Downtrends/Volatility/Extreme) × 각 5개 하위 데이터셋, 각 데이터셋은 300개 종목 × 250거래일(Table 1).
+  - 평가지표는 WQL/MSE/MAE가 아니라 **Ranking Metrics(IC, RankIC, RankICIR)와 Portfolio-based Metrics**(원문 §4.3) — 방향 정확도(Directional Accuracy)·비대칭 손실함수 관련 언급도 원문에 없음.
+  - 핵심 비판 프레임은 **Diversity Gap(움직임 패턴 다양성 부족) / Standardization Deficit(평가 프로토콜 불일치) / Real-World Mismatch(시장 구조 요인 무시로 성능 과대평가)** 3대 결함(Abstract) — 이는 `02_요약정리/정찰_TSFM금융_문헌지도.md`(2026-08-12, 더 이른 조사)의 기존 기록과 일치하며, 오히려 21~23차에서 "신규 편입"하며 새로 작성한 설명이 원문을 확인하지 않고 다른 금융 멀티에셋 벤치마크와 혼동해 작성된 것으로 추정됨.
+- **우리 연구와의 관계 (정정)**:
+  - FinTSB는 중국 주식시장 한정 실측 벤치마크이며 확률예측(CRPS/PIT)도, 합성 데이터 통제 진단도 다루지 않음 — "실측 다중 자산 확장의 표준 레퍼런스"로 쓰기엔 자산군 범위가 우리 연구(미국 대표 자산 중심)와 다르므로, 인용한다면 "금융 시계열 평가 프로토콜 설계 시 참고할 비판적 프레임(3대 결함)" 용도로 한정할 것.
 
 ---
 
