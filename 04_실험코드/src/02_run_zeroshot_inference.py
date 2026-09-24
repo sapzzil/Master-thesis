@@ -133,6 +133,51 @@ def predict_chronos(context, model_id="amazon/chronos-t5-tiny", horizon=20, num_
 
 
 # -------------------------------------------------------------------------
+# 3-B. Moirai 모델 로더 및 추론 (Salesforce/moirai-1.0-R-small / base)
+# -------------------------------------------------------------------------
+_MOIRAI_MODEL = {}
+
+def get_moirai_model(model_id="Salesforce/moirai-1.0-R-small", horizon=20, context_len=512, num_samples=100):
+    global _MOIRAI_MODEL
+    key = (model_id, horizon, context_len, num_samples)
+    if key not in _MOIRAI_MODEL:
+        print(f"  [Moirai 로딩] {model_id} (device={DEVICE})...")
+        from uni2ts.model.moirai import MoiraiForecast, MoiraiModule
+        module = MoiraiModule.from_pretrained(model_id)
+        model = MoiraiForecast(
+            module=module,
+            prediction_length=horizon,
+            context_length=context_len,
+            patch_size=32,
+            num_samples=num_samples,
+            target_dim=1,
+            feat_dynamic_real_dim=0,
+            past_feat_dynamic_real_dim=0,
+        ).to(DEVICE)
+        model.eval()
+        _MOIRAI_MODEL[key] = model
+    return _MOIRAI_MODEL[key]
+
+
+def predict_moirai(context, model_id="Salesforce/moirai-1.0-R-small", horizon=20, num_samples=100, seed=42):
+    torch.manual_seed(seed)
+    L = len(context)
+    model = get_moirai_model(model_id, horizon=horizon, context_len=L, num_samples=num_samples)
+    past_target = torch.tensor(context, dtype=torch.float32, device=DEVICE).view(1, L, 1)
+    past_observed_target = torch.ones(1, L, 1, dtype=torch.bool, device=DEVICE)
+    past_is_pad = torch.zeros(1, L, dtype=torch.bool, device=DEVICE)
+    with torch.no_grad():
+        preds = model(
+            past_target=past_target,
+            past_observed_target=past_observed_target,
+            past_is_pad=past_is_pad,
+            num_samples=num_samples,
+        )
+    # preds shape: (1, num_samples, horizon)
+    return preds[0].cpu().numpy()
+
+
+# -------------------------------------------------------------------------
 # 4. 시계열 배치 추론 실행기
 # -------------------------------------------------------------------------
 def run_inference_on_series_dict(series_data, model_name, scenario_id, horizon=20, num_samples=100):
@@ -152,6 +197,9 @@ def run_inference_on_series_dict(series_data, model_name, scenario_id, horizon=2
         if model_name.startswith("chronos"):
             model_id = "amazon/chronos-t5-tiny" if "tiny" in model_name else "amazon/chronos-t5-base"
             samples = predict_chronos(context, model_id=model_id, horizon=horizon, num_samples=num_samples)
+        elif model_name.startswith("moirai"):
+            model_id = "Salesforce/moirai-1.0-R-small" if "small" in model_name else "Salesforce/moirai-1.0-R-base"
+            samples = predict_moirai(context, model_id=model_id, horizon=horizon, num_samples=num_samples, seed=42 + s_idx)
         elif model_name == "random_walk":
             samples = predict_random_walk(context, horizon=horizon, num_samples=num_samples, seed=42 + s_idx)
         elif model_name == "garch_t":
@@ -185,7 +233,7 @@ def run_inference_on_series_dict(series_data, model_name, scenario_id, horizon=2
 def main():
     parser = argparse.ArgumentParser(description="Zero-shot Multi-Model Inference Runner")
     parser.add_argument("--model", type=str, default="chronos-tiny",
-                        choices=["chronos-tiny", "chronos-base", "random_walk", "garch_t", "all_tier1", "all_tier2", "all_models"],
+                        choices=["chronos-tiny", "chronos-base", "moirai-small", "moirai-base", "moirai_all", "random_walk", "garch_t", "all_tier1", "all_tier2", "all_models"],
                         help="Model to run")
     parser.add_argument("--target", type=str, default="synthetic",
                         choices=["synthetic", "market", "both"],
@@ -194,11 +242,13 @@ def main():
     args = parser.parse_args()
 
     if args.model == "all_tier1":
-        models_to_run = ["chronos-tiny", "random_walk", "garch_t"]
+        models_to_run = ["chronos-tiny", "moirai-small", "random_walk", "garch_t"]
     elif args.model == "all_tier2":
-        models_to_run = ["chronos-base", "random_walk", "garch_t"]
+        models_to_run = ["chronos-base", "moirai-base", "random_walk", "garch_t"]
+    elif args.model == "moirai_all":
+        models_to_run = ["moirai-small", "moirai-base"]
     elif args.model == "all_models":
-        models_to_run = ["chronos-base", "chronos-tiny", "random_walk", "garch_t"]
+        models_to_run = ["chronos-base", "chronos-tiny", "moirai-base", "moirai-small", "random_walk", "garch_t"]
     else:
         models_to_run = [args.model]
 

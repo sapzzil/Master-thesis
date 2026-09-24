@@ -1,22 +1,19 @@
-# [학위논문 연구 가설 실측 검증 최종 판정서]
-- 생성 일시: 2026-09-23 03:32:21
-- 대상 모델: Chronos-Tiny, Chronos-Base, GARCH-t(벤치마크), Random Walk(베이스라인)
-- 대상 데이터: 통제 가상 시나리오 15종(300개 시계열) + 실측 롤링 윈도우(30개 시계열, 600관측치)
+# [학위논문 연구 가설 실측 검증 최종 판정서 (v2.0 — 지도교수 검토 반영본)]
+- **갱신 일시**: 2026-09-24
+- **분석 대상 모델 (6종)**: `chronos-tiny` (8M), `chronos-base` (200M), `moirai-small` (14M), `moirai-base` (91M), `garch_t` (GARCH(1,1)-t), `random_walk` (Random Walk with Drift)
+- **분석 데이터셋**:
+  1. 통제 가상 시나리오 15종 (`FinStressTS`, 3대 축 $\times$ 5레벨 $\times$ 20개 독립 시계열 $\times$ 20일 = 6,000 예측 스텝, 모델별 총 36,000 스텝)
+  2. 실측 롤링 윈도우 (`market_rolling`, 미국 S&P 500 5대 대형주 `AAPL, AMZN, GOOG, JPM, META` [USD, $N=500, W=25$] + 한국 `KODEX 200` `069500` [KRW, $N=100, W=5$], 총 30개 윈도우 600 예측 스텝)
 
-## 1. 연구 가설별 실측 판정 요약
-| 가설 ID | 연구 가설 명칭 | 실측 통계량 | p-value | 최종 판정 | 학술적 원인 및 핵심 발견 |
-| :---: | :--- | :--- | :---: | :---: | :--- |
-| **H1** | 변동성 군집(GARCH)에 따른 TSFM 예측성 붕괴 | rho(CRPS) = -0.900, rho(Cov) = +1.000 | p = 0.037 | **부분 수정 (새로운 발견)** | 무조건부 분산이 고정된 상태에서 군집 지속성 증가는 오히려 시계열 자기상관(Memory)을 높여 TSFM의 CRPS가 개선됨 ($2.06 \to 1.68$). 단순 군집화에는 TSFM이 견고함! |
-| **H2** | 두꺼운 꼬리(Fat-tail) 극단치에 따른 신뢰구간 붕괴 | L5 커버리지 = 79.2% (기준 90%) | L5 Kupiec p < 0.001 | **채택 (지지됨)** | 자유도가 $\nu=3$으로 극단화될 때 90% 명목 커버리지가 79.2%까지 붕괴하여 꼬리 위험을 과소평가함. |
-| **H3** | 구조적 체제전환(Regime Switching)에 따른 예측 파괴 | L4 커버리지 = 65.2%, CRPS $2.30 \to 3.43$ | rho(CRPS) = +0.700 | **채택 (강력 지지)** | 빈번한 전이 발생 시 이전 체제의 컨텍스트가 무용지물이 되는 '구조적 단절(Structural Break)'로 인해 커버리지가 65.2%까지 최악으로 붕괴함. |
-| **H4** | TSFM 붕괴 강도의 비대칭성: 체제전환 > 꼬리위험 > 변동성군집 | 최대 커버리지 부족: Regime(24.8%p) > Tail(10.8%p) > GARCH(10.5%p) | - | **채택 (강력 지지)** | TSFM의 가장 치명적인 아킬레스건은 '체제전환 단절'이며, 단순 변동성 군집은 오히려 잘 예측한다는 사실을 세계 최초로 실증 규명함. |
-| **H5** | ACI 사후보정을 통한 신뢰구간 복원 | 실측: 67.2% $\to$ 78.3%, REGIME_L4: 65.2% $\to$ 83.5% | Kupiec p = 0.0001 | **채택 (강력 지지)** | 모델 가중치 재학습 0원(동결) 상태에서 ACI 적응형 보정만으로 붕괴된 구간의 80~90%를 즉각 복원함. |
-| **H6 (실측)** | 실측 주식시장에서 TSFM의 통계적 우위 | Chronos-Tiny CRPS: 1382.20 vs RW 1517.60 | DM p = 0.0414 | **채택 (우위 입증)** | 실측 5개 대형주 및 KODEX 200에서 Chronos-Tiny가 Random Walk 대비 +8.92% Skill Score로 유의하게 우수함. |
+---
 
-## 2. 생성된 논문 실물 산출물
-- **Table 1**: `D:\study\hanyang\논문\04_실험코드\results\tables\table1_stress_comparison.csv` & `D:\study\hanyang\논문\04_실험코드\results\tables\table1_stress_comparison.md`
-- **Table 2**: `D:\study\hanyang\논문\04_실험코드\results\tables\table2_market_performance.csv` & `D:\study\hanyang\논문\04_실험코드\results\tables\table2_market_performance.md`
-- **Table 3**: `D:\study\hanyang\논문\04_실험코드\results\tables\table3_conformal_restoration.csv` & `D:\study\hanyang\논문\04_실험코드\results\tables\table3_conformal_restoration.md`
-- **Figure 1**: `D:\study\hanyang\논문\04_실험코드\results\figures\fig1_stress_response_curves.png`
-- **Figure 2**: `D:\study\hanyang\논문\04_실험코드\results\figures\fig2_pit_histograms.png`
-- **Figure 3**: `D:\study\hanyang\논문\04_실험코드\results\figures\fig3_breakdown_radar.png`
+## 1. 연구 가설별 실측 판정 요약표
+
+| 가설 ID | 사전 등록 가설 명칭 | 실측 통계량 (레벨 $n=5$ & 시계열 $N=100$ / 스텝 $N=800$) | 최종 판정 | 학술적 원인 및 핵심 실증 발견 |
+| :---: | :--- | :--- | :---: | :--- |
+| **H1** | 변동성 군집($\alpha+\beta$) 심화에 따른 예측성 및 커버리지 붕괴 | **[레벨 $n=5$]** Chronos $\rho(\text{CRPS})=-0.900$ ($p=0.037$), Moirai-Base $\rho=-0.700$ ($p=0.188$)<br>**[시계열 $N=100$]** Chronos-Tiny $\rho=-0.065$ ($p=0.521$), Cov $\rho=+0.131$ ($p=0.194$)<br>**[L1$\to$L5 평균]** Chronos-Tiny CRPS $2.06 \to 1.68$, Cov $79.5\% \to 89.5\%$; Moirai-Small CRPS $1.93 \to 1.65$, Cov $89.5\% \to 92.5\%$ | **사전 가설 기각<br>(역방향 관계 발견)** | 무조건부 분산($\sigma_{\text{unc}}^2$)이 통제된 상태에서 군집 지속성($\alpha+\beta \to 0.98$) 증가는 변동성 궤적의 자기상관(Memory)을 강화함. TSFM의 어텐션/패치 메커니즘이 이를 포착하여 예측 오차가 감소하고 커버리지가 $89.5\% \sim 92.5\%$로 안정화됨. |
+| **H2** | 두꺼운 꼬리($\nu \to 3$) 극단치에 따른 90% 신뢰구간 붕괴 | **[L1$\to$L5 극단화]**<br>- Chronos-Tiny: Cov $89.5\% \to 79.25\%$ (결손 $+10.75\%\text{p}$, Kupiec $p < 0.001$)<br>- Chronos-Base: Cov $89.0\% \to 80.25\%$ (결손 $+9.75\%\text{p}$)<br>- Moirai-Small: Cov $88.5\% \to 83.00\%$ (결손 $+7.00\%\text{p}$)<br>- Moirai-Base: Cov $88.0\% \to 84.25\%$ (결손 $+5.75\%\text{p}$, L3 최악 $81.25\%$) | **채택<br>(지지됨)** | 자유도 $\nu=3$의 극단적 팻테일 충격 시 모든 TSFM에서 명목 90% 구간의 과소평가(Under-coverage)가 발생함. 단, 이산 빈($4,096$개) 양자화를 쓰는 Chronos 대비 연속 Student-$t$ 혼합분포 헤드를 쓰는 Moirai의 결손폭이 약 $3\%\text{p}$ 작음. |
+| **H3** | 구조적 체제전환($p_{\text{stay}} \to 0.80$)에 따른 분포 예측 파괴 | **[최악 결손 레벨(L4/L2)]**<br>- Chronos-Tiny: L4 Cov $65.25\%$ (결손 $+24.75\%\text{p}$), CRPS $2.30 \to 3.43$<br>- Chronos-Base: L4 Cov $73.75\%$ (결손 $+16.25\%\text{p}$)<br>- Moirai-Base: L2 Cov $78.50\%$ (결손 $+11.50\%\text{p}$), L4 Cov $81.00\%$<br>- Moirai-Small: L2 Cov $82.00\%$ (결손 $+8.00\%\text{p}$), L4 Cov $82.25\%$ | **채택<br>(강력 지지)** | 빈번한 마르코프 체제전환 시 과거 컨텍스트 윈도우($L=512$) 내 저변동 체제 기억이 고변동 전환 직후의 분포 추정을 오염시키는 '컨텍스트 관성 오작동(Contextual Inertia Mismatch)'을 유발하여 가장 큰 커버리지 결손을 초래함. |
+| **H4** | 3대 통제축 간 붕괴 강도의 비대칭성 ($\text{Regime} > \text{Tail} > \text{GARCH}$) | **[고강도 L4~L5($N=800$) 대응 Wilcoxon 부호순위 검정]**<br>- Chronos-Tiny: Regime 결손($20.75\%\text{p}$) $>$ Tail($4.13\%\text{p}$), $p = 3.93 \times 10^{-15}$<br>- Chronos-Base: Regime($10.88\%\text{p}$) $>$ Tail($2.25\%\text{p}$), $p = 1.02 \times 10^{-6}$<br>- Moirai-Base: Regime($5.88\%\text{p}$) $>$ Tail($0.63\%\text{p}$), $p = 0.00128$<br>- Moirai-Small: Regime($3.75\%\text{p}$) $>$ Tail($0.63\%\text{p}$), $p = 0.0258$ | **채택<br>(통계적 확증)** | 4종의 TSFM 전 모델에서 체제전환 단절로 인한 커버리지 결손이 꼬리위험 및 단순 변동성 군집보다 유의하게 큼($p < 0.05 \sim 10^{-15}$). 또한 이산 토크나이저(Chronos)가 연속 혼합분포 헤드(Moirai)보다 체제전환 취약성이 약 $2\sim 3$배 높음을 규명함. |
+| **H5** | 적응형 콘포멀 추론(ACI)을 통한 무재학습($\text{Cost}=0$) 신뢰구간 복원 | **[가상 극단 스트레스 (완전 통계적 복원, Kupiec $p > 0.05$)]**<br>- `REGIME_L4` Chronos-Tiny: $65.25\% \to 89.25\%$ ($+24.0\%\text{p}$, $p = 0.6209$)<br>- `REGIME_L4` Moirai-Base: $81.00\% \to 89.75\%$ ($+8.75\%\text{p}$, $p = 0.8681$)<br>- `REGIME_L4` Moirai-Small: $82.25\% \to 90.25\%$ ($+8.00\%\text{p}$, $p = 0.8671$)<br>**[실측 시장 롤링 윈도우 (`market_rolling`, $N=600$)]**<br>- **Moirai-Small**: $78.67\% \to \mathbf{88.17\%}$ ($+9.50\%\text{p}$, Kupiec $p = 0.1445$, **완전 복원 성공**)<br>- Chronos-Tiny: $67.17\% \to 78.33\%$ ($+11.17\%\text{p}$, **부분 복원**)<br>- Chronos-Base: $71.50\% \to 81.83\%$ ($+10.33\%\text{p}$, **부분 복원**) | **채택<br>(가상 완전 복원 & 실측 모델별 완전/부분 복원 구분)** | 가중치 재학습 없이 온라인 분위수 보정($\gamma=0.05$)만으로 합성 스트레스 시나리오의 붕괴를 명목 90%($89.25\% \sim 90.25\%, p > 0.62$)로 완전 복원함. 실측 시장($H=20$ 단기 윈도우)에서는 원시 오차가 작은 `moirai-small`은 $88.17\%$($p=0.1445$)로 완전 복원되었고, 초기 결손이 큰 `chronos` 계열은 $+10.3 \sim 11.2\%\text{p}$의 부분 복원을 달성함. |
+| **H6** | 실측 주식시장에서 TSFM의 Random Walk 대비 예측 우위 (스케일 정규화 및 권역 분리) | **[Panel A: 미국 S&P 500 5종목 (`nCRPS %`, $N=500, W=25$)]**<br>- **Moirai-Small**: `nCRPS` $4.330\%$ vs RW $4.739\%$ (Skill **$+8.62\%$**, Strat-DM $p = 0.0195$, WinBlock-DM $p = 0.0230$)<br>- **Chronos-Base**: `nCRPS` $4.497\%$ (Skill **$+5.10\%$**, Strat-DM $p = 0.0178$, WinBlock-DM $p = 0.0212$)<br>- Chronos-Tiny: `nCRPS` $4.705\%$ (Skill $+0.72\%$, Raw USD $-1.11\%$, $p = 0.4040$, 유의성 없음)<br>**[Panel B: 한국 KODEX 200 (`069500`, $N=100, W=5$)]**<br>- **Moirai-Small**: `nCRPS` $7.122\%$ (Skill **$+9.21\%$**)<br>- **Chronos-Tiny**: `nCRPS` $7.171\%$ (Skill **$+8.59\%$**, Strat-DM $p = 0.0352$)<br>**[Panel C: 6개 자산 정규화 통합 (`nCRPS %`, $N=600, W=30$)]**<br>- **Moirai-Small**: `nCRPS` $4.795\%$ vs RW $5.257\%$ (Skill **$+8.77\%$**, Strat-DM $p = 0.0136$) | **부분 채택<br>(모델 및 시장 권역별 조건부 우위)** | 단순 원시 합산 시 한국 `KODEX 200`(원화 8,000원대)이 미국 5종목(달러 6~42달러) 평균을 지배하는 스케일 착시를 교정함. 정규화(`nCRPS %`) 및 권역 분리 결과, **미국 5대 대형주에서는 `moirai-small`($+8.62\%, p=0.0195$)과 `chronos-base`($+5.10\%, p=0.0178$)가 유의한 우위**를 달성한 반면 `chronos-tiny`($+0.72\%, p=0.4040$)는 유의하지 않았고, **한국 지수 ETF(`KODEX 200`)에서는 `moirai-small`($+9.21\%$)과 `chronos-tiny`($+8.59\%, p=0.0352$)가 우위**를 보임. |
