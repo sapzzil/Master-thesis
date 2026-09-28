@@ -238,6 +238,7 @@ def run_aci_calibration(alpha_nominal: float = 0.10, gamma: float = 0.05, seed_m
     table3_path = os.path.join(TABLES_DIR, "table3_conformal_restoration.md")
     with open(table3_path, "w", encoding="utf-8") as f:
         f.write("\n".join(md_lines) + "\n")
+    sub.to_csv(os.path.join(TABLES_DIR, "table3_conformal_restoration.csv"), index=False, encoding="utf-8-sig")
 
     # Table 3b: Winkler Interval Score (IS_0.10) 및 동일 폭 상수 확장(Same-Width Constant) 대조표
     sub_mkt = res_df[res_df["scenario"] == "market_rolling"].copy()
@@ -264,6 +265,7 @@ def run_aci_calibration(alpha_nominal: float = 0.10, gamma: float = 0.05, seed_m
     table3b_path = os.path.join(TABLES_DIR, "table3b_winkler_sharpness.md")
     with open(table3b_path, "w", encoding="utf-8") as f:
         f.write("\n".join(md_3b) + "\n")
+    sub_mkt.to_csv(os.path.join(TABLES_DIR, "table3b_winkler_sharpness.csv"), index=False, encoding="utf-8-sig")
 
     print(f"[완료] 보정 지표 저장: {os.path.join(RESULTS_DIR, 'calibrated_metrics.csv')}")
     print(f"[완료] Table 3 저장: {table3_path}")
