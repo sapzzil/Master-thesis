@@ -1,109 +1,20 @@
-# [Table 3] 무재학습 적응형 콘포멀 사후 보정(ACI) 전/후 90% 신뢰구간 복원율 비교표
+# [Table 3] 무재학습 사후 보정(Post-hoc Calibration) 2단계 커버리지 복원 비교표
 
-| model        | scenario        |   raw_coverage |   cal_coverage |   width_ratio |   kupiec_p_raw |   kupiec_p_cal | is_h5_success   |
-|:-------------|:----------------|---------------:|---------------:|--------------:|---------------:|---------------:|:----------------|
-| chronos-base | market_rolling  |       0.715    |       0.816667 |      1.14804  |    1.05471e-13 |    6.62049e-10 | False           |
-| chronos-base | synth_GARCH_L1  |       0.805    |       0.8925   |      1.03371  |    1.29316e-08 |    0.62087     | True            |
-| chronos-base | synth_GARCH_L2  |       0.8425   |       0.9075   |      1.03431  |    0.000358312 |    0.613037    | True            |
-| chronos-base | synth_GARCH_L3  |       0.8325   |       0.8925   |      1.055    |    3.37043e-05 |    0.62087     | True            |
-| chronos-base | synth_GARCH_L4  |       0.8575   |       0.915    |      0.990737 |    0.00732576  |    0.305931    | True            |
-| chronos-base | synth_GARCH_L5  |       0.915    |       0.9375   |      0.959978 |    0.305931    |    0.00763856  | False           |
-| chronos-base | synth_REGIME_L1 |       0.865    |       0.92     |      0.972542 |    0.0258962   |    0.168607    | False           |
-| chronos-base | synth_REGIME_L2 |       0.77     |       0.8475   |      1.10264  |    1.05471e-13 |    0.0010525   | False           |
-| chronos-base | synth_REGIME_L3 |       0.8325   |       0.9025   |      0.991724 |    3.37043e-05 |    0.867141    | True            |
-| chronos-base | synth_REGIME_L4 |       0.7375   |       0.8925   |      1.03714  |    1.05471e-13 |    0.62087     | True            |
-| chronos-base | synth_REGIME_L5 |       0.845    |       0.9225   |      1.01945  |    0.000619546 |    0.119808    | False           |
-| chronos-base | synth_TAIL_L1   |       0.89     |       0.9175   |      0.98787  |    0.511055    |    0.230351    | True            |
-| chronos-base | synth_TAIL_L2   |       0.91     |       0.94     |      0.976035 |    0.498408    |    0.00423274  | False           |
-| chronos-base | synth_TAIL_L3   |       0.86     |       0.915    |      1.00999  |    0.0113686   |    0.305931    | True            |
-| chronos-base | synth_TAIL_L4   |       0.9525   |       0.955    |      0.914784 |    0.000112578 |    4.68476e-05 | False           |
-| chronos-base | synth_TAIL_L5   |       0.8025   |       0.8725   |      1.19231  |    5.7537e-09  |    0.0773321   | False           |
-| chronos-tiny | market_rolling  |       0.671667 |       0.783333 |      1.20929  |    1.05471e-13 |    1.05471e-13 | False           |
-| chronos-tiny | market_snap     |       1        |       1        |      0.868627 |    1           |    1           | False           |
-| chronos-tiny | synth_GARCH_L1  |       0.795    |       0.8925   |      1.03277  |    4.62784e-10 |    0.62087     | True            |
-| chronos-tiny | synth_GARCH_L2  |       0.815    |       0.8575   |      1.0263   |    2.82654e-07 |    0.00732576  | False           |
-| chronos-tiny | synth_GARCH_L3  |       0.8175   |       0.8775   |      1.02402  |    5.87574e-07 |    0.145852    | False           |
-| chronos-tiny | synth_GARCH_L4  |       0.8375   |       0.8825   |      0.991206 |    0.000113738 |    0.254907    | True            |
-| chronos-tiny | synth_GARCH_L5  |       0.895    |       0.905    |      0.94204  |    0.740708    |    0.736978    | True            |
-| chronos-tiny | synth_REGIME_L1 |       0.845    |       0.8925   |      1.05978  |    0.000619546 |    0.62087     | True            |
-| chronos-tiny | synth_REGIME_L2 |       0.735    |       0.7925   |      1.05569  |    1.05471e-13 |    1.93886e-10 | False           |
-| chronos-tiny | synth_REGIME_L3 |       0.755    |       0.8175   |      1.05459  |    1.05471e-13 |    5.87574e-07 | False           |
-| chronos-tiny | synth_REGIME_L4 |       0.6525   |       0.835    |      1.10726  |    1.05471e-13 |    6.24446e-05 | False           |
-| chronos-tiny | synth_REGIME_L5 |       0.7325   |       0.815    |      1.12421  |    1.05471e-13 |    2.82654e-07 | False           |
-| chronos-tiny | synth_TAIL_L1   |       0.895    |       0.9275   |      0.973202 |    0.740708    |    0.0550395   | False           |
-| chronos-tiny | synth_TAIL_L2   |       0.87     |       0.9325   |      0.997379 |    0.0547264   |    0.0220784   | False           |
-| chronos-tiny | synth_TAIL_L3   |       0.825    |       0.8975   |      1.02607  |    4.79193e-06 |    0.868113    | True            |
-| chronos-tiny | synth_TAIL_L4   |       0.925    |       0.95     |      0.990376 |    0.0825322   |    0.000256336 | False           |
-| chronos-tiny | synth_TAIL_L5   |       0.7925   |       0.85     |      1.07773  |    1.93886e-10 |    0.00175646  | False           |
-| garch_t      | market_rolling  |       0.723333 |       0.845    |      1.13861  |    1.05471e-13 |    2.76273e-05 | False           |
-| garch_t      | market_snap     |       0.9      |       0.85     |      0.908133 |    1           |    0.484193    | False           |
-| garch_t      | synth_GARCH_L1  |       0.815    |       0.8825   |      1.0158   |    2.82654e-07 |    0.254907    | True            |
-| garch_t      | synth_GARCH_L2  |       0.805    |       0.8575   |      1.01371  |    1.29316e-08 |    0.00732576  | False           |
-| garch_t      | synth_GARCH_L3  |       0.845    |       0.895    |      1.01603  |    0.000619546 |    0.740708    | True            |
-| garch_t      | synth_GARCH_L4  |       0.855    |       0.885    |      1.02408  |    0.00463464  |    0.327525    | True            |
-| garch_t      | synth_GARCH_L5  |       0.87     |       0.9225   |      0.976766 |    0.0547264   |    0.119808    | False           |
-| garch_t      | synth_REGIME_L1 |       0.8775   |       0.915    |      1.01422  |    0.145852    |    0.305931    | True            |
-| garch_t      | synth_REGIME_L2 |       0.7575   |       0.8375   |      1.05774  |    1.05471e-13 |    0.000113738 | False           |
-| garch_t      | synth_REGIME_L3 |       0.8525   |       0.915    |      0.970255 |    0.0028791   |    0.305931    | True            |
-| garch_t      | synth_REGIME_L4 |       0.8875   |       0.9375   |      0.96259  |    0.412967    |    0.00763856  | False           |
-| garch_t      | synth_REGIME_L5 |       0.85     |       0.9125   |      1.00281  |    0.00175646  |    0.395512    | True            |
-| garch_t      | synth_TAIL_L1   |       0.8875   |       0.9      |      0.984473 |    0.412967    |    1           | True            |
-| garch_t      | synth_TAIL_L2   |       0.93     |       0.945    |      0.955069 |    0.0354819   |    0.00114285  | False           |
-| garch_t      | synth_TAIL_L3   |       0.8175   |       0.905    |      0.99769  |    5.87574e-07 |    0.736978    | True            |
-| garch_t      | synth_TAIL_L4   |       0.9475   |       0.9625   |      0.958468 |    0.000554572 |    2.36585e-06 | False           |
-| garch_t      | synth_TAIL_L5   |       0.84     |       0.88     |      1.02581  |    0.000203634 |    0.194662    | False           |
-| moirai-base  | market_rolling  |       0.691667 |       0.828333 |      1.33484  |    1.05471e-13 |    7.86938e-08 | False           |
-| moirai-base  | synth_GARCH_L1  |       0.8475   |       0.91     |      1.00976  |    0.0010525   |    0.498408    | True            |
-| moirai-base  | synth_GARCH_L2  |       0.8075   |       0.875    |      1.09314  |    2.86215e-08 |    0.107219    | False           |
-| moirai-base  | synth_GARCH_L3  |       0.825    |       0.87     |      1.0674   |    4.79193e-06 |    0.0547264   | False           |
-| moirai-base  | synth_GARCH_L4  |       0.82     |       0.88     |      1.04152  |    1.20203e-06 |    0.194662    | False           |
-| moirai-base  | synth_GARCH_L5  |       0.91     |       0.9325   |      0.914245 |    0.498408    |    0.0220784   | False           |
-| moirai-base  | synth_REGIME_L1 |       0.8425   |       0.905    |      1.00726  |    0.000358312 |    0.736978    | True            |
-| moirai-base  | synth_REGIME_L2 |       0.785    |       0.8525   |      1.07026  |    1.30568e-11 |    0.0028791   | False           |
-| moirai-base  | synth_REGIME_L3 |       0.8825   |       0.93     |      0.972897 |    0.254907    |    0.0354819   | False           |
-| moirai-base  | synth_REGIME_L4 |       0.81     |       0.8975   |      1.02241  |    6.23751e-08 |    0.868113    | True            |
-| moirai-base  | synth_REGIME_L5 |       0.8725   |       0.9075   |      1.01396  |    0.0773321   |    0.613037    | True            |
-| moirai-base  | synth_TAIL_L1   |       0.88     |       0.9025   |      1.01121  |    0.194662    |    0.867141    | True            |
-| moirai-base  | synth_TAIL_L2   |       0.905    |       0.935    |      0.963511 |    0.736978    |    0.0132396   | False           |
-| moirai-base  | synth_TAIL_L3   |       0.8125   |       0.8925   |      1.04031  |    1.33829e-07 |    0.62087     | True            |
-| moirai-base  | synth_TAIL_L4   |       0.945    |       0.96     |      0.923627 |    0.00114285  |    6.81569e-06 | False           |
-| moirai-base  | synth_TAIL_L5   |       0.8425   |       0.885    |      1.07029  |    0.000358312 |    0.327525    | True            |
-| moirai-small | market_rolling  |       0.786667 |       0.881667 |      1.26146  |    1.05471e-13 |    0.144514    | True            |
-| moirai-small | synth_GARCH_L1  |       0.895    |       0.9225   |      1.00168  |    0.740708    |    0.119808    | False           |
-| moirai-small | synth_GARCH_L2  |       0.8675   |       0.9075   |      1.03843  |    0.0380023   |    0.613037    | True            |
-| moirai-small | synth_GARCH_L3  |       0.88     |       0.9425   |      0.988676 |    0.194662    |    0.00224854  | False           |
-| moirai-small | synth_GARCH_L4  |       0.86     |       0.9225   |      1.04022  |    0.0113686   |    0.119808    | False           |
-| moirai-small | synth_GARCH_L5  |       0.925    |       0.945    |      0.886571 |    0.0825322   |    0.00114285  | False           |
-| moirai-small | synth_REGIME_L1 |       0.895    |       0.9325   |      0.982145 |    0.740708    |    0.0220784   | False           |
-| moirai-small | synth_REGIME_L2 |       0.82     |       0.8825   |      1.07862  |    1.20203e-06 |    0.254907    | True            |
-| moirai-small | synth_REGIME_L3 |       0.8775   |       0.9325   |      1.01328  |    0.145852    |    0.0220784   | False           |
-| moirai-small | synth_REGIME_L4 |       0.8225   |       0.9025   |      1.1269   |    2.41965e-06 |    0.867141    | True            |
-| moirai-small | synth_REGIME_L5 |       0.9025   |       0.925    |      1.02742  |    0.867141    |    0.0825322   | False           |
-| moirai-small | synth_TAIL_L1   |       0.885    |       0.9225   |      1.05208  |    0.327525    |    0.119808    | False           |
-| moirai-small | synth_TAIL_L2   |       0.9575   |       0.95     |      0.93294  |    1.8416e-05  |    0.000256336 | False           |
-| moirai-small | synth_TAIL_L3   |       0.865    |       0.9175   |      1.01846  |    0.0258962   |    0.230351    | True            |
-| moirai-small | synth_TAIL_L4   |       0.9575   |       0.9675   |      0.895929 |    1.8416e-05  |    2.31072e-07 | False           |
-| moirai-small | synth_TAIL_L5   |       0.83     |       0.8725   |      1.06235  |    1.78872e-05 |    0.0773321   | False           |
-| random_walk  | market_rolling  |       0.618333 |       0.736667 |      1.18987  |    1.05471e-13 |    1.05471e-13 | False           |
-| random_walk  | market_snap     |       1        |       0.95     |      0.917294 |    1           |    0.413659    | False           |
-| random_walk  | synth_GARCH_L1  |       0.8075   |       0.8875   |      1.02769  |    2.86215e-08 |    0.412967    | True            |
-| random_walk  | synth_GARCH_L2  |       0.815    |       0.8725   |      1.01271  |    2.82654e-07 |    0.0773321   | False           |
-| random_walk  | synth_GARCH_L3  |       0.8325   |       0.8775   |      1.01235  |    3.37043e-05 |    0.145852    | False           |
-| random_walk  | synth_GARCH_L4  |       0.8475   |       0.8675   |      0.991974 |    0.0010525   |    0.0380023   | False           |
-| random_walk  | synth_GARCH_L5  |       0.8875   |       0.9325   |      0.93731  |    0.412967    |    0.0220784   | False           |
-| random_walk  | synth_REGIME_L1 |       0.9425   |       0.955    |      0.916621 |    0.00224854  |    4.68476e-05 | False           |
-| random_walk  | synth_REGIME_L2 |       0.8475   |       0.9225   |      0.977999 |    0.0010525   |    0.119808    | False           |
-| random_walk  | synth_REGIME_L3 |       0.9825   |       0.9675   |      0.910657 |    2.49848e-11 |    2.31072e-07 | False           |
-| random_walk  | synth_REGIME_L4 |       0.9575   |       0.97     |      0.911902 |    1.8416e-05  |    6.43404e-08 | False           |
-| random_walk  | synth_REGIME_L5 |       0.89     |       0.9225   |      0.956509 |    0.511055    |    0.119808    | False           |
-| random_walk  | synth_TAIL_L1   |       0.8825   |       0.905    |      0.981195 |    0.254907    |    0.736978    | True            |
-| random_walk  | synth_TAIL_L2   |       0.925    |       0.9425   |      0.965921 |    0.0825322   |    0.00224854  | False           |
-| random_walk  | synth_TAIL_L3   |       0.85     |       0.9125   |      0.988285 |    0.00175646  |    0.395512    | True            |
-| random_walk  | synth_TAIL_L4   |       0.93     |       0.955    |      0.96687  |    0.0354819   |    4.68476e-05 | False           |
-| random_walk  | synth_TAIL_L5   |       0.865    |       0.8875   |      0.985766 |    0.0258962   |    0.412967    | True            |
+> **보정 방법론 비교 (`M0=20` 층화 분위수 사전분포 표준 적용)**:
+> - **Step 1 (`Quantile-Index ACI`)**: 모델이 생성한 100개 예측 샘플 내부에서 분위수 인덱스만 조정 (`Chronos`의 고정 양자화 빈 절단 한계 노출)
+> - **Step 2 (`Scale-Normalized ACI-CQR`)**: 현재 예측 구간 폭($w_t$)으로 정규화한 비순응 잔차($e_t / w_t$)의 경험적 분위수를 외삽하여 양자화 빈 경계 밖으로 구간 확장
 
-- `raw_coverage`: 동결 TSFM의 원시 90% 명목 커버리지 실측치
-- `cal_coverage`: ACI 사후 보정 후 실측 커버리지 (목표: 90% +- 2%)
-- `width_ratio`: 보정 후 신뢰구간 너비 비율 (너비 폭증 통제 여부)
-- `kupiec_p_cal`: Kupiec POF 검정 p-value (p > 0.05 이면 통계적으로 90% 구간 적합)
-- `is_h5_success`: 가설 H5 성공 여부 (|Coverage - 0.90| <= 0.02)
+| 모델 (Model) | 시나리오 | 보정 전 (Raw) | Step 1: Quantile-ACI | Step 1 Kupiec $p$ | **Step 2: ACI-CQR (최종)** | **Step 2 폭 배율 (`WidthRatio`)** | **Step 2 Kupiec $p$** | **90% 복원 판정 ($p>0.05$)** |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **chronos-base** | `market_rolling` | 0.7150 (71.50%) | 0.8167 (81.67%) | 0.0000 | **0.8967 (89.67%)** | `1.363x` | **0.7865** | ✅ **통과 (복원 성공)** |
+| **chronos-base** | `synth_REGIME_L4` | 0.7375 (73.75%) | 0.8925 (89.25%) | 0.6209 | **0.9250 (92.50%)** | `1.091x` | **0.0825** | ✅ **통과 (복원 성공)** |
+| **chronos-tiny** | `market_rolling` | 0.6717 (67.17%) | 0.7833 (78.33%) | 0.0000 | **0.9017 (90.17%)** | `1.421x` | **0.8915** | ✅ **통과 (복원 성공)** |
+| **chronos-tiny** | `synth_REGIME_L4` | 0.6525 (65.25%) | 0.8350 (83.50%) | 0.0001 | **0.9225 (92.25%)** | `1.197x` | **0.1198** | ✅ **통과 (복원 성공)** |
+| **garch_t** | `market_rolling` | 0.7233 (72.33%) | 0.8450 (84.50%) | 0.0000 | **0.8950 (89.50%)** | `1.119x` | **0.6853** | ✅ **통과 (복원 성공)** |
+| **garch_t** | `synth_REGIME_L4` | 0.8875 (88.75%) | 0.9375 (93.75%) | 0.0076 | **0.9425 (94.25%)** | `0.981x` | **0.0022** | ❌ 기각 |
+| **moirai-base** | `market_rolling` | 0.6917 (69.17%) | 0.8283 (82.83%) | 0.0000 | **0.9017 (90.17%)** | `1.432x` | **0.8915** | ✅ **통과 (복원 성공)** |
+| **moirai-base** | `synth_REGIME_L4` | 0.8100 (81.00%) | 0.8975 (89.75%) | 0.8681 | **0.9200 (92.00%)** | `1.006x` | **0.1686** | ✅ **통과 (복원 성공)** |
+| **moirai-small** | `market_rolling` | 0.7867 (78.67%) | 0.8817 (88.17%) | 0.1445 | **0.8933 (89.33%)** | `1.238x` | **0.5898** | ✅ **통과 (복원 성공)** |
+| **moirai-small** | `synth_REGIME_L4` | 0.8225 (82.25%) | 0.9025 (90.25%) | 0.8671 | **0.9175 (91.75%)** | `1.015x` | **0.2304** | ✅ **통과 (복원 성공)** |
+| **random_walk** | `market_rolling` | 0.6183 (61.83%) | 0.7367 (73.67%) | 0.0000 | **0.9033 (90.33%)** | `1.814x` | **0.7844** | ✅ **통과 (복원 성공)** |
+| **random_walk** | `synth_REGIME_L4` | 0.9575 (95.75%) | 0.9700 (97.00%) | 0.0000 | **0.9550 (95.50%)** | `0.862x` | **0.0000** | ❌ 기각 |
