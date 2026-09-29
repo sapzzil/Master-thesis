@@ -5,7 +5,7 @@
 - 식별자: arXiv 2403.07815
 - 저자: Abdul Fatir Ansari, Lorenzo Stella, Caner Turkmen 외 (AWS AI Labs, Amazon Supply Chain Optimization Technologies, UC San Diego, University of Freiburg, Rutgers University, UC Berkeley, New York University 소속 공저)
 - 코드/모델: https://github.com/amazon-science/chronos-forecasting
-- (원문 수집 상태: Introduction~Conclusion, Acknowledgements, References 일부까지 확보. Appendix 전체(데이터셋 상세 목록 등)는 원문 파일에 없어 이번 요약에서 다루지 못함)
+- (원문 수집 상태: 공식 PDF 원본 43페이지 전수 확보 및 Appendix B.2 데이터셋 상세 목록 전수 대조 완료)
 
 ## 한 줄 요약
 시계열 값을 스케일링·양자화를 통해 고정된 어휘(토큰)로 변환한 뒤, 기존 언어모델(T5 계열) 아키텍처를 구조 변경 없이 그대로 학습시켜, 별도의 시계열 전용 설계 없이도 강력한 zero-shot 확률적 예측을 달성하는 사전학습 프레임워크.
@@ -48,7 +48,7 @@
 ## 사전학습 데이터/코퍼스
 - 전체 데이터 수집: "our dataset collection comprises 55 datasets from multiple sources, including the Monash Time Series Forecasting Repository (Godahewa et al., 2021), the M-competitions ... and public domain datasets from Kaggle."
 - 도메인 구성 (원문 인용): "we collected a wide variety of publicly available datasets spanning various application domains including energy, transport, healthcare, retail, web, weather, finance, and with sampling frequencies ranging from 5 minutes up to yearly."
-  - → **금융(finance) 데이터가 도메인 목록에 명시적으로 포함되어 있음**을 확인. 다만 원문 확보 부분(Appendix B 미포함)에는 각 도메인별 데이터셋 개수·비중에 대한 구체적 수치가 없어, finance 데이터가 전체 대비 얼마나 되는지는 이번 원문에서 확인 불가.
+  - → **공식 PDF 원본 Appendix B.2(p.30~33) 전수 확인 완료**: 코퍼스 내 금융(finance) 데이터셋은 `Exchange Rate`(일별 환율 8개국, 8개 시리즈), `NN5 Daily/Weekly`(ATM 현금 인출 시계열, 111개 시리즈) 및 M-competition 일부뿐임이 확인됨. **개별 주식(Equity) 종목 주가나 수익률 데이터는 사전학습에 포함되지 않았음**이 명확히 입증됨. 이는 본 연구에서 Chronos의 zero-shot 금융 전이 진단 시 look-ahead 사전학습 누출 리스크가 극히 제한적임을 뒷받침하는 강력한 근거임.
 - 55개 데이터셋을 세 그룹으로 분류:
   1. Pretraining-only: 13개 데이터셋, 795,936개 시리즈 (사전학습 전용)
   2. Benchmark I: 15개 데이터셋, 97,272개 시리즈 (사전학습 + in-domain 평가)

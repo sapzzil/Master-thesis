@@ -26,13 +26,10 @@ START = "2015-01-01"
 END = datetime.today().strftime("%Y-%m-%d")
 
 KR_TICKERS = {
-    "005930": "삼성전자",
-    "000660": "SK하이닉스",
-    "005380": "현대차",
-    "035420": "NAVER",
-    "068270": "셀트리온",
+    "069500": "KODEX_200",  # KOSPI 200 대표 ETF (선행연구 Re(Visiting) 한국 시장 보조 검증용)
 }
-US_TICKERS = ["AAPL", "MSFT", "JPM", "XOM", "SPY"]
+US_TICKERS = ["AAPL", "AMZN", "GOOG", "JPM", "META"]  # Pretrained TSFM Table 7 실측 5종목 전수 일치
+
 
 ROOT = Path(__file__).resolve().parents[1]     # 04_실험코드/
 OUT = ROOT / "data" / "raw"

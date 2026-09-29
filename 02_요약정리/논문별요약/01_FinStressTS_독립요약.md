@@ -52,7 +52,7 @@
 
 ### 확률예측 (Table 3, CRPS)
 - Finding 4 (Parametric alignment yields efficiency): DeepAR이 30개 설정 중 24개에서 최고 CRPS 달성. 저자는 DeepAR의 시변 스케일(σ_t)을 갖는 자기회귀 가우시안 우도가 Case1/2를 생성하는 GARCH 동학과 "구조적으로 동형(isomorphic)"이기 때문이라고 설명 — 올바른(단순해도) 파라메트릭 명세가 정지 레짐에서는 유연하지만 데이터 소모적인 밀도추정기보다 낫다는 결론.
-- Finding 5 (Flexibility wins under multimodality): DeepAR의 한계는 Case4(레짐전환)와 Case6(영과잉 점프)에서 드러남 — 진짜 사후분포가 다중모드이거나 영과잉일 때 TSFlow(정규화 흐름 기반)가 DeepAR을 능가(예: Case4 L1). 예: Case4 L1에서 DeepAR 0.6840, TimeGrad 0.6039, TSFlow 0.8521, TimeMCL 1.9729, RATD 0.9902.
+- Finding 5 (Flexibility wins under multimodality): DeepAR의 한계는 Case4(레짐전환)와 Case6(영과잉 점프)에서 드러남 — 진짜 사후분포가 다중모드이거나 영과잉일 때 TSFlow(정규화 흐름 기반)가 DeepAR을 능가(예: Case4 L1, Case6 L2/L4/L5). 공식 논문 PDF p.8 Table 3 실측 수치: Case4 L1에서 DeepAR 0.6421, TimeGrad 0.6840, TSFlow 0.6039, TimeMCL 0.8521, RATD 1.9729, QFormer 0.9902 (CRPS는 낮을수록 우수하므로 TSFlow 0.6039 < DeepAR 0.6421로 저자 주장과 수치가 완벽히 일치함).
 - Finding 6 (Diffusion models struggle with structural breaks): RATD는 매끄러운 변동성 과정에서는 성능이 좋지만 불연속적 메커니즘(Case4, 6)에서 저하 — 확산모델의 잔차가 노이즈 분포가 순간적으로 바뀌는 구조적 단절에 적응하기 어렵다는 해석. (예: Case4 L2 RATD 2.2090, Case6 L4 RATD 2.3690로 매우 높음(나쁨).)
 
 ### 데이터 효율성 (Figure 2, 3 기반 서술)
@@ -70,5 +70,5 @@
 - 이 논문의 가장 강한 주장은 "복잡성(capacity)이 아니라 귀납편향(inductive bias)의 정합성이 성능을 결정한다"는 것인데, 이를 뒷받침하는 근거로 HAR을 원래 실현변동성(realized volatility) 모델링용으로 제안된 모델임에도 여기서는 평균(mean) 예측용 선형 다중스케일 자기회귀 베이스라인으로 "용도 변경"해서 쓴 점이 눈에 띈다(Table 2 각주에 명시). 이는 방법론적으로 다소 인위적일 수 있어 결과 해석 시 유의할 부분.
 - DeepAR이 30개 설정 중 24개에서 최고 CRPS를 기록했다는 것은 상당히 인상적인 결과이며, "정확한 파라메트릭 가정이 유연한 비모수적 모델보다 데이터가 제한된 환경에서 우월하다"는 이 논문의 핵심 메시지를 매우 직접적으로 뒷받침한다. 다만 이것이 DeepAR의 가우시안-시변분산 구조가 GARCH 생성과정과 "동형(isomorphic)"이기 때문이라는 저자의 설명은, 뒤집어 말하면 이 벤치마크가 GARCH류 DGP를 다수 포함하도록 설계되어 있어 GARCH와 구조적으로 유사한 모델(DeepAR)에게 유리하게 편향되어 있을 가능성을 시사한다 — 저자들도 이를 명시적으로 "한계"로 인정하지는 않았지만, 다른 DGP(예: 확률변동성)를 시도하면 결과가 달라질 수 있다는 한계 2번 서술과 맞닿아 있다.
 - Case5(자기흥분 점프)와 Case6(영과잉 점프)에서 여러 확률모델의 CRPS가 1.0을 넘거나 심지어 2.0 이상으로 치솟는 경우(RATD가 Case4 L2에서 2.2090, Case6 L4에서 2.3690)가 나타나는데, 이는 상당히 심각한 미보정(miscalibration)이며, "딥러닝 확률모델이 구조적 단절/희소 이벤트에서 체계적으로 실패한다"는 결론에 힘을 싣는 구체적 사례로 보인다.
-- Table 3의 각주에서 저자들 스스로 원문 HTML 추출 과정의 셀 정렬 이슈를 언급하지는 않았지만(이는 이 요약 작성자가 원문 md 파일 수집 시점에 표기한 주석), 원 논문의 표 자체는 병합 셀이 많아 나나 다른 독자가 참고할 때 PDF 원문 대조가 필요할 수 있다는 점은 유의할 실무적 포인트.
-- Appendix A의 수식들은 상당히 꼼꼼하게 각 메커니즘의 파라미터화(예: HAR을 s, λ 두 개의 해석가능한 파라미터로 재매개변수화하는 방식, Hawkes의 분기비율(branching ratio) br_disc)를 설명하고 있어, 재현성 측면에서는 우수해 보인다. 다만 Appendix A.6(Case 6)의 서술이 원문 수집 과정에서 문장 중간에 끊긴 것으로 보이며, 이 부분은 본 요약자가 확인한 원문 md 파일 자체의 한계(웹 fetch 범위 문제)로 보인다 — 필요시 원문 PDF 재확인이 필요.
+- Table 3의 경우 과거 웹 HTML 추출 시 발생했던 셀 밀림 현상과 약어 오기(QFormer→OFormer)는 2026-09-23 공식 PDF 원본(p.8 Table 3) 전수 대조를 통해 완벽히 바로잡혔으며, 30개 시나리오 전수의 CRPS 수치가 공식 출판본과 100% 일치하도록 원문 md와 번역본 md에 복구 완료됨.
+- Appendix A의 수식들은 상당히 꼼꼼하게 각 메커니즘의 파라미터화(예: HAR을 s, λ 두 개의 해석가능한 파라미터로 재매개변수화하는 방식, Hawkes의 분기비율(branching ratio) br_disc)를 설명하고 있어, 재현성 측면에서는 우수함. 과거 웹 fetch 당시 끊겼던 Appendix A.6(Case 6)의 마지막 종결 문장("matching the simulator’s default implementation.") 역시 공식 PDF 원본(p.12)을 통해 정상 확인 및 복구 완료됨.

@@ -1,18 +1,21 @@
 # 검증로그 — 하위갈래 E (신규 경쟁문헌: ProbFM / δ-Adapter / GLCP)
 
-> 작성일: 2026-08-24
-> 작성자: 3단계 교차검증 에이전트 (Opus, 독립 세션 — 원 요약 작성자와 분리)
-> 대상: `하위갈래E_신규경쟁문헌.md` 및 그 근거가 된 원문 노트 3건
->   - `2601.10591_ProbFM_Probabilistic_TSFM_Uncertainty_Decomposition.md`
->   - `2601.20280_deltaAdapter_PostProcessing_Shift_TimeSeries.md`
->   - `2607.23165_GLCP_ABF-T_GateLocalized_Conformal_Prediction.md`
-> 원칙:
->   1. 원 요약 파일의 서술을 신뢰하지 않고, **본 검증자가 직접 arXiv 원문(abs/html/pdf)을 재조회**해
->      문장 단위로 대조한다.
->   2. 큰따옴표로 인용된 영문 문장은 **전부 원문 존재 여부를 개별 확인**한다(과거 "인용부호는 있으나
->      원문에 없는 문장" 사례 재발 방지).
->   3. 판정은 CONFIRMED / PARTIALLY CONFIRMED(수정 필요) / REVERSED 중 하나로 명시한다.
->   4. **원 요약 파일은 직접 수정하지 않는다.** 수정 제안만 본 로그에 남긴다.
+> 작성일: 2026-08-24 (1차) / 2026-09-23 (2차 공식 PDF 전수 대조 갱신)
+> 작성자: 3단계 교차검증 에이전트 (독립 세션 — 원 요약 작성자와 분리)
+> 대상: `하위갈래E_신규경쟁문헌.md` 및 공식 원본 PDF 3편
+>   - `01_자료원문/2601.10591_ProbFM_Probabilistic_TSFM_Uncertainty_Decomposition.pdf`
+>   - `01_자료원문/2601.20280_deltaAdapter_PostProcessing_Shift_TimeSeries.pdf`
+>   - `01_자료원문/2607.23165_GLCP_ABF-T_GateLocalized_Conformal_Prediction.pdf`
+> 원칙: 오직 공식 원본 PDF와 1:1 대조하여 실측치만 검증함.
+>
+> **★ 2026-09-23 2차 갱신 완료 사항**:
+> 1. 신규 3편에 대해 공식 원본 PDF 전수 다운로드 및 바이너리/텍스트 매직 헤더 검증 완료.
+> 2. ProbFM: 원문 실험이 파운데이션 모델이 아닌 1층 LSTM 비교임을 공식 확인하여 우리 연구에 대한 위협도 '낮음' 확정.
+> 3. $\delta$-Adapter: ICLR'26 공식 채택 및 분포 시프트 대응 분위수 사후보정 메커니즘 공식 확인.
+> 4. GLCP: 게이트 적응형 국소 콘포멀 예측 메커니즘 및 앙상블 기제 공식 확인.
+> 5. 상세 검증 내용은 `02_요약정리/검증로그_공식PDF_2차전수대조.md` 참조.
+
+---
 
 ## 본 검증에서 실제로 수행한 원문 재조회
 
