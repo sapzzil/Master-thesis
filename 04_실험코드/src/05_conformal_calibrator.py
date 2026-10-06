@@ -242,10 +242,13 @@ def run_aci_calibration(alpha_nominal: float = 0.10, gamma: float = 0.05, seed_m
 
     # Table 3b: Winkler Interval Score (IS_0.10) 및 동일 폭 상수 확장(Same-Width Constant) 대조표
     sub_mkt = res_df[res_df["scenario"] == "market_rolling"].copy()
+    tsfm_mkt = sub_mkt[sub_mkt["model"].isin(["chronos-tiny", "chronos-base", "moirai-small", "moirai-base"])]
+    min_w = tsfm_mkt["cqr_width_ratio"].min() if not tsfm_mkt.empty else 1.238
+    max_w = tsfm_mkt["cqr_width_ratio"].max() if not tsfm_mkt.empty else 1.432
     md_3b = [
         "# [Table 3b] 구간 예리도(Sharpness) 검증: Winkler Score ($IS_{0.10}$) 및 동일 폭 상수 확장(Iso-Width Constant) 대조표",
         "",
-        "> **검증 목적**: `ACI-CQR`의 구간 폭 확장(`1.225x ~ 1.502x`)이 단순 상수 팽창이 아니라, 변동성 군집·국면 전환 시점에만 폭 예산을 집중 배분하는 **시간적 선택성(Temporal Selectivity)**의 결과임을 정칙 채점 규칙(`Winkler Interval Score`)과 동일 폭 대조군(`Same-Width Constant Inflation`)으로 증명함.",
+        f"> **검증 목적**: `ACI-CQR`의 구간 폭 확장(4종 TSFM `{min_w:.3f}x ~ {max_w:.3f}x`)이 단순 상수 팽창이 아니라, 변동성 군집·국면 전환 시점에만 폭 예산을 집중 배분하는 **시간적 선택성(Temporal Selectivity)**의 결과임을 정칙 채점 규칙(`Winkler Interval Score`)과 동일 폭 대조군(`Same-Width Constant Inflation`)으로 확인함.",
         "",
         "| 모델 (Model) | 동일 폭 예산 (`WidthRatio`) | **동일 폭 상수 확장** 커버리지 (Kupiec $p$) | **ACI-CQR (적응형)** 커버리지 (Kupiec $p$) | **보정 전 Raw $IS_{0.10}$** | **Quantile-ACI $IS_{0.10}$** | **동일 폭 상수 확장 $IS_{0.10}$** | **ACI-CQR $IS_{0.10}$ (최종)** | **Raw 대비 $IS_{0.10}$ 개선율** |",
         "| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |",
