@@ -1,0 +1,155 @@
+{
+  "git_head": "b4d80039b8bb437de188988e0dd3c089400b8bbc",
+  "src_v3_uncommitted_changes": "",
+  "data_sha256": {
+    "AAPL": "feba17c0703a1dbfdbff1e947908d76a46ffb51489f2a37ed7e67fc663c4653e",
+    "AMZN": "79028a5a7ad55dde08e4f9d36957b0f7d2b87b8a5f5bbc6e67f9aba60d963e60",
+    "GOOG": "5b50e25d2b849e01cc0e27f6afc3da302bb34ad633dd27f3b859cdd1c342d041",
+    "JPM": "ee60a136a4be3347562559580faf2451bafb54bd2b12e884e308b372aeb8f910",
+    "META": "63d4bbd86d6c23717aff11260c32ce39a863995540ff3980bec55b1b4c42bc21",
+    "069500": "ddcc189337e4c3bc5c613c09eb0dffd84a665ef85875ea5b8485e88a37cb9ce6"
+  },
+  "synthetic_manifest_sha256": "aef187c2e073b46cf6eec4b6d4cb4ffc0d9e00e599a2123ef22506bbcd3d966b",
+  "config": {
+    "ROOT": "D:\\study\\hanyang\\논문\\04_실험코드",
+    "DATA_RAW": "D:\\study\\hanyang\\논문\\04_실험코드\\data\\raw",
+    "DATA_SYN": "D:\\study\\hanyang\\논문\\04_실험코드\\data\\synthetic_v3",
+    "RES": "D:\\study\\hanyang\\논문\\04_실험코드\\results_v3",
+    "RAW_FC": "D:\\study\\hanyang\\논문\\04_실험코드\\results_v3\\raw_forecasts",
+    "TABLES": "D:\\study\\hanyang\\논문\\04_실험코드\\results_v3\\tables",
+    "SEED_BASE": 20261013,
+    "N_SERIES": 100,
+    "CONTEXT_LEN": 512,
+    "HORIZON": 20,
+    "NUM_SAMPLES": 100,
+    "BURN_IN": 200,
+    "P0": 100.0,
+    "SIGMA_UNC": 0.01,
+    "SIGMA_UNC_SQ": 0.0001,
+    "GARCH_LEVELS": {
+      "L1": 0.3,
+      "L2": 0.6,
+      "L3": 0.85,
+      "L4": 0.95,
+      "L5": 0.98
+    },
+    "GARCH_ALPHA_SHARE": 0.1,
+    "TAIL_LEVELS": {
+      "L1": 30.0,
+      "L2": 10.0,
+      "L3": 5.0,
+      "L4": 3.5,
+      "L5": 2.5
+    },
+    "REGIME_LEVELS": {
+      "L1": 0.02,
+      "L2": 0.05,
+      "L3": 0.1,
+      "L4": 0.2,
+      "L5": 0.35
+    },
+    "_REG_SIGMA_RAW": [
+      0.008,
+      0.03
+    ],
+    "_REG_MU_RAW": [
+      0.00125,
+      -0.00125
+    ],
+    "_V_RAW": 0.0004835625,
+    "REGIME_SCALE": 0.45475103156658137,
+    "REGIME_SIGMA": [
+      0.003638008252532651,
+      0.01364253094699744
+    ],
+    "REGIME_MU": [
+      0.0005684387894582268,
+      -0.0005684387894582268
+    ],
+    "AXES": {
+      "GARCH": {
+        "L1": 0.3,
+        "L2": 0.6,
+        "L3": 0.85,
+        "L4": 0.95,
+        "L5": 0.98
+      },
+      "TAIL": {
+        "L1": 30.0,
+        "L2": 10.0,
+        "L3": 5.0,
+        "L4": 3.5,
+        "L5": 2.5
+      },
+      "REGIME": {
+        "L1": 0.02,
+        "L2": 0.05,
+        "L3": 0.1,
+        "L4": 0.2,
+        "L5": 0.35
+      }
+    },
+    "US_TICKERS": [
+      "AAPL",
+      "AMZN",
+      "GOOG",
+      "JPM",
+      "META"
+    ],
+    "KR_TICKERS": [
+      "069500"
+    ],
+    "MARKET_FILES": {
+      "AAPL": "D:\\study\\hanyang\\논문\\04_실험코드\\data\\raw\\us_yf_AAPL.parquet",
+      "AMZN": "D:\\study\\hanyang\\논문\\04_실험코드\\data\\raw\\us_yf_AMZN.parquet",
+      "GOOG": "D:\\study\\hanyang\\논문\\04_실험코드\\data\\raw\\us_yf_GOOG.parquet",
+      "JPM": "D:\\study\\hanyang\\논문\\04_실험코드\\data\\raw\\us_yf_JPM.parquet",
+      "META": "D:\\study\\hanyang\\논문\\04_실험코드\\data\\raw\\us_yf_META.parquet",
+      "069500": "D:\\study\\hanyang\\논문\\04_실험코드\\data\\raw\\kr_fdr_069500.parquet"
+    },
+    "MASTER_CALENDAR": "AAPL",
+    "PANEL_STEP": 60,
+    "STREAM_LEN": 100,
+    "LEAKAGE_SPLIT_DATE": "2024-03-01",
+    "MODELS": [
+      "chronos-tiny",
+      "chronos-base",
+      "moirai-small",
+      "moirai-base",
+      "garch_t",
+      "random_walk"
+    ],
+    "TSFM": [
+      "chronos-tiny",
+      "chronos-base",
+      "moirai-small",
+      "moirai-base"
+    ],
+    "MODEL_IDS": {
+      "chronos-tiny": "amazon/chronos-t5-tiny",
+      "chronos-base": "amazon/chronos-t5-base",
+      "moirai-small": "Salesforce/moirai-1.0-R-small",
+      "moirai-base": "Salesforce/moirai-1.0-R-base"
+    },
+    "MOIRAI_PATCH": 32,
+    "ACI_ALPHA": 0.1,
+    "ACI_GAMMA": 0.05,
+    "ACI_CLIP": [
+      0.01,
+      0.4
+    ],
+    "QACI_PCT_CLIP": [
+      0.5,
+      99.5
+    ],
+    "CQR_M0": 20,
+    "CQR_QLEVEL_CLIP": [
+      10.0,
+      99.5
+    ],
+    "ALPHA_TEST": 0.05,
+    "N_BOOT": 2000,
+    "BOOT_SEED": 7,
+    "EQUIV_MARGIN": 0.03
+  }
+}
