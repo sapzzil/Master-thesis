@@ -53,7 +53,7 @@ const thin = { style: BorderStyle.SINGLE, size: 4, color: "808080" };
 const thick = { style: BorderStyle.SINGLE, size: 12, color: "000000" };
 const none = { style: BorderStyle.NONE, size: 0, color: "FFFFFF" };
 
-function makeTable(lines) {
+function makeTable(lines, keepLast = false) {
   const parse = (l) => l.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map((c) => c.trim());
   const header = parse(lines[0]);
   const body = lines.slice(2).map(parse);
@@ -90,7 +90,7 @@ function makeTable(lines) {
       children: [new Paragraph({
         alignment: j < 2 || isHead ? AlignmentType.CENTER : AlignmentType.CENTER,
         spacing: { line: 240, before: 0, after: 0 },
-        keepNext: !isLast, keepLines: true,
+        keepNext: !isLast || keepLast, keepLines: true,
         children: runs(txt, { size, bold: isHead || undefined }),
       })],
     });
@@ -109,7 +109,7 @@ function bodyPara(text, opts = {}) {
     alignment: AlignmentType.JUSTIFIED,
     spacing: { line: LINE, before: 0, after: 120 },
     indent: opts.noIndent ? undefined : { firstLine: 200 },
-    keepNext: opts.keepNext,
+    keepNext: opts.keepNext, widowControl: true,
     children: runs(text, { size: BODY_PT * 2 }),
   });
 }
@@ -153,6 +153,20 @@ function processFile(file) {
   } else if (!PLAIN && children !== bodyKids && !file.startsWith("01_")) children = bodyKids;
   const isRef = file.startsWith("09_");
   const isAbs = file.startsWith("13_");
+  // 쪽 끝에서 잘림 방지: 다음에 오는 덩어리 종류를 미리 보고, 도입 문장·목록·표 주석이 뒤 내용과 떨어지지 않게 함
+  const kindAt = (j) => {
+    while (j < lines.length && (!lines[j].trim() || lines[j].trim() === "---")) j++;
+    if (j >= lines.length) return "end";
+    const t = lines[j];
+    if (/^#{1,6} /.test(t)) return "heading";
+    if (t.startsWith("|")) return "table";
+    if (/^!\[/.test(t)) return "image";
+    if (/^\*\*(표|그림) [A-Z0-9]+-\d+\./.test(t)) return "caption";
+    if (t.startsWith("주:")) return "note";
+    if (/^(\s*)- /.test(t) || /^\d+\. /.test(t)) return "list";
+    return "para";
+  };
+  const attach = (k) => ["list", "table", "caption", "image"].includes(k);
   let i = 0;
   while (i < lines.length) {
     const l = lines[i];
@@ -172,7 +186,7 @@ function processFile(file) {
     if (l.startsWith("|")) {
       const tl = [];
       while (i < lines.length && lines[i].startsWith("|")) tl.push(lines[i++]);
-      children.push(makeTable(tl));
+      children.push(makeTable(tl, kindAt(i) === "note"));
       children.push(new Paragraph({ spacing: { after: 60 }, children: [] }));
       continue;
     }
@@ -214,13 +228,25 @@ function processFile(file) {
         children: runs(l.slice(2).trim(), { size: 19 }) }));
       i++; continue;
     }
+    // 목록: 짧으면 한 덩어리로 같은 쪽에 둠
+    let listKeep = false;
+    if (/^(\s*)- /.test(l) || /^\d+\. /.test(l)) {
+      let a = i, b = i;
+      while (a > 0 && (/^(\s*)- /.test(lines[a - 1]) || /^\d+\. /.test(lines[a - 1]) || (!lines[a - 1].trim() && a > 1 && (/^(\s*)- /.test(lines[a - 2]) || /^\d+\. /.test(lines[a - 2]))))) a--;
+      while (b + 1 < lines.length && kindAt(b + 1) === "list" && (lines[b + 1].trim() ? true : true)) { let c = b + 1; while (c < lines.length && !lines[c].trim()) c++; if (!(/^(\s*)- /.test(lines[c]) || /^\d+\. /.test(lines[c]))) break; b = c; }
+      const items = lines.slice(a, b + 1).filter((x) => x.trim());
+      const chars = items.reduce((t, x) => t + x.length, 0);
+      const last = kindAt(i + 1) !== "list";
+      // 짧은 목록(8항목·600자 이하)은 통째로, 긴 목록은 첫 항목만 앞 문장과 붙이고 나머지는 자연스럽게 넘김
+      listKeep = last ? attach(kindAt(i + 1)) : (items.length <= 8 && chars <= 600) || i === a;
+    }
     if ((m = l.match(/^(\s*)- (.*)$/))) {
       children.push(new Paragraph({ numbering: { reference: "bullets", level: m[1].length >= 2 ? 1 : 0 }, alignment: AlignmentType.JUSTIFIED,
-        spacing: { line: LINE, after: 60 }, children: runs(m[2], { size: BODY_PT * 2 }) }));
+        keepNext: listKeep, widowControl: true, spacing: { line: LINE, after: 60 }, children: runs(m[2], { size: BODY_PT * 2 }) }));
       i++; continue;
     }
     if ((m = l.match(/^(\d+)\. (.*)$/))) {
-      children.push(new Paragraph({ indent: { left: 360, hanging: 360 }, alignment: AlignmentType.JUSTIFIED, spacing: { line: LINE, after: 60 },
+      children.push(new Paragraph({ indent: { left: 360, hanging: 360 }, alignment: AlignmentType.JUSTIFIED, keepNext: listKeep, widowControl: true, spacing: { line: LINE, after: 60 },
         children: runs(`${m[1]}. ${m[2]}`, { size: BODY_PT * 2 }) }));
       i++; continue;
     }
@@ -229,8 +255,8 @@ function processFile(file) {
         children: runs(l.trim(), { size: 20 }) }));
       i++; continue;
     }
-    // 문단: 다음 줄이 표/그림 캡션이면 붙여 둠
-    children.push(bodyPara(l.trim()));
+    // 문단: 뒤에 목록·표·그림이 오거나 ':'로 끝나는 도입 문장이면 다음 덩어리와 같은 쪽에 둠
+    children.push(bodyPara(l.trim(), { keepNext: attach(kindAt(i + 1)) || /[:：]$/.test(l.trim()) }));
     i++;
   }
 }
