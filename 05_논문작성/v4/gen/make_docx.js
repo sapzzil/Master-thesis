@@ -186,8 +186,15 @@ function processFile(file) {
     }
     if ((m = l.match(/^\*\*(표|그림) [A-Z0-9]+-\d+\./))) {
       const isTab = m[1] === "표";
-      children.push(new Paragraph({ style: isTab ? "TableCaption" : "FigureCaption", alignment: AlignmentType.CENTER, keepNext: isTab, spacing: { before: isTab ? 200 : 0, after: isTab ? 80 : 240, line: 276 },
-        children: runs(l.trim(), { size: 19 }) }));
+      // 캡션은 제목(첫 문장)만 캡션 스타일로 두어 표·그림 차례에 제목만 실리게 하고, 뒤 설명은 별도 문단
+      const full = l.trim().replace(/\*\*/g, "");
+      const pre = full.match(/^(표|그림) [A-Z0-9]+-\d+\. /)[0];
+      const k = full.indexOf(". ", pre.length);
+      const title = k > 0 ? full.slice(0, k) : full.replace(/\.$/, "");
+      const desc = k > 0 ? full.slice(k + 2).trim() : "";
+      children.push(new Paragraph({ style: isTab ? "TableCaption" : "FigureCaption", alignment: AlignmentType.CENTER, keepNext: isTab || !!desc, spacing: { before: isTab ? 200 : 0, after: desc ? 40 : isTab ? 80 : 240, line: 276 },
+        children: runs(title, { size: 19 }) }));
+      if (desc) children.push(new Paragraph({ alignment: AlignmentType.CENTER, keepNext: isTab, spacing: { after: isTab ? 80 : 240, line: 276 }, children: runs(desc, { size: 17 }) }));
       i++; continue;
     }
     if (l.startsWith("주:")) {
@@ -235,8 +242,8 @@ const doc = new Document({
   styles: {
     default: { document: { run: { font: FONT, size: BODY_PT * 2 } } },
     paragraphStyles: [
-      { id: "TableCaption", name: "TableCaption", basedOn: "Normal", next: "Normal", run: { size: 19, font: FONT } },
-      { id: "FigureCaption", name: "FigureCaption", basedOn: "Normal", next: "Normal", run: { size: 19, font: FONT } },
+      { id: "TableCaption", name: "TableCaption", basedOn: "Normal", next: "Normal", run: { size: 19, bold: true, font: FONT } },
+      { id: "FigureCaption", name: "FigureCaption", basedOn: "Normal", next: "Normal", run: { size: 19, bold: true, font: FONT } },
       { id: "Heading1", name: "Heading 1", basedOn: "Normal", next: "Normal", quickFormat: true,
         run: { size: 32, bold: true, font: FONT }, paragraph: { alignment: AlignmentType.CENTER, spacing: { before: 0, after: 480 }, outlineLevel: 0 } },
       { id: "Heading2", name: "Heading 2", basedOn: "Normal", next: "Normal", quickFormat: true,
