@@ -27,7 +27,6 @@ ax.set_yticks(range(len(SC))); ax.set_yticklabels([scl(s) for s in SC],fontsize=
 for y in [0.5,4.5,8.5,12.5]: ax.axhline(y,color="k",lw=0.6)
 for x in [3.5,7.5,11.5,15.5]: ax.axvline(x,color="k",lw=0.6)
 cb=fig.colorbar(im,ax=ax,shrink=0.8); cb.set_label("커버리지 % (목표 80, 파랑=넓음·빨강=좁음)")
-ax.set_title("그림 4-1. 합성 데이터 시나리오별 보정 전 커버리지(%) — 100계열 × 60일")
 fig.tight_layout(); fig.savefig(F+"fig4_1_합성커버리지_히트맵.png"); plt.close()
 # Fig 4-2 dose-response delta vs L1
 fig,axs=plt.subplots(1,4,figsize=(12,3.8),sharey=True)
@@ -49,7 +48,6 @@ axs[0].set_ylabel("L1 대비 커버리지 변화 (%p)")
 from matplotlib.lines import Line2D
 h=[Line2D([],[],color=c,label=NM[m]) for m,c in COL.items()]+[Line2D([],[],color="gray",ls="-",label="가격 입력"),Line2D([],[],color="gray",ls="--",label="수익률 입력"),Line2D([],[],color="k",lw=2,label="과거변동(RW) 1년"),Line2D([],[],color="orange",ls=":",lw=2,label="이론(꼬리 축)")]
 fig.legend(handles=h,loc="lower center",ncol=8,fontsize=7.5,frameon=False)
-fig.suptitle("그림 4-2. 특성 강도에 따른 커버리지 변화 (회색 띠 = 실질 기준 ±2%p, 아래로 갈수록 구간이 좁아짐)")
 fig.tight_layout(rect=(0,.07,1,1)); fig.savefig(F+"fig4_2_강도별변화.png"); plt.close()
 # Fig 5-1 real coverage
 t6=pd.read_csv(T+"T6_real_coverage_H5.csv"); c6=pd.read_csv(T+"T6c_real_coverage_by_stock.csv")
@@ -64,7 +62,6 @@ for i,(m,L,k) in enumerate(rows):
 ax.axvline(80,color="k",lw=1); ax.axvspan(78,82,color="gray",alpha=.1)
 ax.set_yticks(range(len(rows))); ax.set_yticklabels([lab(*c) for c in rows],fontsize=7.5); ax.set_xlim(70,92)
 ax.set_xlabel("커버리지 % (점·막대 = 10종목 전체와 95% 구간, 옅은 띠 = 종목별 범위)")
-ax.set_title("그림 5-1. 실제 10종목 보정 전 커버리지 (2017~2026, 17,700건)")
 fig.tight_layout(); fig.savefig(F+"fig5_1_실제커버리지.png"); plt.close()
 # Fig 5-2 H6
 t7=pd.read_csv(T+"T7_H6_real.csv"); rows=CO[:16][::-1]
@@ -76,7 +73,6 @@ for i,(m,L,k) in enumerate(rows):
 ax.axvline(0,color="k",lw=1); ax.axvspan(-2,2,color="gray",alpha=.1)
 ax.set_yticks(range(len(rows))); ax.set_yticklabels([lab(*c) for c in rows],fontsize=7.5); ax.set_xlim(-22,5)
 ax.set_xlabel("과거변동(RW, 같은 과거 길이) 대비 분위수 손실 개선 % (오른쪽 = TSFM이 나음)\n진한 막대 = Holm 보정 유의, 옅은 막대 = 유의하지 않음, 회색 띠 = 실질 기준 ±2%")
-ax.set_title("그림 5-2. 실제 주식에서 TSFM의 분위수 손실 (H6)")
 fig.tight_layout(); fig.savefig(F+"fig5_2_H6손실.png"); plt.close()
 # Fig 5-3 econ
 E1=pd.read_pickle(S+"econ/out/E1_curves.pkl"); E2=pd.read_pickle(S+"econ/out/E2_ports.pkl")
@@ -99,7 +95,6 @@ for key,ax,title in [(None,axs[0],"① 방향 매매 (비용 반영)"),(1,axs[1]
 axs[0].set_ylabel("누적 배수 (로그 눈금, 시작 = 1)")
 h=[Line2D([],[],color=c,label=NM[m]) for m,c in COL.items()]+[Line2D([],[],color="k",ls="--",lw=1.6,label="과거변동(RW) 1년"),Line2D([],[],color="goldenrod",lw=2,label="계속 보유")]
 fig.legend(handles=h,loc="lower center",ncol=6,frameon=False,fontsize=8)
-fig.suptitle("그림 5-3. 10종목 동일비중 포트폴리오 누적 수익 (2017-02 ~ 2026-09, 탐색 분석)")
 fig.tight_layout(rect=(0,.07,1,1)); fig.savefig(F+"fig5_3_경제적가치.png"); plt.close()
 # Fig 6-1 calibration dumbbell (real) + synthetic range
 t4=pd.read_csv(T+"T4_H5_synth.csv"); rows=CO[:19][::-1]
@@ -117,6 +112,5 @@ for ax,t in zip(axs,["합성 17개 시나리오 (막대 = 시나리오 범위)",
     ax.axvline(80,color="k",lw=1); ax.axvspan(77,83,color="gray",alpha=.1); ax.set_title(t); ax.set_xlim(10,92)
     ax.set_xlabel("커버리지 % (빈 점 = 보정 전, 찬 점 = 보정 후, 회색 띠 = 판정 범위 77~83%)")
 axs[0].set_yticks(range(len(rows))); axs[0].set_yticklabels([lab(*c) for c in rows],fontsize=7.5)
-fig.suptitle("그림 6-1. 사후보정(ACI-CQR) 전후 커버리지")
 fig.tight_layout(); fig.savefig(F+"fig6_1_보정전후.png"); plt.close()
 print("ok")
