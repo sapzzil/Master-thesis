@@ -1,10 +1,13 @@
+# 표 생성: results_v4/tables(T1~T8)와 results_v4_econ 사용. TAB62의 폭 배율(연속 보정)은 real_all.parquet(20MB, git 제외 — src_v4_econ/econ_v4.py로 재생성)이 필요하다.
 import pandas as pd, numpy as np
-T="/mnt/user-data/uploads/논문/04_실험코드/results_v4/tables/"
-E="/tmp/claude-0/-home-claude/fa74dbd6-df2f-598d-89dd-28a1a0c58d47/scratchpad/econ/out/"
-NM={"chronos_t5_base":"Chronos-T5","chronos2":"Chronos-2","timesfm25":"TimesFM-2.5","moirai2":"Moirai-2","rw":"과거변동(RW)","garch_t":"GARCH-t","oracle":"정답 모델"}
+import pathlib
+_V=pathlib.Path(__file__).resolve().parents[1]; _R=_V.parents[1]
+T=str(_R/"04_실험코드/results_v4/tables")+"/"
+E=str(_R/"04_실험코드/results_v4_econ")+"/"
+NM={"chronos_t5_base":"Chronos-T5","chronos2":"Chronos-2","timesfm25":"TimesFM-2.5","moirai2":"Moirai-2","rw":"과거변동(RW)","garch_t":"GARCH-t","oracle":"오라클 모형"}
 ORD=["chronos_t5_base","chronos2","timesfm25","moirai2","rw","garch_t","oracle"]
 def lab(m,L,k):
-    if m=="oracle": return "정답 모델 | -"
+    if m=="oracle": return "오라클 모형 | -"
     return f"{NM[m]} | {'한 달' if L==21 else '1년'}·{'수익률' if k=='return' else '가격'}"
 def srt(d): d=d.copy(); d["_o"]=d.model.map({m:i for i,m in enumerate(ORD)}); return d.sort_values(["_o","L","input"],ascending=[True,True,False])
 pc=lambda x:f"{100*x:.1f}"
@@ -75,4 +78,4 @@ for (m,L,k),g in srt(t6[t6.panel=="ALL"]).groupby(["model","L","input"],sort=Fal
     a=g.iloc[0]; cc=t6b[(t6b.model==m)&(t6b.L==L)&(t6b.input==k)].iloc[0].cont_cov
     rows.append(f"| {lab(m,L,k)} | {pc(a['cov'])} | {pc(a.cal)} [{pc(a.cal_lo90)}, {pc(a.cal_hi90)}] | {'복원' if a.restored else '실패'} | {pc(a.ctl)} | {pc(cc)} | {wr.loc[(m,L,k)]:.2f} |")
 out.append("TAB62\n| 모델 | 조건 | 보정 전 % | 보정 후 % [90% 구간] | 판정 | 대조군 % | 연속 보정 % | 폭 배율(연속) |\n|---|---|---|---|---|---|---|---|\n"+"\n".join(rows))
-open("/tmp/claude-0/-home-claude/fa74dbd6-df2f-598d-89dd-28a1a0c58d47/scratchpad/draft/gen/tables.md","w").write("\n\n".join(out))
+open(str(_V/"gen/tables.md"),"w").write("\n\n".join(out))

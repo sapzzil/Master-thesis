@@ -1,14 +1,15 @@
+# 그림 생성 스크립트(작성 당시 클라우드 경로 기준). 경제 분석 그림(fig5_3)은 econ_v4.py가 만든 E1_curves.pkl·E2_ports.pkl이 필요하다.
 import pandas as pd, numpy as np, matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt, koreanize_matplotlib
 from scipy import stats
 T="/mnt/user-data/uploads/논문/04_실험코드/results_v4/tables/"
 S="/tmp/claude-0/-home-claude/fa74dbd6-df2f-598d-89dd-28a1a0c58d47/scratchpad/"
 F=S+"draft/figs/"
-NM={"chronos_t5_base":"Chronos-T5","chronos2":"Chronos-2","timesfm25":"TimesFM-2.5","moirai2":"Moirai-2","rw":"과거변동(RW)","garch_t":"GARCH-t","oracle":"정답 모델"}
+NM={"chronos_t5_base":"Chronos-T5","chronos2":"Chronos-2","timesfm25":"TimesFM-2.5","moirai2":"Moirai-2","rw":"과거변동(RW)","garch_t":"GARCH-t","oracle":"오라클 모형"}
 COL={"chronos_t5_base":"#7f7f7f","chronos2":"#1f77b4","timesfm25":"#d62728","moirai2":"#2ca02c"}
 ORD=["chronos_t5_base","chronos2","timesfm25","moirai2","rw","garch_t","oracle"]
 CO=[(m,L,k) for m in ORD[:4] for L,k in [(21,"return"),(21,"price"),(252,"return"),(252,"price")]]+[("rw",21,"return"),("rw",252,"return"),("garch_t",252,"return"),("oracle",0,"-")]
-def lab(m,L,k): return "정답 모델" if m=="oracle" else f"{NM[m]} {'한 달' if L==21 else '1년'}·{'수익률' if k=='return' else '가격'}"
+def lab(m,L,k): return "오라클 모형" if m=="oracle" else f"{NM[m]} {'한 달' if L==21 else '1년'}·{'수익률' if k=='return' else '가격'}"
 plt.rcParams.update({"figure.dpi":150,"font.size":9})
 t1=pd.read_csv(T+"T1_synth_scenarios.csv")
 SC=["L1"]+[f"{a}_L{i}" for a in ["CL","TL","RF","RS"] for i in range(2,6)]
