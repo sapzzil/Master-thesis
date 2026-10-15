@@ -1,8 +1,9 @@
 import pandas as pd, numpy as np, matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt, koreanize_matplotlib
 from matplotlib.patches import FancyBboxPatch
-T="/mnt/user-data/uploads/논문/04_실험코드/results_v4/tables/"
-F="/tmp/claude-0/-home-claude/fa74dbd6-df2f-598d-89dd-28a1a0c58d47/scratchpad/draft/figs/"
+import pathlib; _R=pathlib.Path(__file__).resolve().parents[3]
+T=str(_R/"04_실험코드/results_v4/tables")+"/"
+F=str(_R/"05_논문작성/v4/figs")+"/"
 plt.rcParams.update({"figure.dpi":150,"font.size":9})
 # S1 design
 fig,ax=plt.subplots(figsize=(10,4.2)); ax.set_xlim(0,100); ax.set_ylim(0,42); ax.axis("off")
@@ -14,7 +15,7 @@ box(1,27,19,11,"실제 10종목에서\n특성 강도 측정\n(군집·꼬리·�
 box(26,27,21,11,"① 합성 데이터 실험\n17개 시나리오 × 100계열\n(특성 하나씩만 L1~L5)","#eef3fb")
 box(26,4,21,11,"② 실제 주가 실증\n미국 5 + 한국 5종목\n2017.01~2026.09 (24,132건)","#fdf3e7")
 box(53,15,21,12,"같은 예측 절차\nTSFM 4종 × 4조건\n(과거 21/252일 × 수익률/가격)\n+ RW, GARCH-t\n내일 수익률 80% 구간","#f2f2f2")
-box(80,30,19,8,"RQ1 진단\n오차는 어디서 오나","#e8f4ea")
+box(80,30,19,8,"RQ1 진단\n오차는 어디서 오는가","#e8f4ea")
 box(80,17,19,8,"RQ2 평가\n실제 주식에서 쓸 만한가","#e8f4ea")
 box(80,4,19,8,"RQ3 처방\nACI-CQR 사후보정","#e8f4ea")
 arr(20.8,32.5,25.2,32.5); arr(47.8,32,52.6,24); arr(47.8,9.5,52.6,18)

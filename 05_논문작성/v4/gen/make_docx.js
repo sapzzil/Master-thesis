@@ -1,5 +1,5 @@
 // 학위논문 초고 docx 생성 (A4, 한양대 작성방법 기준 여백·줄간격)
-// 사용: node 05_논문작성/v4/gen/make_docx.js   → 05_논문작성/v4/00_학위논문_초고_통합본_v4.docx
+// 사용: node 05_논문작성/v4/gen/make_docx.js [출력.docx]   (기본 석사학위논문_초고_김승민.docx)
 // 입력: v4 폴더의 01~13 장별 md 파일(순서는 ORDER). 지원 문법: #~### 제목, 문단, -/1. 목록, 표, 그림, > 인용, **굵게**, *기울임*
 const fs = require("fs");
 const path = require("path");
@@ -18,29 +18,55 @@ const ORDER = [
 ];
 // 일반 모드: node make_docx.js  → 통합본. 요약본 등: node make_docx.js --plain 출력.docx 입력.md
 const PLAIN = process.argv[2] === "--plain";
-const OUT = path.join(V, PLAIN ? process.argv[3] : "00_학위논문_초고_통합본_v4.docx");
+const OUT = path.join(V, PLAIN ? process.argv[3] : process.argv[2] || "석사학위논문_초고_김승민.docx");
 const FILES = PLAIN ? process.argv.slice(4) : ORDER;
 
 // 단위: DXA(1/20pt). 한양대 인공지능융합대학원 작성방법 'MS 워드 기준': A4, 여백 위아래 40mm·좌우 35mm, 머리말·꼬리말 15mm
 const MM = 56.7;
-const PAGE = { w: 11906, h: 16838, top: Math.round(40 * MM), bottom: Math.round(40 * MM), lr: Math.round(35 * MM), hf: Math.round(15 * MM) };
+// 요약본(--plain)은 학위논문 양식이 아니므로 일반 문서 여백(상하·좌우 25mm)
+const PAGE = PLAIN
+  ? { w: 11906, h: 16838, top: Math.round(25 * MM), bottom: Math.round(25 * MM), lr: Math.round(25 * MM), hf: Math.round(12 * MM) }
+  : { w: 11906, h: 16838, top: Math.round(40 * MM), bottom: Math.round(40 * MM), lr: Math.round(35 * MM), hf: Math.round(15 * MM) };
 const TEXT_W = PAGE.w - 2 * PAGE.lr;
 const FONT = { ascii: "Times New Roman", hAnsi: "Times New Roman", eastAsia: "바탕", cs: "Times New Roman" };
 const BODY_PT = 10.5, LINE = 384; // 160%
+// 언어: 한글을 한국어(ko-KR)로 지정해야 Word가 한국어 줄바꿈 규칙(어절 단위)을 적용함.
+// 지정이 없으면 동아시아 문자를 중국어·일본어처럼 글자 단위로 끊을 수 있음
+const LANG = { value: "en-US", eastAsia: "ko-KR" };
 
-function runs(text, base = {}) {
-  // **굵게**, *기울임* 처리
+// 인라인 서식: **굵게**, *기울임*, `코드`(백틱 제거, 고정폭), 아래첨자 x_{t+1}·x_t (기호 제거 후 실제 아래첨자)
+const MONO = { ascii: "Consolas", hAnsi: "Consolas", eastAsia: "바탕", cs: "Consolas" };
+function subRuns(text, opt) {
+  // 아래첨자 표기를 찾아 일반/아래첨자 조각으로 나눔. 중괄호 안의 중첩 표기(σ_{S_t})는 기호만 지우고 모두 아래첨자
   const out = [];
-  const re = /(\*\*[^*]+\*\*|\*[^*\s][^*]*\*)/g;
+  const re = /_\{((?:[^{}]|\{[^{}]*\})*)\}|_([A-Za-z0-9ν]+)/g;
   let last = 0, m;
   while ((m = re.exec(text)) !== null) {
-    if (m.index > last) out.push(new TextRun({ text: text.slice(last, m.index), font: FONT, ...base }));
+    // 앞 글자가 문자·기호(변수)일 때만 아래첨자로 봄 (파일명 등 일반 밑줄 제외)
+    const prev = text[m.index - 1] || "";
+    if (!/[A-Za-zͰ-Ͽ²)]/.test(prev)) continue;
+    if (m.index > last) out.push(new TextRun({ text: text.slice(last, m.index), ...opt }));
+    const sub = (m[1] !== undefined ? m[1] : m[2]).replace(/_\{?|\}/g, "");
+    out.push(new TextRun({ text: sub, subScript: true, ...opt }));
+    last = m.index + m[0].length;
+  }
+  if (last < text.length) out.push(new TextRun({ text: text.slice(last), ...opt }));
+  return out;
+}
+function runs(text, base = {}) {
+  const out = [];
+  const re = /(`[^`]+`|\*\*[^*]+\*\*|\*[^*\s][^*]*\*)/g;
+  let last = 0, m;
+  const plain = (t, extra = {}) => out.push(...subRuns(t, { font: FONT, language: LANG, ...base, ...extra }));
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) plain(text.slice(last, m.index));
     const t = m[0];
-    if (t.startsWith("**")) out.push(new TextRun({ text: t.slice(2, -2), bold: true, font: FONT, ...base }));
-    else out.push(new TextRun({ text: t.slice(1, -1), italics: true, font: FONT, ...base }));
+    if (t.startsWith("`")) out.push(new TextRun({ text: t.slice(1, -1), font: MONO, ...base, size: base.size ? base.size - 1 : undefined }));
+    else if (t.startsWith("**")) plain(t.slice(2, -2), { bold: true });
+    else plain(t.slice(1, -1), { italics: true });
     last = m.index + t.length;
   }
-  if (last < text.length) out.push(new TextRun({ text: text.slice(last), font: FONT, ...base }));
+  if (last < text.length) plain(text.slice(last));
   return out;
 }
 
@@ -53,33 +79,76 @@ const thin = { style: BorderStyle.SINGLE, size: 4, color: "808080" };
 const thick = { style: BorderStyle.SINGLE, size: 12, color: "000000" };
 const none = { style: BorderStyle.NONE, size: 0, color: "FFFFFF" };
 
-function makeTable(lines, keepLast = false) {
+// 표별 추가 설정(표 번호 기준): equal = 너비를 같게 맞출 열, wide = 남는 폭을 더 받을 열(0부터 셈)
+const TABLE_OPTS = { "3-4": { equal: [1, 2] }, "3-7": { wide: [4] }, "4-4": { keep: [9] } }; // keep = 늘 한 줄로 둘 열
+function makeTable(lines, keepLast = false, tno = "") {
+  const topt = TABLE_OPTS[tno] || {};
   const parse = (l) => l.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map((c) => c.trim());
-  const header = parse(lines[0]);
+  // 긴 머리글은 괄호 앞에서 두 줄로 나눔(괄호 안에서 어색하게 끊기지 않도록)
+  const header = parse(lines[0]).map((h) => (/<br>/i.test(h) || [...h].length <= 9 ? h : h.replace(/ ([(\[])/, "<br>$1")));
   const body = lines.slice(2).map(parse);
+  // 구분선의 ':---'(왼쪽 맞춤)은 서술형 열 → 본문 칸을 왼쪽 정렬. 그 밖은 가운데 정렬
+  // 정렬 규칙: 머리글은 가운데. 본문은 열 성격으로 정함
+  //  - 숫자·기호 열(값, ○×△, 〃, →, 17/17 등)과 짧은 범주 값 열(판정·가설 번호 등, 평균 6자 이하)은 가운데
+  //  - 그 밖의 글자 열(모델·조건·항목 같은 이름 열, 설명 열)은 왼쪽
+  //  - 구분선에 ':---'는 왼쪽, ':---:'는 가운데로 강제
+  const sepCells = parse(lines[1]);
+  const symOnly = (t) => /^[\s○×△✕〃\-–·→/]*$/.test(t);
+  const numLike = (t) => { const c = t.replace(/\*\*|<br>/gi, " ").replace(/\([^)]*\)/g, "").trim(); /* 괄호 속 보충 설명은 무시 */ return c === "" || symOnly(c) || (/\d/.test(c) && !/[\u3131-\uD79D]{2,}/.test(c) && !/[A-Za-z]{3,}/.test(c)); };
+  const leftCol = sepCells.map((c, j) => {
+    if (/^:-+$/.test(c)) return true;
+    if (/^:-+:$/.test(c)) return false;
+    const cells = body.map((r) => (r[j] || "").trim()).filter((x) => x && x !== "-");
+    if (!cells.length) return false;
+    const numShare = cells.filter(numLike).length / cells.length;
+    if (numShare >= 0.6) return false;
+    const avgLen = cells.reduce((a, x) => a + [...x.replace(/\*\*|<br>/gi, "")].length, 0) / cells.length;
+    return j < 2 ? avgLen > 3 : avgLen > 6;
+  });
   const n = header.length;
-  // 열 너비: 단어가 줄 중간에서 끊기지 않도록 각 열의 최소 폭(가장 긴 단어)을 먼저 확보하고, 남는 폭을 내용 길이에 비례해 배분
-  const vis = (s) => [...s.replace(/\*\*/g, "")].reduce((a, ch) => a + (/[\u3131-\uD79D]/.test(ch) ? 1.8 : /[A-Z]/.test(ch) ? 1.35 : 1), 0);
+  // 열 너비 계산(근사 글자 폭: 한글 1em, 영문 대문자 0.76em, 그 밖 0.56em)
+  // 원칙: ① 단어(어절)가 셀 안에서 쪼개지지 않게 각 열의 가장 긴 어절 폭을 확보
+  //       ② 1·2열(모델·조건·항목 등), 숫자 셀, 짧은 셀은 내용 전체를 한 줄로(띄어쓰기를 줄바꿈 없는 공백으로 바꾸고 폭 확보)
+  //       ③ 남는 폭은 내용 길이에 비례해 배분
+  const clean = (s) => s.replace(/\*\*|`/g, "").replace(/_\{|\}/g, "").replace(/_/g, "");
+  const vis = (s) => [...clean(s)].reduce((a, ch) => a + (/[ㄱ-힝]/.test(ch) ? 1.9 : /[A-Z]/.test(ch) ? 1.35 : 1), 0);
+  const isNum = (t) => /^[-+−0-9.,%\[\]()→ ✕○~×e/]+$/.test(clean(t).trim()) && /\d/.test(t);
+  const segs = (t) => t.split(/<br>/i);
   const cols = [...Array(n).keys()].map((j) => [header[j], ...body.map((r) => r[j] || "")]);
-  // \uBA38\uB9AC\uAE00\uC740 \uAD75\uC740 \uAE00\uC528\uB77C 10% \uB354 \uB113\uAC8C \uC7A1\uC74C
-  const minNeed = cols.map((c) => Math.max(...c.flatMap((t, i) => t.split(/\s+/).map((w) => vis(w) * (i === 0 ? 1.05 : 1))), 2));
-  const fullNeed = cols.map((c, j) => Math.max(...c.slice(1).map(vis), Math.min(vis(c[0]), 14), minNeed[j]));
-  let size = n <= 5 ? 18 : n <= 8 ? 17 : 15; // half-points
-  const tight = n >= 10; // 열이 많은 표는 셀 여백을 줄임
-  const PAD = tight ? 80 : 140;
-  let unit = () => (size / 2) * 20 * 0.56;
-  while (size > 13 && minNeed.reduce((a, b) => a + b * unit() + PAD, 0) > TEXT_W) size -= 1;
+  // 한 줄 유지 우선순위: 0단계 = 1·2열 + 숫자 셀 + 머리글 각 줄, 1단계 = 머리글은 어절 단위 허용, 2단계 = 1·2열도 어절 단위 허용
+  let lv = 0;
+  const unitOf = (sz) => (sz / 2) * 20 * 0.56;
+  const SZ0 = n <= 5 ? 18 : n <= 8 ? 17 : 16; // half-points
+  // 1·2열은 내용이 짧은 경우(가장 긴 셀이 본문 폭의 30% 이하)에만 한 줄 고정 대상
+  const shortCol = cols.map((c, j) => j < 2 && Math.max(...c.slice(1).map(vis)) * unitOf(SZ0) + 140 <= 0.3 * TEXT_W);
+  const keepWhole = (t, j, i) => ((topt.keep || []).includes(j) && i > 0) || (i === 0 ? lv === 0 || (shortCol[j] && lv < 2) : (shortCol[j] ? lv < 2 : isNum(t) || (lv < 2 && vis(t) <= 16)));
+  const tight = n >= 9;
+  const PAD = tight ? 90 : 140;
+  const need = () => cols.map((c, j) => Math.max(2, ...c.flatMap((t, i) => segs(t).flatMap((sg) =>
+    (keepWhole(sg, j, i) ? [sg] : sg.split(/\s+/)).map((w) => vis(w) * (i === 0 ? 1.05 : 1))))));
+  let minNeed, size;
+  const fits = () => minNeed.reduce((a, b) => a + b * unitOf(size) + PAD, 0) <= TEXT_W;
+  for (lv = 0; lv <= 2; lv++) {
+    minNeed = need(); size = SZ0;
+    while (!fits() && size > (lv < 2 ? 16 : 15)) size -= 1;
+    if (fits()) break;
+  }
+  if (lv > 2) { lv = 2; minNeed = need(); while (!fits() && size > 14) size -= 1; }
+  const unit = () => unitOf(size);
+  const fullNeed = cols.map((c, j) => Math.max(...c.slice(1).flatMap((t) => segs(t).map(vis)), ...segs(c[0]).map((x) => vis(x) * 1.05), minNeed[j]));
   const base = minNeed.map((x) => x * unit() + PAD);
   const extra = Math.max(TEXT_W - base.reduce((a, b) => a + b, 0), 0);
-  const want = fullNeed.map((x, j) => Math.max(x * unit() + PAD - base[j], 0));
+  const want = fullNeed.map((x, j) => Math.max(x * unit() + PAD - base[j], 0) * ((topt.wide || []).includes(j) ? 2.5 : 1));
   const wsum = want.reduce((a, b) => a + b, 0) || 1;
   let widths = base.map((b, j) => Math.round(b + (extra * (want[j] > 0 ? want[j] : 0)) / wsum + (wsum === 1 ? extra / n : 0)));
   const adj = TEXT_W - widths.reduce((a, b) => a + b, 0);
   widths[widths.indexOf(Math.max(...widths))] += adj;
+  if (topt.equal) { const av = Math.round(topt.equal.reduce((a, j) => a + widths[j], 0) / topt.equal.length); topt.equal.forEach((j) => (widths[j] = av)); widths[0] += TEXT_W - widths.reduce((a, b) => a + b, 0); }
+  const nb = (t, j, i) => (keepWhole(t, j, i) ? t.replace(/ /g, "\u00A0") : t);
   const mkCell = (txt, j, isHead, isLast) =>
     new TableCell({
       width: { size: widths[j], type: WidthType.DXA },
-      margins: { top: 40, bottom: 40, left: tight ? 30 : 60, right: tight ? 30 : 60 },
+      margins: { top: 40, bottom: 40, left: tight ? 28 : 50, right: tight ? 28 : 50 },
       verticalAlign: VerticalAlign.CENTER,
       shading: isHead ? { fill: "F2F2F2", type: ShadingType.CLEAR, color: "auto" } : undefined,
       borders: {
@@ -87,12 +156,12 @@ function makeTable(lines, keepLast = false) {
         bottom: isHead ? thin : isLast ? thick : thin,
         left: none, right: none,
       },
-      children: [new Paragraph({
-        alignment: j < 2 || isHead ? AlignmentType.CENTER : AlignmentType.CENTER,
+      children: segs(txt).map((sg) => new Paragraph({
+        alignment: !isHead && leftCol[j] ? AlignmentType.LEFT : AlignmentType.CENTER,
         spacing: { line: 240, before: 0, after: 0 },
-        keepNext: !isLast || keepLast, keepLines: true,
-        children: runs(txt, { size, bold: isHead || undefined }),
-      })],
+        keepNext: !isLast || keepLast, keepLines: true, wordWrap: true,
+        children: runs(nb(sg, j, isHead ? 0 : 1), { size, bold: isHead || undefined }),
+      })),
     });
   const rows = [
     new TableRow({ tableHeader: true, cantSplit: true, children: header.map((h, j) => mkCell(h, j, true, false)) }),
@@ -107,7 +176,7 @@ function makeTable(lines, keepLast = false) {
 function bodyPara(text, opts = {}) {
   return new Paragraph({
     alignment: AlignmentType.JUSTIFIED,
-    spacing: { line: LINE, before: 0, after: 120 },
+    spacing: { line: LINE, before: 0, after: opts.compact ? 0 : 120 },
     indent: opts.noIndent ? undefined : { firstLine: 200 },
     keepNext: opts.keepNext, widowControl: true,
     children: runs(text, { size: BODY_PT * 2 }),
@@ -153,6 +222,9 @@ function processFile(file) {
   } else if (!PLAIN && children !== bodyKids && !file.startsWith("01_")) children = bodyKids;
   const isRef = file.startsWith("09_");
   const isAbs = file.startsWith("13_");
+  // 국문요지·ABSTRACT는 각 2쪽 이내 규정 → 문단 뒤 간격을 줄여 한 쪽 안에 여유 있게
+  const compact = !PLAIN && (file.startsWith("01_") || isAbs);
+  let lastTab = "";
   // 쪽 끝에서 잘림 방지: 다음에 오는 덩어리 종류를 미리 보고, 도입 문장·목록·표 주석이 뒤 내용과 떨어지지 않게 함
   const kindAt = (j) => {
     while (j < lines.length && (!lines[j].trim() || lines[j].trim() === "---")) j++;
@@ -186,20 +258,21 @@ function processFile(file) {
     if (l.startsWith("|")) {
       const tl = [];
       while (i < lines.length && lines[i].startsWith("|")) tl.push(lines[i++]);
-      children.push(makeTable(tl, kindAt(i) === "note"));
+      children.push(makeTable(tl, kindAt(i) === "note", lastTab));
       children.push(new Paragraph({ spacing: { after: 60 }, children: [] }));
       continue;
     }
     if ((m = l.match(/^!\[[^\]]*\]\(([^)]+)\)/))) {
       const f = path.join(V, m[1]);
       const { w, h, data } = pngSize(f);
-      const wPx = Math.round((TEXT_W / 1440) * 96);
-      children.push(new Paragraph({ alignment: AlignmentType.CENTER, keepNext: true, spacing: { before: 120, after: 60 },
+      const wPx = Math.round((TEXT_W / 1440) * 96 * (PLAIN ? 0.72 : 1)); // 요약본은 그림을 작게(쪽수 절약)
+      children.push(new Paragraph({ alignment: AlignmentType.CENTER, keepNext: kindAt(i + 1) === "caption", spacing: { before: 120, after: 60 },
         children: [new ImageRun({ type: "png", data, transformation: { width: wPx, height: Math.round((wPx * h) / w) } })] }));
       i++; continue;
     }
-    if ((m = l.match(/^\*\*(표|그림) [A-Z0-9]+-\d+\./))) {
+    if ((m = l.match(/^\*\*(표|그림) ([A-Z0-9]+-\d+)\./))) {
       const isTab = m[1] === "표";
+      if (isTab) lastTab = m[2];
       // 캡션은 제목(첫 문장)만 캡션 스타일로 두어 표·그림 차례에 제목만 실리게 하고, 뒤 설명은 별도 문단
       const full = l.trim().replace(/\*\*/g, "");
       const pre = full.match(/^(표|그림) [A-Z0-9]+-\d+\. /)[0];
@@ -238,15 +311,15 @@ function processFile(file) {
       const chars = items.reduce((t, x) => t + x.length, 0);
       const last = kindAt(i + 1) !== "list";
       // 짧은 목록(8항목·600자 이하)은 통째로, 긴 목록은 첫 항목만 앞 문장과 붙이고 나머지는 자연스럽게 넘김
-      listKeep = last ? attach(kindAt(i + 1)) : (items.length <= 8 && chars <= 600) || i === a;
+      listKeep = last ? attach(kindAt(i + 1)) : (items.length <= 8 && chars <= 900) || i === a;
     }
     if ((m = l.match(/^(\s*)- (.*)$/))) {
       children.push(new Paragraph({ numbering: { reference: "bullets", level: m[1].length >= 2 ? 1 : 0 }, alignment: AlignmentType.JUSTIFIED,
-        keepNext: listKeep, widowControl: true, spacing: { line: LINE, after: 60 }, children: runs(m[2], { size: BODY_PT * 2 }) }));
+        keepNext: listKeep, keepLines: true, widowControl: true, spacing: { line: LINE, after: 60 }, children: runs(m[2], { size: BODY_PT * 2 }) }));
       i++; continue;
     }
     if ((m = l.match(/^(\d+)\. (.*)$/))) {
-      children.push(new Paragraph({ indent: { left: 360, hanging: 360 }, alignment: AlignmentType.JUSTIFIED, keepNext: listKeep, widowControl: true, spacing: { line: LINE, after: 60 },
+      children.push(new Paragraph({ indent: { left: 360, hanging: 360 }, alignment: AlignmentType.JUSTIFIED, keepNext: listKeep, keepLines: true, widowControl: true, spacing: { line: LINE, after: 60 },
         children: runs(`${m[1]}. ${m[2]}`, { size: BODY_PT * 2 }) }));
       i++; continue;
     }
@@ -256,7 +329,9 @@ function processFile(file) {
       i++; continue;
     }
     // 문단: 뒤에 목록·표·그림이 오거나 ':'로 끝나는 도입 문장이면 다음 덩어리와 같은 쪽에 둠
-    children.push(bodyPara(l.trim(), { keepNext: attach(kindAt(i + 1)) || /[:：]$/.test(l.trim()) }));
+    // 주제어·Keywords 줄은 바로 앞 문단과 같은 쪽에
+    const nextLine = (lines.slice(i + 1).find((x) => x.trim()) || "").trim();
+    children.push(bodyPara(l.trim(), { compact, keepNext: attach(kindAt(i + 1)) || /[:：]$/.test(l.trim()) || (compact && /^(주제어|Keywords)/.test(nextLine)) }));
     i++;
   }
 }
@@ -264,9 +339,11 @@ function processFile(file) {
 FILES.forEach(processFile);
 
 const doc = new Document({
+  creator: "김승민", lastModifiedBy: "김승민",
+  title: PLAIN ? "석사학위논문 초고 요약" : "사전학습 시계열 모델의 금융 수익률 예측구간: 오차의 출처와 재학습 없는 사후보정",
   features: { updateFields: !PLAIN },
   styles: {
-    default: { document: { run: { font: FONT, size: BODY_PT * 2 } } },
+    default: { document: { run: { font: FONT, size: BODY_PT * 2, language: LANG }, paragraph: { wordWrap: true, widowControl: true } } }, // 줄바꿈 단위 속성. 라이브러리는 0(단어 중간 끊기 허용)만 쓰므로 gen/postfix.py가 1(어절 단위)로 바꿈
     paragraphStyles: [
       { id: "TableCaption", name: "TableCaption", basedOn: "Normal", next: "Normal", run: { size: 19, bold: true, font: FONT } },
       { id: "FigureCaption", name: "FigureCaption", basedOn: "Normal", next: "Normal", run: { size: 19, bold: true, font: FONT } },

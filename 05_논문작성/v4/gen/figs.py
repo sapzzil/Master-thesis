@@ -2,9 +2,10 @@
 import pandas as pd, numpy as np, matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt, koreanize_matplotlib
 from scipy import stats
-T="/mnt/user-data/uploads/논문/04_실험코드/results_v4/tables/"
+import pathlib; _R=pathlib.Path(__file__).resolve().parents[3]
+T=str(_R/"04_실험코드/results_v4/tables")+"/"
 S="/tmp/claude-0/-home-claude/fa74dbd6-df2f-598d-89dd-28a1a0c58d47/scratchpad/"
-F=S+"draft/figs/"
+F=str(_R/"05_논문작성/v4/figs")+"/"
 NM={"chronos_t5_base":"Chronos-T5","chronos2":"Chronos-2","timesfm25":"TimesFM-2.5","moirai2":"Moirai-2","rw":"과거변동(RW)","garch_t":"GARCH-t","oracle":"오라클 모형"}
 COL={"chronos_t5_base":"#7f7f7f","chronos2":"#1f77b4","timesfm25":"#d62728","moirai2":"#2ca02c"}
 ORD=["chronos_t5_base","chronos2","timesfm25","moirai2","rw","garch_t","oracle"]
@@ -78,7 +79,7 @@ fig.tight_layout(); fig.savefig(F+"fig5_2_H6손실.png"); plt.close()
 E1=pd.read_pickle(S+"econ/out/E1_curves.pkl"); E2=pd.read_pickle(S+"econ/out/E2_ports.pkl")
 fig,axs=plt.subplots(1,2,figsize=(12,4.3),sharey=True)
 def cum(r): return np.cumprod(1+r.values), r.index
-for key,ax,title in [(None,axs[0],"① 방향 매매 (비용 반영)"),(1,axs[1],"② 비중 조절 (보정 구간, 비용 반영)")]:
+for key,ax,title in [(None,axs[0],"방향 매매 (비용 반영)"),(1,axs[1],"비중 조절 (보정 구간, 비용 반영)")]:
     if key is None:
         for nm,r in E1.items():
             if nm=="계속 보유": continue

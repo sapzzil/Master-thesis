@@ -4,8 +4,7 @@
 
 > Kim, Seungmin
 > Dept. of Artificial Intelligence Convergence
-> Graduate School of
-> Hanyang University
+> Graduate School of Hanyang University
 
 Time series foundation models (TSFMs) produce prediction intervals without task-specific training, but whether these intervals keep their nominal coverage on financial returns has not been systematically tested. This thesis diagnoses whether miscoverage of TSFM 80% intervals stems from financial stylized facts or from the model and its usage settings, evaluates performance on real equities, and tests whether a training-free post-hoc calibration can restore coverage.
 
