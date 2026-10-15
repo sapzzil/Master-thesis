@@ -41,7 +41,7 @@ def para(title, page, lvl, width, plain=False):
     font = '<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="바탕" w:cs="Times New Roman"/><w:sz w:val="21"/><w:szCs w:val="21"/>'
     b = "<w:b/>" if lvl == 1 and not plain else ""
     return (f'<w:p><w:pPr><w:tabs><w:tab w:val="right" w:leader="dot" w:pos="{width}"/></w:tabs>'
-            f'<w:spacing w:after="{20 if plain else 60}" w:line="{264 if plain else 300}" w:lineRule="auto"/><w:ind w:left="{ind}" w:right="400" w:hanging="0"/></w:pPr>'
+            f'<w:spacing w:before="{160 if (lvl == 1 and not plain) else 0}" w:after="{20 if plain else 40}" w:line="{264 if plain else 300}" w:lineRule="auto"/><w:ind w:left="{ind}" w:right="400" w:hanging="0"/></w:pPr>'
             f'<w:r><w:rPr>{font}{b}</w:rPr><w:t xml:space="preserve">{escape(title)}</w:t></w:r>'
             f'<w:r><w:rPr>{font}</w:rPr><w:tab/><w:t>{escape(page)}</w:t></w:r></w:p>')
 

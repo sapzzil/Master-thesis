@@ -70,6 +70,11 @@ function runs(text, base = {}) {
   return out;
 }
 
+// 제목처럼 줄을 지정해 나눠야 하는 곳: <br>에서 줄바꿈(같은 문단 안)
+function brRuns(text, base = {}) {
+  return text.split(/<br>/i).flatMap((sg, k) => (k ? [new TextRun({ break: 1 }), ...runs(sg, base)] : runs(sg, base)));
+}
+
 function pngSize(file) {
   const b = fs.readFileSync(file);
   return { w: b.readUInt32BE(16), h: b.readUInt32BE(20), data: b };
@@ -163,10 +168,15 @@ function makeTable(lines, keepLast = false, tno = "") {
         children: runs(nb(sg, j, isHead ? 0 : 1), { size, bold: isHead || undefined }),
       })),
     });
+  // 본문 행 높이 통일: 칸마다 필요한 줄 수를 추정해 가장 많은 줄 수에 모든 행을 맞춤(atLeast라 더 필요하면 늘어남)
+  const mar = tight ? 56 : 100;
+  const cellLines = (t, j) => segs(t).reduce((a, sg) => a + Math.max(1, Math.ceil((vis(sg) * unit() * 1.02) / Math.max(widths[j] - mar, 200))), 0);
+  const maxLines = Math.max(1, ...body.map((r) => Math.max(...header.map((_, j) => cellLines(r[j] || "", j)))));
+  const rowH = Math.round(maxLines * size * 12 + 80);
   const rows = [
     new TableRow({ tableHeader: true, cantSplit: true, children: header.map((h, j) => mkCell(h, j, true, false)) }),
     ...body.map((r, i) => new TableRow({
-      cantSplit: true,
+      cantSplit: true, height: { value: rowH, rule: "atLeast" },
       children: header.map((_, j) => mkCell(r[j] || "", j, false, i === body.length - 1)),
     })),
   ];
@@ -187,17 +197,19 @@ function bodyPara(text, opts = {}) {
 const titleKids = [], frontKids = [], bodyKids = [];
 let children = PLAIN ? bodyKids : titleKids;
 
+// 부제 앞뒤의 줄표(- … -)가 줄 끝·줄 머리에 홀로 떨어지지 않게 붙임
+const nbDash = (t) => t.replace(/^- /, "-\u00A0").replace(/ -$/, "\u00A0-");
 function addTitlePage(lines) {
   // 양식 1(표지): 석사학위논문 16pt / 국문 제목·부제 / 영문 제목·부제 (20pt 내외) / 성명 16pt / 대학원 16pt / 학위수여 연월 16pt
-  const P = (t, size, o = {}) => titleKids.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: o.before || 0, after: o.after || 120, line: Math.round(size * 10 * 1.5), lineRule: "atLeast" }, children: runs(t, { size, bold: o.bold }) }));
+  const P = (t, size, o = {}) => titleKids.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: o.before || 0, after: o.after || 120, line: Math.round(size * 10 * 1.5), lineRule: "atLeast" }, children: brRuns(t, { size, bold: o.bold }) }));
   const L = lines.filter((l) => l.trim() && l.trim() !== "---");
   let stage = 0;
   for (const l of L) {
     let m;
-    if ((m = l.match(/^# (.*)/))) P(m[1], 40, { bold: true, before: 1700, after: 160 });
-    else if ((m = l.match(/^## (.*)/))) P(m[1], 30, { after: 600 });
+    if ((m = l.match(/^# (.*)/))) P(m[1], 36, { bold: true, before: 1200, after: 160 }); // 국문 제목 18pt(양식: 20pt 내외), 콜론 뒤에서 줄바꿈
+    else if ((m = l.match(/^## (.*)/))) P(nbDash(m[1]), 28, { after: 600 });
     else if ((m = l.match(/^### (.*)/))) P(m[1], 30, { bold: true, after: 160 });
-    else if ((m = l.match(/^#### (.*)/))) P(m[1], 24, { after: 2200 });
+    else if ((m = l.match(/^#### (.*)/))) P(nbDash(m[1]), 22, { after: 1400 });
     else { P(l.trim(), 32, { bold: stage === 0, before: stage === 0 ? 600 : 0, after: stage === 0 ? 0 : 480 }); stage++; }
   }
   // 차례(양식 4: 그림·표 차례 포함). 쪽 번호는 Word에서 열 때 필드 갱신으로 채워짐
@@ -248,7 +260,7 @@ function processFile(file) {
       const lvl = m[1].length;
       if (isAbs && lvl === 3) {
         // 양식 7: ABSTRACT 아래 영문 제목(13pt, 진하게)
-        children.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 360, line: 300 }, children: runs(m[2], { size: 26, bold: true }) }));
+        children.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 360, line: 300 }, children: brRuns(m[2], { size: 26, bold: true }) }));
         i++; continue;
       }
       const h = [HeadingLevel.HEADING_1, HeadingLevel.HEADING_2, HeadingLevel.HEADING_3][lvl - 1];
@@ -347,6 +359,9 @@ const doc = new Document({
     paragraphStyles: [
       { id: "TableCaption", name: "TableCaption", basedOn: "Normal", next: "Normal", run: { size: 19, bold: true, font: FONT } },
       { id: "FigureCaption", name: "FigureCaption", basedOn: "Normal", next: "Normal", run: { size: 19, bold: true, font: FONT } },
+      { id: "TOC1", name: "toc 1", basedOn: "Normal", next: "Normal", paragraph: { spacing: { before: 160, after: 40 } }, run: { size: 21 } },
+      { id: "TOC2", name: "toc 2", basedOn: "Normal", next: "Normal", paragraph: { spacing: { before: 0, after: 40 }, indent: { left: 300 } }, run: { size: 21 } },
+      { id: "TOC3", name: "toc 3", basedOn: "Normal", next: "Normal", paragraph: { spacing: { before: 0, after: 40 }, indent: { left: 600 } }, run: { size: 21 } },
       { id: "Heading1", name: "Heading 1", basedOn: "Normal", next: "Normal", quickFormat: true,
         run: { size: 32, bold: true, font: FONT }, paragraph: { alignment: AlignmentType.CENTER, spacing: { before: 0, after: 480 }, outlineLevel: 0 } },
       { id: "Heading2", name: "Heading 2", basedOn: "Normal", next: "Normal", quickFormat: true,
