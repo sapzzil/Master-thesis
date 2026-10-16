@@ -6,7 +6,7 @@ const path = require("path");
 const {
   Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell,
   WidthType, BorderStyle, ShadingType, ImageRun, TableOfContents, Footer, PageNumber, LevelFormat,
-  VerticalAlign, TableLayoutType,
+  VerticalAlign, TableLayoutType, HeightRule,
 } = require("docx");
 
 const V = path.resolve(__dirname, "..");
@@ -28,14 +28,14 @@ const PAGE = PLAIN
   ? { w: 11906, h: 16838, top: Math.round(25 * MM), bottom: Math.round(25 * MM), lr: Math.round(25 * MM), hf: Math.round(12 * MM) }
   : { w: 11906, h: 16838, top: Math.round(40 * MM), bottom: Math.round(40 * MM), lr: Math.round(35 * MM), hf: Math.round(15 * MM) };
 const TEXT_W = PAGE.w - 2 * PAGE.lr;
-const FONT = { ascii: "Times New Roman", hAnsi: "Times New Roman", eastAsia: "바탕", cs: "Times New Roman" };
-const BODY_PT = 10.5, LINE = 384; // 160%
+const FONT = { ascii: "굴림체", hAnsi: "굴림체", eastAsia: "굴림체", cs: "굴림체" }; // 작성요령(한글 프로그램 기준 글씨체를 Word에 준용): 영문·숫자까지 굴림체로 통일(사용자 지정)
+const BODY_PT = PLAIN ? 10.5 : 11, LINE = 384; // 160%. 본문 11pt(작성요령: 10 또는 11pt). 요약본은 학위논문 양식 대상이 아니므로 10.5pt 유지
 // 언어: 한글을 한국어(ko-KR)로 지정해야 Word가 한국어 줄바꿈 규칙(어절 단위)을 적용함.
 // 지정이 없으면 동아시아 문자를 중국어·일본어처럼 글자 단위로 끊을 수 있음
 const LANG = { value: "en-US", eastAsia: "ko-KR" };
 
 // 인라인 서식: **굵게**, *기울임*, `코드`(백틱 제거, 고정폭), 아래첨자 x_{t+1}·x_t (기호 제거 후 실제 아래첨자)
-const MONO = { ascii: "Consolas", hAnsi: "Consolas", eastAsia: "바탕", cs: "Consolas" };
+const MONO = FONT; // 코드 표기도 같은 글꼴로 통일
 function subRuns(text, opt) {
   // 아래첨자 표기를 찾아 일반/아래첨자 조각으로 나눔. 중괄호 안의 중첩 표기(σ_{S_t})는 기호만 지우고 모두 아래첨자
   const out = [];
@@ -85,7 +85,7 @@ const thick = { style: BorderStyle.SINGLE, size: 12, color: "000000" };
 const none = { style: BorderStyle.NONE, size: 0, color: "FFFFFF" };
 
 // 표별 추가 설정(표 번호 기준): equal = 너비를 같게 맞출 열, wide = 남는 폭을 더 받을 열(0부터 셈)
-const TABLE_OPTS = { "3-4": { equal: [1, 2] }, "3-7": { wide: [4] }, "4-4": { keep: [9] } }; // keep = 늘 한 줄로 둘 열
+const TABLE_OPTS = { "3-4": { equal: [1, 2] }, "3-7": { wide: [4] }, "4-4": { keep: [9] }, "7-1": { wide: [2] } }; // keep = 늘 한 줄로 둘 열
 function makeTable(lines, keepLast = false, tno = "") {
   const topt = TABLE_OPTS[tno] || {};
   const parse = (l) => l.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map((c) => c.trim());
@@ -187,7 +187,7 @@ function bodyPara(text, opts = {}) {
   return new Paragraph({
     alignment: AlignmentType.JUSTIFIED,
     spacing: { line: LINE, before: 0, after: opts.compact ? 0 : 120 },
-    indent: opts.noIndent ? undefined : { firstLine: 200 },
+    indent: opts.noIndent ? undefined : { firstLine: Math.round(BODY_PT * 20) }, // 문단 시작 2칸(공백 2개 ≈ 한 글자 폭)
     keepNext: opts.keepNext, widowControl: true,
     children: runs(text, { size: BODY_PT * 2 }),
   });
@@ -200,18 +200,35 @@ let children = PLAIN ? bodyKids : titleKids;
 // 부제 앞뒤의 줄표(- … -)가 줄 끝·줄 머리에 홀로 떨어지지 않게 붙임
 const nbDash = (t) => t.replace(/^- /, "-\u00A0").replace(/ -$/, "\u00A0-");
 function addTitlePage(lines) {
-  // 양식 1(표지): 석사학위논문 16pt / 국문 제목·부제 / 영문 제목·부제 (20pt 내외) / 성명 16pt / 대학원 16pt / 학위수여 연월 16pt
-  const P = (t, size, o = {}) => titleKids.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: o.before || 0, after: o.after || 120, line: Math.round(size * 10 * 1.5), lineRule: "atLeast" }, children: brRuns(t, { size, bold: o.bold }) }));
+  // 양식 1(표지, 제본 후 B5 기준 치수): 위에서 2cm 석사학위논문(16pt) → 3cm → 국문 제목·부제, 영문 제목·부제(20pt 내외)
+  // … 성명(16pt) → 3.5cm → 대학원(16pt) → 3cm → 학위수여 연월(16pt) → 아래 2cm.
+  // A4 편집 시 위·아래 여백(4cm)이 B5의 2cm에 해당하므로, 첫 줄은 본문 영역 맨 위, 연월은 본문 영역 맨 아래에 둔다.
+  // 아래 묶음(성명~연월)은 위 묶음 길이와 무관하게 바닥에 붙도록, 테두리 없는 2행 표의 둘째 행에 넣는다.
+  const CM = 567;
+  const para = (t, size, o = {}) => new Paragraph({ alignment: AlignmentType.CENTER,
+    spacing: { before: o.before || 0, after: 0, line: Math.round(size * 10 * 1.5), lineRule: "exact" }, children: brRuns(t, { size, bold: o.bold }) });
   const L = lines.filter((l) => l.trim() && l.trim() !== "---");
+  const top = [], bottom = [];
   let stage = 0;
   for (const l of L) {
     let m;
-    if ((m = l.match(/^# (.*)/))) P(m[1], 36, { bold: true, before: 1200, after: 160 }); // 국문 제목 18pt(양식: 20pt 내외), 콜론 뒤에서 줄바꿈
-    else if ((m = l.match(/^## (.*)/))) P(nbDash(m[1]), 28, { after: 600 });
-    else if ((m = l.match(/^### (.*)/))) P(m[1], 30, { bold: true, after: 160 });
-    else if ((m = l.match(/^#### (.*)/))) P(nbDash(m[1]), 22, { after: 1400 });
-    else { P(l.trim(), 32, { bold: stage === 0, before: stage === 0 ? 600 : 0, after: stage === 0 ? 0 : 480 }); stage++; }
+    if ((m = l.match(/^# (.*)/))) top.push(para(m[1], 34, { bold: true, before: 3 * CM })); // 국문 제목 17pt(양식: 20pt 내외). 굴림체(한글 1em·공백 0.5em)에서 첫 줄이 본문 폭 14cm 안에 들도록
+    else if ((m = l.match(/^## (.*)/))) top.push(para(nbDash(m[1]), 26, { before: 120 })); // 국문 부제 13pt(굴림체에서 한 줄)
+    else if ((m = l.match(/^### (.*)/))) top.push(para(m[1], 28, { bold: true, before: 700 })); // 영문 제목 14pt
+    else if ((m = l.match(/^#### (.*)/))) top.push(para(nbDash(m[1]), 22, { before: 120 }));
+    else if (stage === 0) { top.push(para(l.trim(), 32)); stage++; } // 석사학위논문
+    else { bottom.push(para(l.trim(), 32, { before: stage === 1 ? 0 : stage === 2 ? Math.round(3.5 * CM) - 160 : 3 * CM - 160 })); stage++; }
   }
+  const textH = PAGE.h - PAGE.top - PAGE.bottom;
+  const bottomH = 3 * 480 + Math.round(3.5 * CM) - 160 + 3 * CM - 160;
+  const none = { style: BorderStyle.NONE, size: 0, color: "FFFFFF" };
+  const nb = { top: none, bottom: none, left: none, right: none, insideHorizontal: none, insideVertical: none };
+  const cell = (kids) => new TableCell({ children: kids, borders: { top: none, bottom: none, left: none, right: none },
+    margins: { top: 0, bottom: 0, left: 0, right: 0 }, width: { size: TEXT_W, type: WidthType.DXA } });
+  titleKids.push(new Table({ width: { size: TEXT_W, type: WidthType.DXA }, columnWidths: [TEXT_W], borders: nb, layout: TableLayoutType.FIXED,
+    rows: [new TableRow({ height: { value: textH - bottomH - 200, rule: HeightRule.ATLEAST }, cantSplit: true, children: [cell(top)] }),
+           new TableRow({ cantSplit: true, children: [cell(bottom)] })] }));
+  titleKids.push(new Paragraph({ spacing: { before: 0, after: 0, line: 20, lineRule: "exact" }, children: [new TextRun({ text: "", size: 2 })] })); // 표 뒤 필수 문단(빈 쪽 방지)
   // 차례(양식 4: 그림·표 차례 포함). 쪽 번호는 Word에서 열 때 필드 갱신으로 채워짐
   const tocHead = (t) => frontKids.push(new Paragraph({ pageBreakBefore: frontKids.length > 0, alignment: AlignmentType.CENTER, spacing: { after: 480 }, children: runs(t, { size: 32, bold: true }) }));
   tocHead("차 례");
