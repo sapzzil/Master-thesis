@@ -263,6 +263,11 @@ function processFile(file) {
         children.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 360, line: 300 }, children: brRuns(m[2], { size: 26, bold: true }) }));
         i++; continue;
       }
+      if (lvl === 2 && !PLAIN && /^[A-Z]\.\d/.test(m[2])) {
+        // 부록 A.1 등: 본문 모양은 절 제목과 같게, 차례에서는 한 단계 더 들여쓰도록 제목 3 수준으로 둠
+        children.push(new Paragraph({ heading: HeadingLevel.HEADING_3, keepNext: true, spacing: { before: 360, after: 160 }, children: brRuns(m[2], { size: 26, bold: true }) }));
+        i++; continue;
+      }
       const h = [HeadingLevel.HEADING_1, HeadingLevel.HEADING_2, HeadingLevel.HEADING_3][lvl - 1];
       children.push(new Paragraph({ heading: h, pageBreakBefore: lvl === 1 && !PLAIN && children.length > 0, keepNext: true, children: runs(m[2]) }));
       i++; continue;

@@ -33,7 +33,8 @@ def lo_entries(docx, pdf=None):
 
 def level(t):
     if re.match(r"^\d+\.\d+\.\d+", t): return 3
-    if re.match(r"^(\d+|[A-Z])\.\d+", t): return 2
+    if re.match(r"^[A-Z]\.\d+", t): return 3  # 부록 A.1 등은 한 단계 더 들여씀
+    if re.match(r"^\d+\.\d+", t): return 2
     return 1
 
 def para(title, page, lvl, width, plain=False):
