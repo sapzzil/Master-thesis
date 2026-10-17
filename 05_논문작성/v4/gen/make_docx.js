@@ -28,7 +28,8 @@ const PAGE = PLAIN
   ? { w: 11906, h: 16838, top: Math.round(25 * MM), bottom: Math.round(25 * MM), lr: Math.round(25 * MM), hf: Math.round(12 * MM) }
   : { w: 11906, h: 16838, top: Math.round(40 * MM), bottom: Math.round(40 * MM), lr: Math.round(35 * MM), hf: Math.round(15 * MM) };
 const TEXT_W = PAGE.w - 2 * PAGE.lr;
-const FONT = { ascii: "굴림체", hAnsi: "굴림체", eastAsia: "굴림체", cs: "굴림체" }; // 작성요령(한글 프로그램 기준 글씨체를 Word에 준용): 영문·숫자까지 굴림체로 통일(사용자 지정)
+const FONT = { ascii: "바탕", hAnsi: "바탕", eastAsia: "바탕", cs: "바탕" }; // 작성요령(한글 프로그램 기준 글씨체를 Word에 준용): 본문은 영문·숫자까지 바탕
+const TFONT = { ascii: "굴림", hAnsi: "굴림", eastAsia: "굴림", cs: "굴림" }; // 표 안 글자는 굴림(본문과 구분)
 const BODY_PT = PLAIN ? 10.5 : 11, LINE = 384; // 160%. 본문 11pt(작성요령: 10 또는 11pt). 요약본은 학위논문 양식 대상이 아니므로 10.5pt 유지
 // 언어: 한글을 한국어(ko-KR)로 지정해야 Word가 한국어 줄바꿈 규칙(어절 단위)을 적용함.
 // 지정이 없으면 동아시아 문자를 중국어·일본어처럼 글자 단위로 끊을 수 있음
@@ -165,7 +166,7 @@ function makeTable(lines, keepLast = false, tno = "") {
         alignment: !isHead && leftCol[j] ? AlignmentType.LEFT : AlignmentType.CENTER,
         spacing: { line: 240, before: 0, after: 0 },
         keepNext: !isLast || keepLast, keepLines: true, wordWrap: true,
-        children: runs(nb(sg, j, isHead ? 0 : 1), { size, bold: isHead || undefined }),
+        children: runs(nb(sg, j, isHead ? 0 : 1), { size, bold: isHead || undefined, font: TFONT }),
       })),
     });
   // 본문 행 높이 통일: 칸마다 필요한 줄 수를 추정해 가장 많은 줄 수에 모든 행을 맞춤(atLeast라 더 필요하면 늘어남)
@@ -212,9 +213,9 @@ function addTitlePage(lines) {
   let stage = 0;
   for (const l of L) {
     let m;
-    if ((m = l.match(/^# (.*)/))) top.push(para(m[1], 34, { bold: true, before: 3 * CM })); // 국문 제목 17pt(양식: 20pt 내외). 굴림체(한글 1em·공백 0.5em)에서 첫 줄이 본문 폭 14cm 안에 들도록
-    else if ((m = l.match(/^## (.*)/))) top.push(para(nbDash(m[1]), 26, { before: 120 })); // 국문 부제 13pt(굴림체에서 한 줄)
-    else if ((m = l.match(/^### (.*)/))) top.push(para(m[1], 28, { bold: true, before: 700 })); // 영문 제목 14pt
+    if ((m = l.match(/^# (.*)/))) top.push(para(m[1], 36, { bold: true, before: 3 * CM })); // 국문 제목 18pt(양식: 20pt 내외), 콜론 뒤에서 줄바꿈
+    else if ((m = l.match(/^## (.*)/))) top.push(para(nbDash(m[1]), 28, { before: 120 })); // 국문 부제 14pt
+    else if ((m = l.match(/^### (.*)/))) top.push(para(m[1], 28, { bold: true, before: 600 })); // 영문 제목 14pt(바탕 영문 폭이 넓어 아래 묶음과 겹치지 않게)
     else if ((m = l.match(/^#### (.*)/))) top.push(para(nbDash(m[1]), 22, { before: 120 }));
     else if (stage === 0) { top.push(para(l.trim(), 32)); stage++; } // 석사학위논문
     else { bottom.push(para(l.trim(), 32, { before: stage === 1 ? 0 : stage === 2 ? Math.round(3.5 * CM) - 160 : 3 * CM - 160 })); stage++; }
