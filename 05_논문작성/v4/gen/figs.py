@@ -96,7 +96,7 @@ for key,ax,title in [(None,axs[0],"방향 매매 (비용 반영)"),(1,axs[1],"�
 axs[0].set_ylabel("누적 배수 (로그 눈금, 시작 = 1)")
 h=[Line2D([],[],color=c,label=NM[m]) for m,c in COL.items()]+[Line2D([],[],color="k",ls="--",lw=1.6,label="과거변동(RW) 1년"),Line2D([],[],color="goldenrod",lw=2,label="계속 보유")]
 fig.legend(handles=h,loc="lower center",ncol=6,frameon=False,fontsize=8)
-fig.tight_layout(rect=(0,.07,1,1)); fig.savefig(F+"fig5_3_경제적가치.png"); plt.close()
+fig.tight_layout(rect=(0,.07,1,1)); fig.savefig(F+"fig5_4_경제적가치.png"); plt.close()
 # Fig 6-1 calibration dumbbell (real) + synthetic range
 t4=pd.read_csv(T+"T4_H5_synth.csv"); rows=CO[:19][::-1]
 fig,axs=plt.subplots(1,2,figsize=(12,6),sharey=True)

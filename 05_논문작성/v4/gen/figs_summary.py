@@ -42,4 +42,6 @@ from matplotlib.lines import Line2D
 axs[1].legend(handles=[Line2D([],[],color=c,marker="s",ls="",label=NM[m]) for m,c in COL.items()],fontsize=7.5,loc="upper left")
 axs[1].text(88.5,75,"● 가격 입력  ▲ 수익률 입력\n점선 = 합성과 실제가 같음",ha="right",fontsize=7.5,color="#555")
 fig.suptitle("특성이 하나도 없는 합성 데이터의 커버리지가 실제 주가 커버리지를 거의 그대로 예측한다 (Chronos-T5 수익률 제외 17개 평균 차이 1.0%p)",fontsize=9.5)
-fig.tight_layout(); fig.savefig(F+"figS3_합성L1_vs_실제.png"); plt.close(); print("ok")
+fig.tight_layout(); fig.savefig(F+"figS3_합성L1_vs_실제.png")
+# 본문(그림 5-3)용: 그림 안 제목 없이 같은 그림을 저장(설명은 그림 제목으로)
+fig._suptitle.set_visible(False); fig.tight_layout(); fig.savefig(F+"fig5_3_합성L1_vs_실제.png"); plt.close(); print("ok")
