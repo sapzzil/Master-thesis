@@ -6,7 +6,7 @@ const path = require("path");
 const {
   Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell,
   WidthType, BorderStyle, ShadingType, ImageRun, TableOfContents, Footer, PageNumber, LevelFormat,
-  VerticalAlign, TableLayoutType, HeightRule,
+  VerticalAlign, TableLayoutType, HeightRule, Tab, TabStopType,
 } = require("docx");
 
 const V = path.resolve(__dirname, "..");
@@ -38,22 +38,24 @@ const LANG = { value: "en-US", eastAsia: "ko-KR" };
 // 인라인 서식: **굵게**, *기울임*, `코드`(백틱 제거, 고정폭), 아래첨자 x_{t+1}·x_t (기호 제거 후 실제 아래첨자)
 const MONO = FONT; // 코드 표기도 같은 글꼴로 통일
 function subRuns(text, opt) {
-  // 아래첨자 표기를 찾아 일반/아래첨자 조각으로 나눔. 중괄호 안의 중첩 표기(σ_{S_t})는 기호만 지우고 모두 아래첨자
+  // 아래첨자(_x, _{…})와 위첨자(^{…})를 찾아 조각으로 나눔. 중괄호 안의 중첩 표기(σ_{S_t})는 기호만 지우고 모두 아래첨자
   const out = [];
-  const re = /_\{((?:[^{}]|\{[^{}]*\})*)\}|_([A-Za-z0-9ν]+)/g;
+  const re = /_\{((?:[^{}]|\{[^{}]*\})*)\}|_([A-Za-z0-9ν]+)|\^\{((?:[^{}]|\{[^{}]*\})*)\}/g;
   let last = 0, m;
   while ((m = re.exec(text)) !== null) {
-    // 앞 글자가 문자·기호(변수)일 때만 아래첨자로 봄 (파일명 등 일반 밑줄 제외)
     const prev = text[m.index - 1] || "";
-    if (!/[A-Za-zͰ-Ͽ²)]/.test(prev)) continue;
+    const isSup = m[3] !== undefined;
+    // 아래첨자는 앞 글자가 변수·기호일 때만 (파일명 등 일반 밑줄 제외)
+    if (!isSup && !/[A-Za-zͰ-Ͽ²)\]∫Σ̂]/.test(prev)) continue;
     if (m.index > last) out.push(new TextRun({ text: text.slice(last, m.index), ...opt }));
-    const sub = (m[1] !== undefined ? m[1] : m[2]).replace(/_\{?|\}/g, "");
-    out.push(new TextRun({ text: sub, subScript: true, ...opt }));
+    if (isSup) out.push(new TextRun({ text: m[3].replace(/_\{?|\}/g, ""), superScript: true, ...opt }));
+    else out.push(new TextRun({ text: (m[1] !== undefined ? m[1] : m[2]).replace(/_\{?|\}/g, ""), subScript: true, ...opt }));
     last = m.index + m[0].length;
   }
   if (last < text.length) out.push(new TextRun({ text: text.slice(last), ...opt }));
   return out;
 }
+
 function runs(text, base = {}) {
   const out = [];
   const re = /(`[^`]+`|\*\*[^*]+\*\*|\*[^*\s][^*]*\*)/g;
@@ -288,6 +290,14 @@ function processFile(file) {
       }
       const h = [HeadingLevel.HEADING_1, HeadingLevel.HEADING_2, HeadingLevel.HEADING_3][lvl - 1];
       children.push(new Paragraph({ heading: h, pageBreakBefore: lvl === 1 && !PLAIN && children.length > 0, keepNext: true, children: runs(m[2]) }));
+      i++; continue;
+    }
+    if ((m = l.match(/^\$\$\s*(.+?)\s*\$\$\s*(\(\d+\.\d+\))?\s*$/))) {
+      // 수식 줄: 가운데 정렬, 수식 번호는 오른쪽 끝
+      const kids = [new TextRun({ children: [new Tab()], font: FONT }), ...subRuns(m[1], { font: FONT, language: LANG, size: BODY_PT * 2 })];
+      if (m[2]) kids.push(new TextRun({ children: [new Tab(), m[2]], font: FONT, size: BODY_PT * 2 }));
+      children.push(new Paragraph({ tabStops: [{ type: TabStopType.CENTER, position: Math.round(TEXT_W / 2) }, { type: TabStopType.RIGHT, position: TEXT_W }],
+        spacing: { before: 120, after: 120, line: 300 }, keepLines: true, children: kids }));
       i++; continue;
     }
     if (l.startsWith("|")) {
