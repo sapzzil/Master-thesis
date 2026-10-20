@@ -3,7 +3,7 @@ import pandas as pd, numpy as np, matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt, koreanize_matplotlib
 from scipy import stats
 import pathlib; _R=pathlib.Path(__file__).resolve().parents[3]
-T=str(_R/"04_실험코드/results_v4/tables")+"/"
+T=str(_R/"04_실험코드/results_v4_t5fix/tables")+"/"   # 95차: 본문 기준 결과
 S="/tmp/claude-0/-home-claude/fa74dbd6-df2f-598d-89dd-28a1a0c58d47/scratchpad/"
 F=str(_R/"05_논문작성/v4/figs")+"/"
 NM={"chronos_t5_base":"Chronos-T5","chronos2":"Chronos-2","timesfm25":"TimesFM-2.5","moirai2":"Moirai-2","rw":"과거변동(RW)","garch_t":"GARCH-t","oracle":"오라클 모형"}
@@ -72,11 +72,11 @@ for i,(m,L,k) in enumerate(rows):
     ax.barh(i,v,color=COL[m],alpha=.85 if r.p_holm<.05 else .35)
     ax.text(v-0.4 if v<0 else v+0.3,i,f"{v:+.1f}",va="center",ha="right" if v<0 else "left",fontsize=7)
 ax.axvline(0,color="k",lw=1); ax.axvspan(-2,2,color="gray",alpha=.1)
-ax.set_yticks(range(len(rows))); ax.set_yticklabels([lab(*c) for c in rows],fontsize=7.5); ax.set_xlim(-22,5)
+ax.set_yticks(range(len(rows))); ax.set_yticklabels([lab(*c) for c in rows],fontsize=7.5); ax.set_xlim(-12,4)
 ax.set_xlabel("과거변동(RW, 같은 과거 길이) 대비 분위수 손실 개선 % (오른쪽 = TSFM이 나음)\n진한 막대 = Holm 보정 유의, 옅은 막대 = 유의하지 않음, 회색 띠 = 실질 기준 ±2%")
 fig.tight_layout(); fig.savefig(F+"fig5_2_H6손실.png"); plt.close()
 # Fig 5-3 econ
-E1=pd.read_pickle(S+"econ/out/E1_curves.pkl"); E2=pd.read_pickle(S+"econ/out/E2_ports.pkl")
+E1=pd.read_pickle(str(_R/"04_실험코드/results_v4_t5fix_econ/E1_curves.pkl")); E2=pd.read_pickle(str(_R/"04_실험코드/results_v4_t5fix_econ/E2_ports.pkl"))
 fig,axs=plt.subplots(1,2,figsize=(12,4.3),sharey=True)
 def cum(r): return np.cumprod(1+r.values), r.index
 for key,ax,title in [(None,axs[0],"방향 매매 (비용 반영)"),(1,axs[1],"비중 조절 (보정 구간, 비용 반영)")]:
@@ -110,7 +110,7 @@ for i,(m,L,k) in enumerate(rows):
         ax.plot([100*b0,100*b1],[i,i],color=col,lw=5,alpha=.3,solid_capstyle="butt"); ax.plot([100*c0,100*c1],[i,i],color=col,lw=5,solid_capstyle="butt")
         ax.plot(x0,i,"o",mfc="white",mec=col,ms=4); ax.plot(x1,i,"o",color=col,ms=4)
 for ax,t in zip(axs,["합성 17개 시나리오 (막대 = 시나리오 범위)","실제 10종목 (2017~2026)"]):
-    ax.axvline(80,color="k",lw=1); ax.axvspan(77,83,color="gray",alpha=.1); ax.set_title(t); ax.set_xlim(10,92)
+    ax.axvline(80,color="k",lw=1); ax.axvspan(77,83,color="gray",alpha=.1); ax.set_title(t); ax.set_xlim(70,92)
     ax.set_xlabel("커버리지 % (빈 점 = 보정 전, 찬 점 = 보정 후, 회색 띠 = 판정 범위 77~83%)")
 axs[0].set_yticks(range(len(rows))); axs[0].set_yticklabels([lab(*c) for c in rows],fontsize=7.5)
 fig.tight_layout(); fig.savefig(F+"fig6_1_보정전후.png"); plt.close()

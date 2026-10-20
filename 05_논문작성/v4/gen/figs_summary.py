@@ -2,7 +2,7 @@ import pandas as pd, numpy as np, matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt, koreanize_matplotlib
 from matplotlib.patches import FancyBboxPatch
 import pathlib; _R=pathlib.Path(__file__).resolve().parents[3]
-T=str(_R/"04_실험코드/results_v4/tables")+"/"
+T=str(_R/"04_실험코드/results_v4_t5fix/tables")+"/"
 F=str(_R/"05_논문작성/v4/figs")+"/"
 plt.rcParams.update({"figure.dpi":150,"font.size":9})
 # S1 design
@@ -28,20 +28,16 @@ a=t1[t1.scenario=="L1"].set_index(["model","L","input"])["cov"]; b=t6[t6.panel==
 j=pd.concat([a,b],axis=1,keys=["s","r"]).dropna()*100
 COL={"chronos_t5_base":"#7f7f7f","chronos2":"#1f77b4","timesfm25":"#d62728","moirai2":"#2ca02c","rw":"k","garch_t":"#9467bd"}
 NM={"chronos_t5_base":"Chronos-T5","chronos2":"Chronos-2","timesfm25":"TimesFM-2.5","moirai2":"Moirai-2","rw":"과거변동(RW)","garch_t":"GARCH-t"}
-fig,axs=plt.subplots(1,2,figsize=(10,4.3),gridspec_kw={"width_ratios":[1,1.35]})
-for ax,lim in [(axs[0],(0,100)),(axs[1],(74,90))]:
-    ax.plot(lim,lim,color="gray",lw=1,ls="--")
-    for (m,L,k),r in j.iterrows():
-        if not (lim[0]<=r.s<=lim[1]): continue
-        ax.scatter(r.s,r.r,color=COL[m],marker="o" if k=="price" else ("^" if m in COL and k=="return" else "o"),s=38,label=NM[m],edgecolor="white",lw=.5)
-    ax.set_xlim(*lim); ax.set_ylim(*lim); ax.set_xlabel("합성 L1(특성 없음) 커버리지 %"); ax.grid(alpha=.3)
-axs[0].set_ylabel("실제 10종목 커버리지 %"); axs[0].set_title("전체 (19개 모델·조건)")
-axs[1].axvspan(78,82,color="gray",alpha=.08); axs[1].axhspan(78,82,color="gray",alpha=.08)
-axs[1].set_title("확대 (Chronos-T5 수익률 제외 17개)")
+fig,ax=plt.subplots(figsize=(6.4,5.2)); lim=(73,90)
+ax.plot(lim,lim,color="gray",lw=1,ls="--"); ax.axvspan(78,82,color="gray",alpha=.08); ax.axhspan(78,82,color="gray",alpha=.08)
+for (m,L,k),r in j.iterrows():
+    ax.scatter(r.s,r.r,color=COL[m],marker="o" if k=="price" else "^",s=40,edgecolor="white",lw=.5)
+ax.set_xlim(*lim); ax.set_ylim(*lim); ax.set_xlabel("합성 L1(특성 없음) 커버리지 %"); ax.set_ylabel("실제 10종목 커버리지 %"); ax.grid(alpha=.3)
 from matplotlib.lines import Line2D
-axs[1].legend(handles=[Line2D([],[],color=c,marker="s",ls="",label=NM[m]) for m,c in COL.items()],fontsize=7.5,loc="upper left")
-axs[1].text(88.5,75,"● 가격 입력  ▲ 수익률 입력\n점선 = 합성과 실제가 같음",ha="right",fontsize=7.5,color="#555")
-fig.suptitle("특성이 하나도 없는 합성 데이터의 커버리지가 실제 주가 커버리지를 거의 그대로 예측한다 (Chronos-T5 수익률 제외 17개 평균 차이 1.0%p)",fontsize=9.5)
+ax.legend(handles=[Line2D([],[],color=c,marker="s",ls="",label=NM[m]) for m,c in COL.items()],fontsize=7.5,loc="upper left")
+ax.text(89.5,73.6,"● 가격 입력  ▲ 수익률 입력\n점선 = 합성과 실제가 같음, 음영 = 80% ± 2%p",ha="right",va="bottom",fontsize=7.5,color="#555",linespacing=1.6)
+md=(j.r-j.s).abs().mean()
+fig.suptitle(f"특성이 하나도 없는 합성 데이터의 커버리지가 실제 주가 커버리지를 거의 그대로 예측한다 (19개 평균 차이 {md:.1f}%p)",fontsize=8.5)
 fig.tight_layout(); fig.savefig(F+"figS3_합성L1_vs_실제.png")
 # 본문(그림 5-3)용: 그림 안 제목 없이 같은 그림을 저장(설명은 그림 제목으로)
 fig._suptitle.set_visible(False); fig.tight_layout(); fig.savefig(F+"fig5_3_합성L1_vs_실제.png"); plt.close(); print("ok")

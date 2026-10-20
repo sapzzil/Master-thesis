@@ -4,7 +4,7 @@
 사용: python 05_논문작성/v4/gen/build.py   (표를 다시 만들려면 먼저 gen/tables.py 실행)"""
 import re, subprocess, pathlib, pandas as pd
 V = pathlib.Path(__file__).resolve().parents[1]; R = V.parents[1]
-E = R / "04_실험코드/results_v4_econ"
+E = R / "04_실험코드/results_v4_t5fix_econ"
 tabs = {}
 for blk in (V / "gen/tables.md").read_text(encoding="utf-8").split("\n\n"):
     k, v = blk.split("\n", 1); tabs[k.strip()] = v
@@ -45,7 +45,7 @@ for t, out in [("05_제4장_template.md", "05_제4장_금융특성의_영향_v4.
     (V / out).write_text(s, encoding="utf-8")
 
 # 부록 B·C 생성
-T = R / "04_실험코드/results_v4/tables"
+T = R / "04_실험코드/results_v4_t5fix/tables"
 NM = {"chronos_t5_base": "Chronos-T5", "chronos2": "Chronos-2", "timesfm25": "TimesFM-2.5", "moirai2": "Moirai-2", "rw": "과거변동(RW)", "garch_t": "GARCH-t"}
 ORD = list(NM)
 def lab(m, L, k): return f"{NM[m]} | {'한 달' if L == 21 else '1년'}·{'수익률' if k == 'return' else '가격'}"

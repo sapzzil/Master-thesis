@@ -1,0 +1,4 @@
+{"model": "chronos_t5_base", "top_k": 4096, "L": 21, "input": "return", "dataset": "synth", "n": 136000, "sec": 1016.7, "batch_end": 32, "crossed_rate": 0.0, "nonfinite": 0, "coverage": 0.763610294117647, "finished": "2026-10-21 01:43:28"}
+{"model": "chronos_t5_base", "top_k": 4096, "L": 21, "input": "return", "dataset": "real", "n": 24132, "sec": 165.2, "batch_end": 32, "crossed_rate": 0.0, "nonfinite": 0, "coverage": 0.7796701475219625, "finished": "2026-10-21 01:46:14"}
+{"model": "chronos_t5_base", "top_k": 4096, "L": 252, "input": "return", "dataset": "synth", "n": 136000, "sec": 6888.8, "batch_end": 4, "crossed_rate": 0.0, "nonfinite": 0, "coverage": 0.7969926470588236, "finished": "2026-10-21 03:41:04"}
+{"model": "chronos_t5_base", "top_k": 4096, "L": 252, "input": "return", "dataset": "real", "n": 24132, "sec": 1123.2, "batch_end": 4, "crossed_rate": 0.0, "nonfinite": 0, "coverage": 0.7998508204873197, "finished": "2026-10-21 03:59:48"}

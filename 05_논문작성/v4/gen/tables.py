@@ -2,8 +2,8 @@
 import pandas as pd, numpy as np
 import pathlib
 _V=pathlib.Path(__file__).resolve().parents[1]; _R=_V.parents[1]
-T=str(_R/"04_실험코드/results_v4/tables")+"/"
-E=str(_R/"04_실험코드/results_v4_econ")+"/"
+T=str(_R/"04_실험코드/results_v4_t5fix/tables")+"/"   # 95차: Chronos-T5 top_k 해제 재실행 결과(본문 기준)
+E=str(_R/"04_실험코드/results_v4_t5fix_econ")+"/"
 NM={"chronos_t5_base":"Chronos-T5","chronos2":"Chronos-2","timesfm25":"TimesFM-2.5","moirai2":"Moirai-2","rw":"과거변동(RW)","garch_t":"GARCH-t","oracle":"오라클 모형"}
 ORD=["chronos_t5_base","chronos2","timesfm25","moirai2","rw","garch_t","oracle"]
 def lab(m,L,k):
