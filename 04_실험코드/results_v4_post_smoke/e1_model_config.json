@@ -1,0 +1,12 @@
+{
+ "n_tokens": 4096,
+ "tokenizer_kwargs": {
+  "low_limit": -15.0,
+  "high_limit": 15.0
+ },
+ "temperature": 1.0,
+ "top_k": 50,
+ "top_p": 1.0,
+ "num_samples": 20,
+ "context_length": 512
+}
