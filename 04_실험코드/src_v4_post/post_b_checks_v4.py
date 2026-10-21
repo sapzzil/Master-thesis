@@ -12,6 +12,8 @@ post_b_checks_v4.py — 추가 점검 b1~b3 (CPU, 새 예측 없음). 본문 표
 """
 from pathlib import Path
 
+from scipy import stats
+
 import numpy as np
 import pandas as pd
 
@@ -33,11 +35,11 @@ def b1():
     s, r = j["cov_syn"].to_numpy() * 100, j["cov_real"].to_numpy() * 100
     out = j[~((j.model == "timesfm25") & (j.L == 252) & (j.input == "price"))]
     s2, r2 = out["cov_syn"].to_numpy() * 100, out["cov_real"].to_numpy() * 100
-    res = pd.DataFrame([
-        {"set": "전체", "n": len(j), "corr": np.corrcoef(s, r)[0, 1], "mad_l1": np.abs(s - r).mean(),
-         "max_l1": np.abs(s - r).max(), "mad_80": np.abs(r - 80).mean()},
-        {"set": "TimesFM 1년·가격 제외", "n": len(out), "corr": np.corrcoef(s2, r2)[0, 1],
-         "mad_l1": np.abs(s2 - r2).mean(), "max_l1": np.abs(s2 - r2).max(), "mad_80": np.abs(r2 - 80).mean()}])
+    def row(name, a, b):
+        e1, e0 = np.abs(a - b), np.abs(b - 80)
+        return {"set": name, "n": len(a), "corr": np.corrcoef(a, b)[0, 1], "mad_l1": e1.mean(), "max_l1": e1.max(),
+                "mad_80": e0.mean(), "l1_closer": int((e1 < e0).sum()), "wilcoxon_p": stats.wilcoxon(e1, e0).pvalue}
+    res = pd.DataFrame([row("전체", s, r), row("TimesFM 1년·가격 제외", s2, r2)])
     res.to_csv(OUT / "b1_correspondence.csv", index=False, encoding="utf-8-sig")
     print("[b1]\n" + res.round(3).to_string(index=False))
 
