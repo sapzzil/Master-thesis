@@ -1,0 +1,9 @@
+﻿L,input,dataset,note
+21,price,real,행 수 다름 24132 vs 320
+21,price,synth,행 수 다름 136000 vs 4080
+21,return,real,행 수 다름 24132 vs 320
+21,return,synth,행 수 다름 136000 vs 4080
+252,price,real,행 수 다름 24132 vs 320
+252,price,synth,행 수 다름 136000 vs 4080
+252,return,real,행 수 다름 24132 vs 320
+252,return,synth,행 수 다름 136000 vs 4080
