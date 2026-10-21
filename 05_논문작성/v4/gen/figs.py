@@ -64,7 +64,7 @@ ax.axvline(80,color="k",lw=1); ax.axvspan(78,82,color="gray",alpha=.1)
 ax.set_yticks(range(len(rows))); ax.set_yticklabels([lab(*c) for c in rows],fontsize=7.5); ax.set_xlim(70,92)
 ax.set_xlabel("커버리지 % (점·막대 = 10종목 전체와 95% 구간, 옅은 띠 = 종목별 범위)")
 fig.tight_layout(); fig.savefig(F+"fig5_1_실제커버리지.png"); plt.close()
-# Fig 5-2 H6
+# Fig 5-2 H5(RW 대비 손실)
 t7=pd.read_csv(T+"T7_H6_real.csv"); rows=CO[:16][::-1]
 fig,ax=plt.subplots(figsize=(7.5,5.2))
 for i,(m,L,k) in enumerate(rows):
@@ -74,7 +74,7 @@ for i,(m,L,k) in enumerate(rows):
 ax.axvline(0,color="k",lw=1); ax.axvspan(-2,2,color="gray",alpha=.1)
 ax.set_yticks(range(len(rows))); ax.set_yticklabels([lab(*c) for c in rows],fontsize=7.5); ax.set_xlim(-12,4)
 ax.set_xlabel("과거변동(RW, 같은 과거 길이) 대비 분위수 손실 개선 % (오른쪽 = TSFM이 나음)\n진한 막대 = Holm 보정 유의, 옅은 막대 = 유의하지 않음, 회색 띠 = 실질 기준 ±2%")
-fig.tight_layout(); fig.savefig(F+"fig5_2_H6손실.png"); plt.close()
+fig.tight_layout(); fig.savefig(F+"fig5_2_RW손실.png"); plt.close()
 # Fig 5-3 econ
 E1=pd.read_pickle(str(_R/"04_실험코드/results_v4_t5fix_econ/E1_curves.pkl")); E2=pd.read_pickle(str(_R/"04_실험코드/results_v4_t5fix_econ/E2_ports.pkl"))
 fig,axs=plt.subplots(1,2,figsize=(12,4.3),sharey=True)
