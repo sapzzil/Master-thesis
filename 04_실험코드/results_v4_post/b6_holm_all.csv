@@ -1,0 +1,9 @@
+﻿hyp,comparison,sig_family,sig_all,sig_2pp_family,sig_2pp_all
+H1,L5-L1,5,2,2,2
+H1,L5-L3,1,1,0,0
+H2,L5-L1,11,8,6,6
+H2,L5-L3,7,6,0,0
+H3a,L5-L1,7,1,0,0
+H3a,L5-L3,8,2,3,2
+H3b,L5-L1,0,0,0,0
+H3b,L5-L3,1,1,0,0
