@@ -1,9 +1,9 @@
 import pandas as pd, numpy as np, matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt, koreanize_matplotlib
 from matplotlib.patches import FancyBboxPatch
-import pathlib; _R=pathlib.Path(__file__).resolve().parents[3]
+import pathlib; _R=pathlib.Path(__file__).resolve().parents[2]
 T=str(_R/"04_실험코드/results_v4_t5fix/tables")+"/"
-F=str(_R/"05_논문작성/v4/figs")+"/"
+F=str(_R/"05_논문작성/figs")+"/"
 plt.rcParams.update({"figure.dpi":150,"font.size":9})
 # S1 design
 fig,ax=plt.subplots(figsize=(10,4.2)); ax.set_xlim(0,100); ax.set_ylim(0,42); ax.axis("off")

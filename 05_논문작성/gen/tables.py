@@ -1,7 +1,7 @@
 # 표 생성: results_v4/tables(T1~T8)와 results_v4_econ 사용. TAB62의 폭 배율(연속 보정)은 real_all.parquet(20MB, git 제외 — src_v4_econ/econ_v4.py로 재생성)이 필요하다.
 import pandas as pd, numpy as np
 import pathlib
-_V=pathlib.Path(__file__).resolve().parents[1]; _R=_V.parents[1]
+_V=pathlib.Path(__file__).resolve().parents[1]; _R=_V.parent
 T=str(_R/"04_실험코드/results_v4_t5fix/tables")+"/"   # 95차: Chronos-T5 top_k 해제 재실행 결과(본문 기준)
 E=str(_R/"04_실험코드/results_v4_t5fix_econ")+"/"
 NM={"chronos_t5_base":"Chronos-T5","chronos2":"Chronos-2","timesfm25":"TimesFM-2.5","moirai2":"Moirai-2","rw":"과거변동(RW)","garch_t":"GARCH-t","oracle":"오라클 모형"}

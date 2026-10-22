@@ -2,10 +2,10 @@
 import pandas as pd, numpy as np, matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt, koreanize_matplotlib
 from scipy import stats
-import pathlib; _R=pathlib.Path(__file__).resolve().parents[3]
+import pathlib; _R=pathlib.Path(__file__).resolve().parents[2]
 T=str(_R/"04_실험코드/results_v4_t5fix/tables")+"/"   # 95차: 본문 기준 결과
 S="/tmp/claude-0/-home-claude/fa74dbd6-df2f-598d-89dd-28a1a0c58d47/scratchpad/"
-F=str(_R/"05_논문작성/v4/figs")+"/"
+F=str(_R/"05_논문작성/figs")+"/"
 NM={"chronos_t5_base":"Chronos-T5","chronos2":"Chronos-2","timesfm25":"TimesFM-2.5","moirai2":"Moirai-2","rw":"과거변동(RW)","garch_t":"GARCH-t","oracle":"오라클 모형"}
 COL={"chronos_t5_base":"#7f7f7f","chronos2":"#1f77b4","timesfm25":"#d62728","moirai2":"#2ca02c"}
 ORD=["chronos_t5_base","chronos2","timesfm25","moirai2","rw","garch_t","oracle"]

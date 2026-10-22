@@ -1,6 +1,6 @@
 // 학위논문 초고 docx 생성 (A4, 한양대 작성방법 기준 여백·줄간격)
-// 사용: node 05_논문작성/v4/gen/make_docx.js [출력.docx]   (기본 석사학위논문_초고_김승민.docx)
-// 입력: v4 폴더의 01~13 장별 md 파일(순서는 ORDER). 지원 문법: #~### 제목, 문단, -/1. 목록, 표, 그림, > 인용, **굵게**, *기울임*
+// 사용: node 05_논문작성/gen/make_docx.js [출력.docx]   (기본 석사학위논문_초고_김승민.docx)
+// 입력: 05_논문작성/원고/의 01~13 장별 md 파일(순서는 ORDER). 지원 문법: #~### 제목, 문단, -/1. 목록, 표, 그림, > 인용, **굵게**, *기울임*
 const fs = require("fs");
 const path = require("path");
 const {
@@ -11,10 +11,10 @@ const {
 
 const V = path.resolve(__dirname, "..");
 const ORDER = [
-  "01_표지_차례_국문요지_v4.md", "02_제1장_서론_v4.md", "03_제2장_관련연구_v4.md", "04_제3장_연구설계_v4.md",
-  "05_제4장_금융특성의_영향_v4.md", "06_제5장_실증평가_v4.md", "07_제6장_사후보정_v4.md", "08_제7장_결론_v4.md",
-  "09_참고문헌_v4.md", "10_부록A_실험절차이력_v4.md", "11_부록B_특성강도비교_v4.md", "12_부록C_종목별커버리지_v4.md",
-  "13_ABSTRACT_v4.md",
+  "01_표지_차례_국문요지.md", "02_제1장_서론.md", "03_제2장_관련연구.md", "04_제3장_연구설계.md",
+  "05_제4장_금융특성의_영향.md", "06_제5장_실증평가.md", "07_제6장_사후보정.md", "08_제7장_결론.md",
+  "09_참고문헌.md", "10_부록A_실험절차이력.md", "11_부록B_특성강도비교.md", "12_부록C_종목별커버리지.md",
+  "13_ABSTRACT.md",
 ];
 // 일반 모드: node make_docx.js  → 통합본. 요약본 등: node make_docx.js --plain 출력.docx 입력.md
 const PLAIN = process.argv[2] === "--plain";
@@ -248,7 +248,7 @@ function addTitlePage(lines) {
 }
 
 function processFile(file) {
-  const text = fs.readFileSync(path.join(V, file), "utf8").replace(/\r/g, "");
+  const text = fs.readFileSync(path.join(V, PLAIN ? file : path.join("원고", file)), "utf8").replace(/\r/g, "");
   let lines = text.split("\n");
   if (!PLAIN && file.startsWith("01_")) {
     // 표지(첫 '---' 전까지) → 차례(md의 '# 차례' 목록은 건너뜀, 필드로 생성) → '# 국문요지'는 앞부분 구역
