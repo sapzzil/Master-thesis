@@ -153,7 +153,7 @@ function makeTable(lines, keepLast = false, tno = "") {
   widths[widths.indexOf(Math.max(...widths))] += adj;
   if (topt.equal) { const av = Math.round(topt.equal.reduce((a, j) => a + widths[j], 0) / topt.equal.length); topt.equal.forEach((j) => (widths[j] = av)); widths[0] += TEXT_W - widths.reduce((a, b) => a + b, 0); }
   const nb = (t, j, i) => (keepWhole(t, j, i) ? t.replace(/ /g, "\u00A0") : t);
-  const mkCell = (txt, j, isHead, isLast) =>
+  const mkCell = (txt, j, isHead, isLast, ri = -1) =>
     new TableCell({
       width: { size: widths[j], type: WidthType.DXA },
       margins: { top: 40, bottom: 40, left: tight ? 28 : 50, right: tight ? 28 : 50 },
@@ -167,20 +167,25 @@ function makeTable(lines, keepLast = false, tno = "") {
       children: segs(txt).map((sg) => new Paragraph({
         alignment: !isHead && leftCol[j] ? AlignmentType.LEFT : AlignmentType.CENTER,
         spacing: { line: 240, before: 0, after: 0 },
-        keepNext: !isLast || keepLast, keepLines: true, wordWrap: true,
+        // 행끼리 붙여 두기: 짧은 표(본문 12행 이하)는 통째로, 긴 표는 제목·머리글·첫 3행과 마지막 2행만 붙이고
+        // 중간에서는 쪽을 넘길 수 있게 한다(머리글은 다음 쪽에 반복). 긴 표가 통째로 다음 쪽으로 밀려 앞 쪽이 비는 것을 막음
+        keepNext: (!isLast || keepLast) && (isHead || body.length <= 12 || ri < 3 || ri >= body.length - 2), keepLines: true, wordWrap: true,
         children: runs(nb(sg, j, isHead ? 0 : 1), { size, bold: isHead || undefined, font: TFONT }),
       })),
     });
   // 본문 행 높이 통일: 칸마다 필요한 줄 수를 추정해 가장 많은 줄 수에 모든 행을 맞춤(atLeast라 더 필요하면 늘어남)
   const mar = tight ? 56 : 100;
   const cellLines = (t, j) => segs(t).reduce((a, sg) => a + Math.max(1, Math.ceil((vis(sg) * unit() * 1.02) / Math.max(widths[j] - mar, 200))), 0);
-  const maxLines = Math.max(1, ...body.map((r) => Math.max(...header.map((_, j) => cellLines(r[j] || "", j)))));
+  // 행 높이는 가장 흔한 줄 수(최빈값)에 맞춤. 더 필요한 행은 atLeast라 Word가 늘림(최댓값에 맞추면 한두 행 때문에 표 전체가 커짐)
+  const lineCounts = body.map((r) => Math.max(...header.map((_, j) => cellLines(r[j] || "", j))));
+  const freq = {}; lineCounts.forEach((c) => (freq[c] = (freq[c] || 0) + 1));
+  const maxLines = Math.max(1, +Object.keys(freq).sort((a, b) => freq[b] - freq[a] || a - b)[0]);
   const rowH = Math.round(maxLines * size * 12 + 80);
   const rows = [
     new TableRow({ tableHeader: true, cantSplit: true, children: header.map((h, j) => mkCell(h, j, true, false)) }),
     ...body.map((r, i) => new TableRow({
       cantSplit: true, height: { value: rowH, rule: "atLeast" },
-      children: header.map((_, j) => mkCell(r[j] || "", j, false, i === body.length - 1)),
+      children: header.map((_, j) => mkCell(r[j] || "", j, false, i === body.length - 1, i)),
     })),
   ];
   return new Table({ width: { size: TEXT_W, type: WidthType.DXA }, columnWidths: widths, layout: TableLayoutType.FIXED, rows });
@@ -363,7 +368,8 @@ function processFile(file) {
       const chars = items.reduce((t, x) => t + x.length, 0);
       const last = kindAt(i + 1) !== "list";
       // 짧은 목록(8항목·600자 이하)은 통째로, 긴 목록은 첫 항목만 앞 문장과 붙이고 나머지는 자연스럽게 넘김
-      listKeep = last ? attach(kindAt(i + 1)) : (items.length <= 8 && chars <= 900) || i === a;
+      // 요약본(--plain)은 목록을 묶지 않음: 첫 항목만 앞 문장과 붙이고 나머지는 쪽을 넘길 수 있게(목록 통째로 다음 쪽으로 밀려 앞 쪽이 비는 것 방지)
+      listKeep = last ? attach(kindAt(i + 1)) : PLAIN ? i === a : (items.length <= 8 && chars <= 900) || i === a;
     }
     if ((m = l.match(/^(\s*)- (.*)$/))) {
       children.push(new Paragraph({ numbering: { reference: "bullets", level: m[1].length >= 2 ? 1 : 0 }, alignment: AlignmentType.JUSTIFIED,
