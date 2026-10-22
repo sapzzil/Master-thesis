@@ -82,6 +82,16 @@ full = "\n\n---\n\n".join((V / f).read_text(encoding="utf-8").strip() for f in o
 (V / "00_학위논문_초고_통합본_v4.md").write_text(full, encoding="utf-8")
 # 결과 docx는 작업용 번호·버전 없이 논문 파일 이름으로 같은 폴더에 둔다(초고 → 심사본 → 최종본으로 이어서 사용)
 DOC_T = "석사학위논문_초고_김승민.docx"; DOC_S = "석사학위논문_초고_요약_김승민.docx"
+# 요약본용 그림: 본문 그림의 흰 여백을 잘라 figs/summary/에 둔다(본문 그림은 그대로)
+from PIL import Image, ImageChops
+(V / "figs/summary").mkdir(exist_ok=True)
+for f in sorted(set(__import__("re").findall(r"figs/summary/([^)]+\.png)", (V / "지도교수_요약본_v4.md").read_text(encoding="utf-8")))):
+    im = Image.open(V / "figs" / f).convert("RGB")
+    box = ImageChops.difference(im, Image.new("RGB", im.size, (255, 255, 255))).convert("L").point(lambda p: 255 if p > 6 else 0).getbbox()
+    if box:
+        p = 8; box = (max(0, box[0] - p), max(0, box[1] - p), min(im.width, box[2] + p), min(im.height, box[3] + p))
+        im = im.crop(box)
+    im.save(V / "figs/summary" / f)
 try:
     subprocess.run(["node", str(V / "gen/make_docx.js"), DOC_T], check=True)
     subprocess.run(["node", str(V / "gen/make_docx.js"), "--plain", DOC_S, "지도교수_요약본_v4.md"], check=True)

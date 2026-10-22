@@ -310,7 +310,9 @@ function processFile(file) {
     if ((m = l.match(/^!\[[^\]]*\]\(([^)]+)\)/))) {
       const f = path.join(V, m[1]);
       const { w, h, data } = pngSize(f);
-      const wPx = Math.round((TEXT_W / 1440) * 96 * (PLAIN ? 0.72 : 1)); // 요약본은 그림을 작게(쪽수 절약)
+      const fullPx = Math.round((TEXT_W / 1440) * 96);
+      // 요약본: 여백을 자른 그림을 본문 폭에 맞추되, 세로로 긴 그림은 높이를 본문 폭의 0.62배로 제한
+      const wPx = PLAIN ? Math.min(fullPx, Math.round((fullPx * 0.62 * w) / h)) : fullPx;
       children.push(new Paragraph({ alignment: AlignmentType.CENTER, keepNext: kindAt(i + 1) === "caption", spacing: { before: 120, after: 60 },
         children: [new ImageRun({ type: "png", data, transformation: { width: wPx, height: Math.round((wPx * h) / w) } })] }));
       i++; continue;
