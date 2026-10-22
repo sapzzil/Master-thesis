@@ -308,11 +308,16 @@ function processFile(file) {
       continue;
     }
     if ((m = l.match(/^!\[[^\]]*\]\(([^)]+)\)/))) {
-      const f = path.join(V, m[1]);
+      // 여백을 자른 사본(figs/trim/, build.py가 만듦)이 있으면 그것을 쓴다
+      const tr = path.join(V, m[1].replace(/^figs\//, "figs/trim/"));
+      const f = fs.existsSync(tr) ? tr : path.join(V, m[1]);
       const { w, h, data } = pngSize(f);
       const fullPx = Math.round((TEXT_W / 1440) * 96);
       // 요약본: 여백을 자른 그림을 본문 폭에 맞추되, 세로로 긴 그림은 높이를 본문 폭의 0.62배로 제한
-      const wPx = PLAIN ? Math.min(fullPx, Math.round((fullPx * 0.62 * w) / h)) : fullPx;
+      // 본문: 여백을 자른 만큼 키우되, 높이는 원본 그림을 본문 폭에 맞췄을 때보다 커지지 않게 한다(쪽 나눔 유지)
+      const o = pngSize(path.join(V, m[1]));
+      const wPx = PLAIN ? Math.min(fullPx, Math.round((fullPx * 0.62 * w) / h))
+                        : Math.min(fullPx, Math.round((fullPx * (o.h / o.w) * w) / h));
       children.push(new Paragraph({ alignment: AlignmentType.CENTER, keepNext: kindAt(i + 1) === "caption", spacing: { before: 120, after: 60 },
         children: [new ImageRun({ type: "png", data, transformation: { width: wPx, height: Math.round((wPx * h) / w) } })] }));
       i++; continue;
