@@ -1,0 +1,21 @@
+<section id="output" data-transition="fade" style="background:#F7F6F2;color:#2B3445;font-family:'Noto Sans KR', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<p style="font-size:26px;color:#A8541A;font-weight:700">핵심 개념 ① 모델이 내는 것</p>
+<h2 style="font-family:'Noto Serif KR', Georgia, serif;font-size:56px;font-weight:700;line-height:1.3;color:#1F2A44">모델은 내일의 분포를 분위수 9개로 낸다</h2>
+<p style="font-size:30px;line-height:1.5">입력: 한 종목의 과거 21일 또는 252일 수익률(또는 가격). 출력: 다음 날 하루에 대한 분위수 9개. 예) 오늘 100원</p>
+<table style="font-size:28px;color:#2B3445;font-family:'Noto Sans KR', Arial, sans-serif">
+<tr><th style="width:19%">분위수</th><th style="width:9%">10%</th><th style="width:9%">20%</th><th style="width:9%">30%</th><th style="width:9%">40%</th><th style="width:9%">50%</th><th style="width:9%">60%</th><th style="width:9%">70%</th><th style="width:9%">80%</th><th style="width:9%">90%</th></tr>
+<tr><td>내일 가격(원)</td><td>97.3</td><td>98.2</td><td>98.9</td><td>99.5</td><td>100.0</td><td>100.5</td><td>101.1</td><td>101.8</td><td>102.7</td></tr>
+</table>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:10px;background:#FFFEFB;padding:32px;border:1px solid #E2E0D8;border-radius:16px">
+<h3 style="font-size:30px;font-weight:700;color:#1F2A44">80% 예측구간</h3>
+<p style="font-size:28px;line-height:1.5">양 끝(10%와 90%)을 이은 97.3~102.7원. 아래 10%, 위 10%를 빼면 가운데 80%.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:10px;background:#FFFEFB;padding:32px;border:1px solid #E2E0D8;border-radius:16px">
+<h3 style="font-size:30px;font-weight:700;color:#1F2A44">점 예측</h3>
+<p style="font-size:28px;line-height:1.5">가운데(50%, 중앙값) 100원. 분포 하나에서 필요한 숫자를 꺼내 쓰는 것.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6B7280">수치는 설명용 예시(하루 변동 2.1% 정규분포) · Chronos-T5는 200번 뽑아 분위수를 계산, 나머지 세 모델은 바로 출력</p>
+<aside>먼저 모델이 무엇을 내는지 보겠습니다. 입력은 한 종목의 과거 21일 또는 252일 수익률이나 가격입니다. 출력은 숫자 하나가 아니라 다음 날 하루에 대한 분포이고, 분위수 9개로 나타냅니다. 오늘 100원인 주식이라면 10% 분위수 97.3원은 "내일 이보다 낮을 확률이 10%"라는 뜻이고, 90% 분위수 102.7원은 "이보다 낮을 확률이 90%"라는 뜻입니다. 이 양 끝을 이은 97.3원에서 102.7원이 80% 예측구간입니다. 가운데 50% 분위수가 우리가 보통 말하는 점 예측입니다. 즉 점 예측과 구간을 따로 내는 것이 아니라 분포 하나에서 꺼내 쓰는 것입니다. 참고로 Chronos-T5는 내일 값을 200번 뽑아서 분위수를 계산하고, 나머지 세 모델은 분위수를 바로 냅니다.</aside>
+</section>

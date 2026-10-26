@@ -1,0 +1,24 @@
+<section id="r3how" data-transition="fade" style="background:#F7F6F2;color:#2B3445;font-family:'Noto Sans KR', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<p style="font-size:26px;color:#A8541A;font-weight:700">RQ3 방법 · 사후보정(ACI-CQR)</p>
+<h2 style="font-family:'Noto Serif KR', Georgia, serif;font-size:52px;font-weight:700;line-height:1.3;color:#1F2A44">모델은 그대로 두고, 나온 구간만 매일 조정한다</h2>
+<div style="display:flex;gap:24px;align-items:stretch">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFFEFB;padding:36px;border:1px solid #E2E0D8;border-radius:16px">
+<p style="font-size:26px;color:#2F6FB0;font-weight:700">① 모델이 구간을 낸다</p>
+<p style="font-size:27px;line-height:1.5">TSFM이 내일의 10%·90% 분위수를 낸다(원래 구간)</p>
+</div>
+<x-shape kind="arrow-right" style="background:#D8D4C8;width:56px;height:28px;align-self:center"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFFEFB;padding:36px;border:1px solid #E2E0D8;border-radius:16px">
+<p style="font-size:26px;color:#2F6FB0;font-weight:700">② 배율을 곱한다</p>
+<p style="font-size:27px;line-height:1.5">지금까지의 이탈 기록으로 구한 배율만큼 구간을 넓히거나 좁힌다</p>
+</div>
+<x-shape kind="arrow-right" style="background:#D8D4C8;width:56px;height:28px;align-self:center"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFFEFB;padding:36px;border:1px solid #E2E0D8;border-radius:16px">
+<p style="font-size:26px;color:#2F6FB0;font-weight:700">③ 결과를 보고 갱신</p>
+<p style="font-size:27px;line-height:1.5">다음 날 실제 가격이 벗어났으면 목표를 조금 올리고, 들어왔으면 조금 내린다</p>
+</div>
+</div>
+<p style="font-size:30px;line-height:1.5">콘포멀 분위수 회귀(Romano 외 2019)의 점수와 적응형 콘포멀 추론(Gibbs·Candès 2021)의 갱신을 결합. 재학습 없음, 계산 비용 거의 없음. 설정(α = 0.20, 갱신 속도 γ = 0.05)은 실험 전에 고정.</p>
+<p style="font-size:30px;line-height:1.5">판정: 보정 후 커버리지의 90% 신뢰구간이 77~83% 안이면 "복원" (H6)</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6B7280">본문 2.5절, 3.5절 · 새 방법이 아니라 기존 방법을 TSFM 금융 구간에 적용해 검증</p>
+<aside>RQ3의 방법입니다. 사후보정은 모델을 고치지 않고, 모델이 낸 구간만 매일 조정합니다. 먼저 TSFM이 원래 구간을 냅니다. 그다음 지금까지 구간을 얼마나 벗어났는지 기록을 보고 구한 배율만큼 구간을 넓히거나 좁힙니다. 다음 날 실제 가격이 구간을 벗어났으면 목표를 조금 올려 다음 구간을 넓히고, 들어왔으면 조금 내려 좁힙니다. 이걸 매일 반복합니다. 콘포멀 분위수 회귀와 적응형 콘포멀 추론이라는 기존 방법 두 개를 결합한 것이고, 제가 새로 만든 방법은 아닙니다. 재학습이 없고 계산 비용도 거의 없습니다. 설정값은 실험 전에 고정했고, 보정 후 커버리지의 90% 신뢰구간이 77에서 83% 안에 들어오면 복원으로 판정했습니다.</aside>
+</section>

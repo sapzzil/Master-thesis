@@ -1,0 +1,12 @@
+<section id="qa15" data-transition="fade" style="background:#E7ECF2;color:#2B3445;font-family:'Noto Sans KR', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:32px">
+<p style="font-size:26px;color:#2F6FB0;font-weight:700">Q15 · 입력 정보</p>
+<h2 style="font-family:'Noto Serif KR', Georgia, serif;font-size:48px;font-weight:700;line-height:1.3;color:#1F2A44">외부 변수 없이 자기 과거만 보는 예측이 의미가 있나? 거래량을 안 넣어서 나쁘게 나온 것 아닌가?</h2>
+<div style="background:#1F2A44;padding:32px 40px;border-radius:16px"><p style="font-size:30px;line-height:1.5;color:#F7F6F2">방향을 맞히는 문제라면 지적이 맞다. 하지만 평가한 것은 내일 변동의 크기(구간)이고, 커버리지 오차는 거래량이 아예 없는 합성 데이터에서도 같게 나타났다.</p></div>
+<ul style="font-size:28px;line-height:1.6">
+<li>변동성은 자기 과거로 상당 부분 예측된다(군집). 표준 모형 GARCH도 단변량이고, 선행연구도 같은 설정</li>
+<li>Chronos-2에 로그 거래량을 넣어 확인: 1년·수익률은 넣기 전과 같음(+1.0%), 한 달·수익률은 −7.3% → −6.4%로 조금 나아졌지만 여전히 RW보다 나쁨</li>
+<li>한 모델·한 변수만 본 것이라, 실현변동성·내재변동성 등은 향후 연구</li>
+</ul>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6B7280">근거: 2.1절, 7.3절 한계 4, 부록 A.4 · 디펜스 A2, A4</p>
+<aside>수익률의 방향을 맞히는 문제라면 지적이 맞고, 실제로 중앙값 부호로 매매하는 규칙은 계속 보유보다 못했습니다. 하지만 이 연구가 평가한 것은 방향이 아니라 내일 변동의 크기, 즉 예측구간입니다. 변동성은 자기 과거만으로 상당 부분 예측된다는 것이 금융계량의 정설이고, 표준 모형인 GARCH도 외부 변수가 없는 단변량 모형입니다. 비교한 선행연구도 같은 단변량 설정입니다. 그리고 커버리지가 75에서 88%로 갈린 것은 거래량 탓이 아닙니다. 거래량이 아예 존재하지 않는 합성 데이터에서도 같은 오차가 나왔기 때문입니다. 실제로 Chronos-2에 로그 거래량을 넣어 확인했는데, 1년·수익률은 넣기 전과 같았고 한 달·수익률은 조금 나아졌지만 여전히 RW보다 나빴습니다. 다만 한 모델, 한 변수만 본 것이라 다른 외부 변수는 향후 연구로 남겼습니다.</aside>
+</section>

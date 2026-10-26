@@ -1,0 +1,13 @@
+<section id="coverage" data-transition="fade" style="background:#F7F6F2;color:#2B3445;font-family:'Noto Sans KR', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:32px">
+<p style="font-size:26px;color:#A8541A;font-weight:700">핵심 개념 ② 커버리지</p>
+<h2 style="font-family:'Noto Serif KR', Georgia, serif;font-size:56px;font-weight:700;line-height:1.3;color:#1F2A44">실제 다음 날 가격이 구간에 들어온 날의 비율</h2>
+<img src="/_blob/66cca2e180136d59a2cbee25841bdf62" alt="40일 중 32일이 80% 예측구간 안에 들어와 커버리지 80%인 예시 그림" style="width:1664px;height:300px;object-fit:contain">
+<table style="font-size:28px;color:#2B3445">
+<tr><th style="width:34%">매일 낸 구간(오늘 100원)</th><th style="width:22%">들어온 날</th><th style="width:44%">뜻</th></tr>
+<tr><td>97.3~102.7원 (±2.7%)</td><td>100일 중 약 80일</td><td>약속대로, 좋은 구간</td></tr>
+<tr><td>98.5~101.5원 (너무 좁음)</td><td>100일 중 약 52일</td><td>자주 벗어남: 위험을 작게 봄</td></tr>
+<tr><td>95~105원 (너무 넓음)</td><td>100일 중 약 98일</td><td>거의 다 맞지만 위험을 크게 봄</td></tr>
+</table>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6B7280">높아도 낮아도 오차 · 목표는 80%, 78~82%(±2%p)를 맞는 범위로 봄 · 그림: 본문 그림 2-3</p>
+<aside>이 구간이 맞는지를 재는 것이 커버리지입니다. 모델이 매일 그날 가격을 기준으로 구간을 내고, 다음 날 실제 가격이 그 구간 안에 들어왔는지를 셉니다. 이걸 여러 날 반복해서 들어온 날의 비율을 낸 것이 커버리지입니다. 그림은 40일 중 32일이 들어와 커버리지 80%인 예시입니다. 주의할 점은, 모델이 뽑은 값이 구간에 들어가는 게 아니라 실제로 찍힌 다음 날 가격이 들어가야 한다는 것입니다. 그리고 커버리지는 높다고 좋은 게 아닙니다. 80%라고 약속했으니 80%가 나와야 합니다. 표처럼 구간이 너무 좁으면 52%만 맞아서 위험을 작게 본 것이고, 너무 넓으면 98% 맞지만 위험을 필요 이상으로 크게 본 것입니다. 극단적으로 -100%에서 +100%로 잡으면 100% 맞지만 쓸모가 없습니다. 그래서 80%에 맞으면서 좁을수록 좋은 구간입니다.</aside>
+</section>

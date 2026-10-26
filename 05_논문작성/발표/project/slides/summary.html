@@ -1,0 +1,20 @@
+<section id="summary" data-transition="fade" style="background:#F7F6F2;color:#2B3445;font-family:'Noto Sans KR', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:26px;color:#A8541A;font-weight:700">한 장 요약</p>
+<h2 style="font-family:'Noto Serif KR', Georgia, serif;font-size:56px;font-weight:700;line-height:1.3;color:#1F2A44">80% 구간은 모델과 설정에 따라 틀어지고,<br>재학습 없는 보정으로 바로잡힌다</h2>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFEFB;padding:40px;border:1px solid #E2E0D8;border-radius:16px">
+<p style="font-size:26px;color:#A8541A;font-weight:700">RQ1·RQ2 진단</p>
+<p style="font-size:30px;line-height:1.5">특성이 없는 데이터에서도 커버리지가 <b>75~88%</b>로 갈렸다. 특성을 가장 강하게 해도 대부분 3%p 안에서만 움직였다.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFEFB;padding:40px;border:1px solid #E2E0D8;border-radius:16px">
+<p style="font-size:26px;color:#A8541A;font-weight:700">RQ3 처방</p>
+<p style="font-size:30px;line-height:1.5">사후보정으로 합성 340개, 실제 19개 모든 경우에서 평균 커버리지가 <b>80%</b>로 돌아왔다. 대가는 5~48% 넓은 구간.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFEFB;padding:40px;border:1px solid #E2E0D8;border-radius:16px">
+<p style="font-size:26px;color:#A8541A;font-weight:700">쓰임새</p>
+<p style="font-size:30px;line-height:1.5">분포 정확도는 단순 기준(RW) 수준. 수익률 예측보다 점검과 보정을 거친 <b>위험 측정</b>에 써야 한다.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6B7280">김승민 · 석사학위논문 발표 · 도입</p>
+<aside>결론부터 말씀드리겠습니다. 세 가지입니다. 첫째, 사전학습 시계열 모델, 줄여서 TSFM이 내는 80% 예측구간은 금융 특성이 하나도 없는 가장 쉬운 데이터에서도 모델과 입력 설정에 따라 75%에서 88%까지 갈렸습니다. 금융 특성을 실제 종목 중 가장 강한 수준까지 높여도 대부분 3%p 안에서만 움직였습니다. 그러니 평균적으로 얼마나 맞느냐는 금융 특성보다 어떤 모델을 어떤 입력으로 쓰느냐가 정합니다. 둘째, 이 오차는 모델을 다시 학습시키지 않는 사후보정으로 모든 경우에 평균 80%로 되돌릴 수 있었습니다. 다만 구간이 이상적인 구간보다 5에서 48% 넓어집니다. 셋째, 분포 전체의 정확도는 가장 단순한 기준인 RW 수준이었습니다. 그래서 TSFM은 수익률을 맞히는 데보다, 점검과 보정을 거쳐 위험을 재는 데 쓰는 것이 맞다는 결론입니다.</aside>
+</section>

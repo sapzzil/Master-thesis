@@ -1,0 +1,15 @@
+<section id="r2a" data-transition="fade" style="background:#F7F6F2;color:#2B3445;font-family:'Noto Sans KR', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:28px">
+<p style="font-size:26px;color:#A8541A;font-weight:700">RQ2 결과 ① 실제 주가의 커버리지</p>
+<h2 style="font-family:'Noto Serif KR', Georgia, serif;font-size:52px;font-weight:700;line-height:1.3;color:#1F2A44">특성이 다 섞인 실제 주가도 특성 없는 합성(L1)과 비슷했다</h2>
+<div style="display:flex;gap:48px;align-items:center">
+<img src="/_blob/b4cdc4319dc772e524ba0f17ae42fe80" alt="19개 모델·조합에서 특성 없는 합성 데이터(가로축)와 실제 10종목(세로축)의 보정 전 커버리지 산점도. 점들이 대각선 근처에 모여 있다" style="width:720px;height:590px;object-fit:contain;background:#FFFEFB;border-radius:12px">
+<div style="flex:1;display:flex;flex-direction:column;gap:22px">
+<p style="font-size:28px;line-height:1.5">실제 10종목 커버리지 76~88%. 미국·한국, 종목 간 차이는 모델·조합 간 차이보다 작다</p>
+<p style="font-size:28px;line-height:1.5">같은 조합끼리 합성 L1과 실제의 차이: 19개 평균 <b>1.1%p</b>(최대 3.6%p)</p>
+<p style="font-size:28px;line-height:1.5">실제 데이터 커버리지 변동의 <b>92%</b>가 모델·조합, <b>1%</b>가 종목</p>
+<p style="font-size:28px;line-height:1.5">크게 어긋나는 조합(TimesFM 1년·가격 88%, 기본 설정 Chronos-T5 14%)은 합성에서 이미 그대로 드러났다</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6B7280">"모두 80%"로 짐작하는 것보다 합성이 더 가깝다는 점은 확실하지 않음(19개 중 12개, p = 0.07) · 본문 5.1절, 5.4절</p>
+<aside>RQ2입니다. 실제 10종목에서 보정 전 커버리지는 76에서 88%였고, 미국과 한국, 종목 간 차이는 모델과 조합 간 차이보다 작았습니다. 그림은 같은 모델·조합끼리, 특성 없는 합성 데이터의 커버리지를 가로축에, 실제 주가의 커버리지를 세로축에 놓은 것입니다. 실제 주가에는 군집, 꼬리, 국면 전환이 실제 세기로 다 섞여 있습니다. 특성이 커버리지를 크게 바꾼다면 실제 값은 특성 없는 합성 값과 크게 달라야 합니다. 그런데 점들이 대각선 근처에 모여 있고, 차이는 평균 1.1%p였습니다. 실제 데이터의 커버리지 변동도 92%가 모델·조합, 1%가 종목의 차이로 설명됐습니다. 그러니 RQ1의 결론이 실제에서도 성립합니다. 솔직하게 말씀드리면, 모든 조합을 그냥 80%로 짐작하는 것보다 합성이 더 정확하다는 점은 조합 수가 적어 통계적으로 확실하지 않습니다. 분명한 것은 크게 어긋나는 조합이 합성 데이터에서 이미 그대로 드러났다는 점입니다.</aside>
+</section>
