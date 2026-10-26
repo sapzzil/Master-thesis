@@ -212,6 +212,8 @@ canvas{width:100%;display:block;background:var(--bg);border-radius:8px}
       <div class="stat"><div class="v" id="g3s">—</div><div class="l">3σ 넘는 날 (L1 / 선택)</div></div>
     </div>
     <canvas id="genC" height="300"></canvas>
+    <canvas id="genV" height="190" style="margin-top:8px"></canvas>
+    <p class="note" id="gNote2" style="color:var(--ink)"></p>
     <p class="note" id="gNote"></p>
   </div>
 
@@ -930,7 +932,16 @@ function drawGen(){
   if(f!=='tl'){g.strokeStyle=css('--ink');g.lineWidth=1.2;[1,-1].forEach(sg=>{g.beginPath();for(let i=0;i<n;i++){const yy=y2-sg*Math.min(12,1.2816*vol[i+W])*sc;i?g.lineTo(X(i),yy):g.moveTo(X(i),yy)}g.stroke()});g.lineWidth=1;g.fillStyle=css('--ink');g.fillText('검은 선 = 그날의 참 80% 구간(±1.28σₜ)',34,h-4)}
   g.fillStyle=css('--muted');g.fillText('L1 (특성 없음)',34,16);g.fillStyle=css('--orange');g.fillText(L+' · '+document.getElementById('gF').selectedOptions[0].text+(f==='rf'||f==='rs'?' (음영 = 격변 국면)':''),34,y2-half+8);
   g.fillStyle=css('--muted');g.fillText('±12%에서 자름 · '+n+'일',w-160,h-4);
-  const notes={cl:'군집 L5는 변동이 "큰" 데이터가 아니라, 같은 평균 변동(2.11%)이 드문 폭풍기에 "몰리는" 데이터입니다. 폭풍기에 분산이 몰리는 만큼 나머지 기간은 L1보다 잔잔합니다. 그래서 332일짜리 계열 하나에 폭풍기가 없으면 막대가 전부 L1보다 작아 보입니다. 실제 실험 데이터(계열 100개)로 확인하면 군집 L5는 전체로는 하루 변동 2.19%지만 계열별로는 중앙값 1.51%(하위 10% 1.03%, 상위 10% 3.10%)이고 100개 중 72개가 2.11%보다 잔잔합니다(L3 중앙값 2.10%, L4 2.05%). 분산이 소수 계열의 폭풍에서 나옵니다. "폭풍 있는 계열 찾기"를 눌러 보세요.',tl:'극단적인 날이 시기와 무관하게 드문드문 튑니다. 대신 평소 막대는 L1보다 짧아집니다(분산이 같으니까).',rf:'짧은 격변 국면(음영)이 자주 옵니다. L2·L3은 지속이 길어 한 계열에서 전환이 거의 없습니다.',rs:'격변 국면의 변동이 평온 국면의 몇 배인지가 커집니다. 지속일은 35.6/7.6일로 고정.'};
+  const gv=document.getElementById('genV');gv.hidden=f!=='cl';document.getElementById('gNote2').textContent='';
+  if(f==='cl'){
+    const [v,w3,h3]=setup(gv);const lv=['L3','L4','L5'],cols=[css('--muted'),css('--blue'),css('--orange')];
+    const lo=Math.log(0.3),hi=Math.log(16),Yv=x=>h3-18-(Math.log(Math.max(0.3,Math.min(16,x)))-lo)/(hi-lo)*(h3-30),Xv=i=>40+i*(w3-50)/(n-1);
+    [0.5,1,2.11,4,8].forEach(t=>{v.strokeStyle=css('--line');v.beginPath();v.moveTo(40,Yv(t));v.lineTo(w3-10,Yv(t));v.stroke();v.fillStyle=css('--muted');v.fillText(t+'%',4,Yv(t)+4)});
+    const st=[];lv.forEach((LL,k)=>{const r=genSeries('cl',LL,genSeed,len);let mx=0,mn=99;v.strokeStyle=cols[k];v.lineWidth=k===2?2:1.4;v.beginPath();for(let i=0;i<n;i++){const x=r.vol[i+W];mx=Math.max(mx,x);mn=Math.min(mn,x);i?v.lineTo(Xv(i),Yv(x)):v.moveTo(Xv(i),Yv(x))}v.stroke();st.push(LL+' '+mn.toFixed(2)+'~'+mx.toFixed(2)+'% ('+(mx/mn).toFixed(1)+'배)')});v.lineWidth=1;
+    v.fillStyle=css('--ink');v.fillText('같은 난수의 참 하루 변동 σₜ (로그 눈금) · 회색 L3, 파랑 L4, 주황 L5',44,12);
+    document.getElementById('gNote2').textContent='이 계열의 σₜ 범위: '+st.join(' · ');
+  }
+  const notes={cl:'군집 L5는 변동이 "큰" 데이터가 아니라, 같은 평균 변동(2.11%)이 드문 폭풍기에 "몰리는" 데이터입니다. 폭풍기에 분산이 몰리는 만큼 나머지 기간은 L1보다 잔잔합니다. 그래서 332일짜리 계열 하나에 폭풍기가 없으면 막대가 전부 L1보다 작아 보입니다. 실제 실험 데이터(계열 100개)로 확인하면 군집 L5는 전체로는 하루 변동 2.19%지만 계열별로는 중앙값 1.51%(하위 10% 1.03%, 상위 10% 3.10%)이고 100개 중 72개가 2.11%보다 잔잔합니다(L3 중앙값 2.10%, L4 2.05%). 분산이 소수 계열의 폭풍에서 나옵니다. "폭풍 있는 계열 찾기"를 눌러 보세요. L4가 L5보다 더 극적으로 보이는 것도 정상입니다. α+β가 크다는 것은 변동이 "크다"가 아니라 "오래 간다"는 뜻이라, L5는 한 번 잔잔해지면 오래(충격 반감기 173일, L4는 38일) 아주 낮은 수준(최저 약 0.4%, L4는 약 0.8%)까지 내려가 머뭅니다. 그래서 같은 난수로 비교하면 막대의 절대 크기는 대부분 L4가 크지만(이 생성기 300개 계열 중 최대 σₜ 79%, 평균 σₜ 87%가 L4 쪽이 큼), 계열 안에서 변동이 오르내리는 폭(상대적 흔들림)은 거의 항상 L5가 큽니다(99% 이상). 아래 로그 눈금 그림에서 주황선이 가장 깊이 내려가고 가장 크게 오르내리는 것을 보세요.',tl:'극단적인 날이 시기와 무관하게 드문드문 튑니다. 대신 평소 막대는 L1보다 짧아집니다(분산이 같으니까).',rf:'짧은 격변 국면(음영)이 자주 옵니다. L2·L3은 지속이 길어 한 계열에서 전환이 거의 없습니다.',rs:'격변 국면의 변동이 평온 국면의 몇 배인지가 커집니다. 지속일은 35.6/7.6일로 고정.'};
   document.getElementById('gNote').textContent=notes[f]+' 같은 난수를 쓰므로 막대의 방향(위/아래)은 L1과 같은 날에 같습니다.';
 }
 ['gF','gL'].forEach(i=>document.getElementById(i).addEventListener('input',drawGen));
