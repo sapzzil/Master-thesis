@@ -1,28 +1,33 @@
-<section id="design" data-transition="fade" style="background:#EEF1F5;color:#2B3445;font-family:'Noto Sans KR', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:40px">
-<p style="font-size:26px;color:#A8541A;font-weight:700">설계 개요</p>
-<h2 style="font-family:'Noto Serif KR', Georgia, serif;font-size:56px;font-weight:700;line-height:1.3;color:#1F2A44">통제된 합성 데이터로 원인을 가리고, 실제 주가로 확인한다</h2>
+<section id="design" data-transition="fade" style="background:#FAF8F4;color:#2E3546;font-family:'Noto Sans KR', Arial, sans-serif;padding:104px 128px 176px;display:flex;flex-direction:column;gap:40px">
+<div style="position:absolute;left:0;top:0;width:16px;height:1080px;background:#2B5C8A"></div>
+<div style="position:absolute;left:128px;top:920px;width:1664px;height:2px;background:#E2DDD2"></div>
+<p style="font-size:26px;color:#2B5C8A;font-weight:700;letter-spacing:1px">설계 개요</p>
+<h2 style="font-family:'Noto Sans KR', Arial, sans-serif;font-size:54px;font-weight:700;line-height:1.25;letter-spacing:-1px;color:#1B2333;padding-bottom:28px;border-bottom:2px solid #E2DDD2">통제된 합성 데이터로 원인을 가리고, 실제 주가로 확인한다</h2>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:40px">
 <div style="display:flex;gap:24px;align-items:stretch">
-<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFFEFB;padding:36px;border:1px solid #DCE1E8;border-radius:16px">
-<p style="font-size:26px;color:#2F6FB0;font-weight:700">① 측정</p>
-<p style="font-size:28px;line-height:1.5">실제 10종목에서 특성의 세기를 잰다(2015~2026)</p>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFFEFD;padding:36px;border-radius:12px;box-shadow:0 6px 24px rgba(27,35,51,.08)">
+<p style="font-size:26px;color:#2B5C8A;font-weight:700">① 측정</p>
+<p style="font-size:30px;line-height:1.5">실제 10종목에서 특성의 세기를 잰다(2015~2026)</p>
 </div>
 <x-shape kind="arrow-right" style="background:#C9D2DE;width:56px;height:28px;align-self:center"></x-shape>
-<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFFEFB;padding:36px;border:1px solid #DCE1E8;border-radius:16px">
-<p style="font-size:26px;color:#2F6FB0;font-weight:700">② 합성 실험 · RQ1</p>
-<p style="font-size:28px;line-height:1.5">그 세기로 특성을 하나씩 넣은 17개 시나리오 × 계열 100개</p>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFFEFD;padding:36px;border-radius:12px;box-shadow:0 6px 24px rgba(27,35,51,.08)">
+<p style="font-size:26px;color:#2B5C8A;font-weight:700">② 합성 실험 · RQ1</p>
+<p style="font-size:30px;line-height:1.5">그 세기로 특성을 하나씩 넣은 17개 시나리오 × 계열 100개</p>
 </div>
 <x-shape kind="arrow-right" style="background:#C9D2DE;width:56px;height:28px;align-self:center"></x-shape>
-<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFFEFB;padding:36px;border:1px solid #DCE1E8;border-radius:16px">
-<p style="font-size:26px;color:#2F6FB0;font-weight:700">③ 실증 · RQ2</p>
-<p style="font-size:28px;line-height:1.5">같은 절차를 실제 10종목 2017~2026년 매 거래일(24,132건)에</p>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFFEFD;padding:36px;border-radius:12px;box-shadow:0 6px 24px rgba(27,35,51,.08)">
+<p style="font-size:26px;color:#2B5C8A;font-weight:700">③ 실증 · RQ2</p>
+<p style="font-size:30px;line-height:1.5">같은 절차를 실제 10종목 2017~2026년 매 거래일(24,132건)에</p>
 </div>
 <x-shape kind="arrow-right" style="background:#C9D2DE;width:56px;height:28px;align-self:center"></x-shape>
-<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFFEFB;padding:36px;border:1px solid #DCE1E8;border-radius:16px">
-<p style="font-size:26px;color:#2F6FB0;font-weight:700">④ 보정 · RQ3</p>
-<p style="font-size:28px;line-height:1.5">두 환경 모두에 같은 사후보정을 적용</p>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFFEFD;padding:36px;border-radius:12px;box-shadow:0 6px 24px rgba(27,35,51,.08)">
+<p style="font-size:26px;color:#2B5C8A;font-weight:700">④ 보정 · RQ3</p>
+<p style="font-size:30px;line-height:1.5">두 환경 모두에 같은 사후보정을 적용</p>
 </div>
 </div>
-<p style="font-size:30px;line-height:1.5">대상: 미국 AAPL·AMZN·GOOG·JPM·META, 한국 삼성전자·SK하이닉스·현대차·한국전력·현대모비스(2017년 초 시가총액 기준). 가설·판정 기준·코드는 실행 전에 고정하고 커밋으로 기록.</p>
-<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6B7280">김승민 · 석사학위논문 발표 · 연구 설계 · 본문 1.3절, 3장</p>
+<p style="font-size:30px;line-height:1.5">대상: 미국 AAPL·AMZN·GOOG·JPM·META, 한국 삼성전자·SK하이닉스·현대차·한국전력·현대모비스(미국은 선행연구와 같은 종목, 한국은 2017년 초 시가총액 순). 가설·판정 기준·코드는 실행 전에 고정하고 커밋으로 기록.</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1480px;font-size:24px;color:#646B7A">김승민 · 석사학위논문 발표 · 연구 설계 · 본문 1.3절, 3장</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;font-weight:700;color:#2B5C8A">9</p>
 <aside>설계는 네 단계입니다. 먼저 실제 10종목에서 금융 특성의 세기를 잽니다. 그 세기로 특성을 하나씩 넣은 합성 데이터를 만들어 RQ1에 답합니다. 합성 데이터는 참 분포를 알고 특성을 하나씩 통제할 수 있어서 원인을 가려낼 수 있습니다. 그다음 같은 절차를 실제 10종목의 2017년부터 2026년까지 매 거래일, 총 24,132건에 적용해 RQ2에 답합니다. 마지막으로 두 환경 모두에 같은 사후보정을 적용해 RQ3에 답합니다. 종목은 미국 5개, 한국 5개 대형주이고, 미국은 선행연구와 같은 종목, 한국은 2017년 초 시가총액 순위로 골랐습니다. 가설과 판정 기준, 코드는 실행 전에 고정해 커밋으로 남겼습니다.</aside>
 </section>

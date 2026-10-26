@@ -1,15 +1,20 @@
-<section id="limits" data-transition="fade" style="background:#EEF1F5;color:#2B3445;font-family:'Noto Sans KR', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:36px">
-<p style="font-size:26px;color:#A8541A;font-weight:700">한계와 향후 연구</p>
-<h2 style="font-family:'Noto Serif KR', Georgia, serif;font-size:52px;font-weight:700;line-height:1.3;color:#1F2A44">이 연구가 말하지 못하는 것</h2>
-<table style="font-size:27px;color:#2B3445">
-<tr><th style="width:28%">한계</th><th style="width:72%">내용</th></tr>
-<tr><td>80% 구간 중심</td><td>극단 구간(98%)은 Chronos-2 한 모델로만 확인</td></tr>
-<tr><td>특성의 범위</td><td>대형주 실측 범위 안(전환 빈도만 넘음). 위기 수준·특성 결합은 미실험</td></tr>
-<tr><td>표본</td><td>다음 날 예측, 대형주 10종목. 소형주·다른 자산·여러 날 앞은 미확인</td></tr>
-<tr><td>모델·입력</td><td>Chronos-T5 base, Moirai small. 종가 단변량(거래량은 일부 확인)</td></tr>
-<tr><td>보정</td><td>평균만 맞춤. 위반 몰림·분포 정확도는 그대로, 폭 효율 개선 여지</td></tr>
+<section id="limits" data-transition="fade" style="background:#FAF8F4;color:#2E3546;font-family:'Noto Sans KR', Arial, sans-serif;padding:104px 128px 176px;display:flex;flex-direction:column;gap:36px">
+<div style="position:absolute;left:0;top:0;width:16px;height:1080px;background:#B4561C"></div>
+<div style="position:absolute;left:128px;top:920px;width:1664px;height:2px;background:#E2DDD2"></div>
+<p style="font-size:26px;color:#B4561C;font-weight:700;letter-spacing:1px">한계와 향후 연구</p>
+<h2 style="font-family:'Noto Sans KR', Arial, sans-serif;font-size:52px;font-weight:700;line-height:1.25;letter-spacing:-1px;color:#1B2333;padding-bottom:28px;border-bottom:2px solid #E2DDD2">이 연구가 말하지 못하는 것</h2>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:36px">
+<table style="font-size:28px;color:#2E3546;background:#FFFEFD;border:1px solid #E2DDD2">
+<tr style="background:#1B2333"><th style="width:28%;color:#F5F3EE">한계</th><th style="width:72%;color:#F5F3EE">내용</th></tr>
+<tr style="background:#FFFEFD"><td>80% 구간 중심</td><td>극단 구간(98%)은 Chronos-2 한 모델로만 확인</td></tr>
+<tr style="background:#F4F1EA"><td>특성의 범위</td><td>대형주 실측 범위 안(전환 빈도만 넘음). 위기 수준·특성 결합은 미실험</td></tr>
+<tr style="background:#FFFEFD"><td>표본</td><td>다음 날 예측, 대형주 10종목. 소형주·다른 자산·여러 날 앞은 미확인</td></tr>
+<tr style="background:#F4F1EA"><td>모델·입력</td><td>Chronos-T5 base, Moirai small. 종가 단변량(거래량은 일부 확인)</td></tr>
+<tr style="background:#FFFEFD"><td>보정</td><td>평균만 맞춤. 위반 몰림·분포 정확도는 그대로, 폭 효율 개선 여지</td></tr>
 </table>
-<p style="font-size:28px;line-height:1.5">향후: 극단 분위수 모델에서 재검증, 위기 수준·결합 시나리오, 여러 날 앞·다른 자산, TimesFM 과대 원인, 조건부 보정</p>
-<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6B7280">본문 7.3~7.4절</p>
+<p style="font-size:30px;line-height:1.5">향후: 극단 분위수 모델에서 재검증, 위기 수준·결합 시나리오, 여러 날 앞·다른 자산, TimesFM 과대 원인, 조건부 보정</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1480px;font-size:24px;color:#646B7A">본문 7.3~7.4절</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;font-weight:700;color:#B4561C">28</p>
 <aside>한계도 분명히 말씀드리겠습니다. 첫째, 주분석은 80% 구간이고 극단 구간은 Chronos-2 한 모델로만 확인했습니다. 둘째, 특성의 세기는 대형주 10종목에서 실측한 범위 안입니다. 전환 빈도만 그 너머까지 했고, 위기 수준의 더 강한 특성이나 특성이 함께 작용하는 경우는 실험하지 않았습니다. 셋째, 다음 날 예측과 미국·한국 대형주 10종목에 한정됩니다. 넷째, 계산 자원 때문에 Chronos-T5는 base, Moirai는 small 크기만 썼고, 입력은 종가 하나뿐입니다. 다섯째, 보정은 평균 수준만 맞추고, 위반이 몰려 오는 문제와 분포 전체의 정확도는 그대로 둡니다. 향후 연구로는 극단 분위수를 내는 다른 모델에서의 재검증, 위기 수준과 결합 시나리오, 여러 날 앞 예측과 다른 자산, 그리고 시기에 따라 다르게 보정하는 방법을 생각하고 있습니다.</aside>
 </section>

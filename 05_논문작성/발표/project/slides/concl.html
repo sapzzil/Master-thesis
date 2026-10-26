@@ -1,21 +1,24 @@
-<section id="concl" data-transition="fade" style="background:#1F2A44;color:#F7F6F2;font-family:'Noto Sans KR', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:36px">
-<p style="font-size:28px;color:#F0A35E;font-weight:700">결론</p>
-<h2 style="font-family:'Noto Serif KR', Georgia, serif;font-size:56px;font-weight:700;line-height:1.35;color:#F7F6F2">평균 수준은 모델과 설정이 정하고,<br>금융 특성은 언제 틀리는지에 작용한다</h2>
+<section id="concl" data-transition="fade" style="background:#16203A;color:#F5F3EE;font-family:'Noto Sans KR', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<div style="position:absolute;left:0;top:0;width:16px;height:1080px;background:#F2A65A"></div>
+<div style="position:absolute;left:128px;top:920px;width:1664px;height:2px;background:rgba(245,243,238,.18)"></div>
+<p style="font-size:28px;color:#F2A65A;font-weight:700">결론</p>
+<h2 style="font-family:'Noto Sans KR', Arial, sans-serif;font-size:56px;font-weight:700;line-height:1.35;color:#F5F3EE">평균 수준은 모델과 설정이 정하고,<br>금융 특성은 언제 틀리는지에 작용한다</h2>
 <div style="display:flex;gap:28px">
-<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#2A3757;padding:36px;border-radius:16px">
-<p style="font-size:26px;color:#F0A35E;font-weight:700">진단</p>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#22304F;padding:36px;border-radius:16px">
+<p style="font-size:26px;color:#F2A65A;font-weight:700">진단</p>
 <p style="font-size:28px;line-height:1.5;color:#E6EAF1">80% 구간의 평균 커버리지는 모델·입력 설정에 따라 75~88%. 특성의 영향은 대부분 3%p 이내.</p>
 </div>
-<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#2A3757;padding:36px;border-radius:16px">
-<p style="font-size:26px;color:#F0A35E;font-weight:700">처방</p>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#22304F;padding:36px;border-radius:16px">
+<p style="font-size:26px;color:#F2A65A;font-weight:700">처방</p>
 <p style="font-size:28px;line-height:1.5;color:#E6EAF1">재학습 없는 사후보정으로 모든 경우 평균 80% 복원. 대가는 5~48% 넓은 구간.</p>
 </div>
-<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#2A3757;padding:36px;border-radius:16px">
-<p style="font-size:26px;color:#F0A35E;font-weight:700">남는 것</p>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#22304F;padding:36px;border-radius:16px">
+<p style="font-size:26px;color:#F2A65A;font-weight:700">남는 것</p>
 <p style="font-size:28px;line-height:1.5;color:#E6EAF1">평온·격변 시기의 차이, 극단 구간에서는 특성이 크게 작용. 보정이 일부만 메운다.</p>
 </div>
 </div>
 <p style="font-size:30px;line-height:1.5;color:#D8DEE9">→ TSFM 예측구간은 수익률 예측보다, 모델과 설정을 점검하고 보정을 거친 위험 측정에 쓰는 것이 적절하다.</p>
-<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#AEB8C8">본문 7.1절</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1480px;font-size:24px;color:#8C96A8">본문 7.1절</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;font-weight:700;color:#F2A65A">26</p>
 <aside>결론입니다. 80% 구간의 평균 커버리지 수준은 금융 특성보다 모델과 입력 설정이 정했습니다. 특성이 없는 데이터에서도 75에서 88%로 갈렸고, 특성을 강하게 해도 대부분 3%p 안에서만 움직였습니다. 이 오차는 재학습 없는 사후보정으로 모든 경우 평균 80%로 되돌릴 수 있었고, 대가는 이상적인 구간보다 5에서 48% 넓은 구간이었습니다. 다만 금융 특성이 중요하지 않다는 뜻은 아닙니다. 평온한 시기와 변동이 큰 시기의 커버리지 차이, 그리고 98% 같은 극단 구간에서는 특성이 크게 작용했고, 보정은 그 차이를 일부만 메웠습니다. 그래서 정확한 결론은 "평균 수준은 모델과 설정이 정하고, 금융 특성은 언제 틀리는지에 작용한다"입니다. 실무적으로는 TSFM 예측구간을 수익률 예측보다는, 모델과 설정을 점검하고 보정을 거친 위험 측정에 쓰는 것이 적절합니다.</aside>
 </section>
