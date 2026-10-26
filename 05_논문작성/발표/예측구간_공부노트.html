@@ -202,7 +202,9 @@ canvas{width:100%;display:block;background:var(--bg);border-radius:8px}
     <div class="ctrl">
       <label for="gF">특성 <select id="gF"><option value="cl">변동성 군집</option><option value="tl">두꺼운 꼬리</option><option value="rf">전환 빈도</option><option value="rs">전환 크기</option></select></label>
       <label for="gL">강도 <select id="gL"><option>L2</option><option>L3</option><option>L4</option><option selected>L5</option></select></label>
+      <label for="gN">기간 <select id="gN"><option value="332" selected>논문의 계열 하나 (332일)</option><option value="2000">긴 기간 (2,000일)</option></select></label>
       <button id="gRe" type="button">다른 계열 번호</button>
+      <button id="gStorm" type="button">폭풍 있는 계열 찾기</button>
     </div>
     <div class="readout">
       <div class="stat"><div class="v" id="gPar">—</div><div class="l">이 단계의 값</div></div>
@@ -370,7 +372,7 @@ const C = [
  easy:'모델의 진짜 출력은 분포 하나입니다. 점 예측은 그 분포의 가운데 값(중앙값)을 꺼낸 것이고, 예측구간은 분포의 양 끝을 꺼낸 것입니다. 같은 출력에서 필요한 숫자를 다르게 꺼내 쓸 뿐입니다.',
  ex:'오늘 100원 → 분위수 9개 97.3, 98.2, 98.9, 99.5, 100.0, 100.5, 101.1, 101.8, 102.7원. 점 예측은 100.0원, 80% 구간은 97.3~102.7원.',
  num:'선행연구(Rahimikia 외 2025, Noguer i Alonso·Franklin 2026)는 점 예측만 비교했고 구간은 보지 않았습니다. 이 연구의 출발점입니다.',
- trap:'"점 예측을 여러 번 해서 줄 세운다"는 것은 Chronos-T5만의 방식입니다. 나머지 세 모델은 분위수를 바로 냅니다.',
+ trap:'"값을 여러 번 뽑아 줄 세운다"는 것은 Chronos-T5만의 방식입니다(200번). 나머지 세 모델은 분위수를 바로 냅니다.',
  rel:['quantile','interval','chronost5'],s:[4],q:[1]},
 {id:'quantile',g:'basic',n:'분위수',en:'quantile',
  one:'"아래에서 몇 % 지점의 값"인가. 10% 분위수는 내일 값이 이보다 작을 확률이 10%인 값.',
@@ -449,7 +451,7 @@ const C = [
  one:'시장이 평온한 상태와 격변 상태를 오가는 성질. 얼마나 자주 바뀌나(빈도)와 얼마나 다르나(크기)로 나눴다.',
  easy:'2국면 마르코프 전환 모형으로 잽니다. "내일도 같은 상태일 확률 p"를 추정하면 평균 지속일은 1/(1−p). 격변기 변동 ÷ 평온기 변동이 변동비(크기)입니다. 빈도와 크기를 나누지 않으면 어느 쪽이 영향을 주는지 알 수 없어서 두 축으로 분리했습니다.',
  ex:'전환 빈도: L3 평온 275/격변 59일 → L5 9.5/2일. 전환 크기(변동비): L3 2.50배 → L5 3.19배(삼성전자).',
- num:'80% 구간에서 잦은 전환은 커버리지를 오히려 높였고(7개 조합 유의), 전환 크기는 영향이 없었습니다. Chronos-2의 98% 구간에서는 빈도·크기 모두 8개 조건 전부에서 −0.6~−1.0%p.',
+ num:'80% 구간에서 잦은 전환은 커버리지를 오히려 높였고(7개 조합 유의), 전환 크기는 영향이 없었습니다. Chronos-2의 98% 구간에서는 빈도 4개·크기 4개, 8개 조건 모두에서 −0.6~−1.0%p.',
  trap:'전환 빈도 L5만 실측 최대의 2배로, 실측 범위를 넘는 스트레스입니다. L2·L3은 한 계열에서 전환이 0~2번이라 "자주 바뀜"보다 "계열마다 변동 수준이 다름"에 가깝습니다.',
  rel:['levels','tailparadox','extreme98'],s:[10,11,14],q:[4,5]},
 /* ---- 설계 ---- */
@@ -502,7 +504,7 @@ const C = [
  one:'과거 수익률의 평균·표준편차로 내일의 정규분포를 그리는 가장 단순한 예측 방법.',
  easy:'"방향은 모르니 중심은 거의 0, 폭은 최근 변동 크기만큼"이라고 답하는 방법입니다. 학습도 패턴 분석도 없습니다. 특성이 없다고 가정하므로, 특성을 넣은 데이터에서는 그 가정이 틀린 만큼 커버리지가 흔들립니다.',
  ex:'과거 21일 또는 252일 사용.',
- num:'같은 합성 데이터에서 RW 1년의 L5−L1: 군집 +2.3, 꼬리 +6.8, 전환 빈도 +5.5, 전환 크기 +7.0%p. TSFM은 대부분 3%p 안. 실제 주가 분포 정확도에서는 RW를 넘은 TSFM 조합이 없었습니다(H5 미지지).',
+ num:'같은 합성 데이터에서 RW 1년의 L5−L1: 군집 +2.3, 꼬리 +6.8, 전환 빈도 +5.5, 전환 크기 +7.0%p. TSFM은 대부분 3%p 안. 실제 주가의 분포 정확도에서 실질 기준(2%)만큼 RW보다 나은 TSFM 조합은 없었습니다(H5 미지지).',
  trap:'RW가 크게 흔들렸다는 사실이 "합성 데이터에 특성이 충분히 들어갔다"는 증거(양성 대조)입니다.',
  rel:['rwdata','garch','h5','tailparadox'],s:[12,14,19],q:[3,5,10]},
 {id:'garch',g:'design',n:'GARCH(1,1)-t',en:'GARCH with Student-t',
@@ -519,7 +521,7 @@ const C = [
 {id:'hyp',g:'design',n:'가설 H1~H6',en:'hypotheses',
  one:'기존 관점(금융 특성은 예측에 불리하다)을 그대로 가설로 두고 검정했다.',
  easy:'H1 군집↑ → 커버리지↓, H2 꼬리↑ → ↓, H3a 전환 잦음 → ↓, H3b 전환 큼 → ↓, H4 특성마다 정도가 다름, H5 실제 주가에서 TSFM이 RW보다 분포 정확, H6 보정 후 80% 복원.',
- ex:'판정: H1은 일부 지지, H2·H3a는 반대 방향, H3b 미지지, H4 지지(군집 최불리), H5 미지지, H6 지지.',
+ ex:'판정: H1 일부 지지(Chronos-2·Moirai-2에서 조건에 따라 다름, 실질 하락 2개 조건), H2·H3a 미지지(반대 방향), H3b 미지지, H4 16개 중 10개 지지(10개 모두 군집이 가장 불리), H5 미지지, H6 전면 지지.',
  num:'',trap:'"가설이 기각됐다 = 실패"가 아니라, 통념이 80% 구간에서는 성립하지 않는다는 결과입니다.',
  rel:['cluster','tail','regime','h5','aci'],s:[8,17],q:[]},
 /* ---- 통계 ---- */
@@ -574,9 +576,9 @@ const C = [
  trap:'"특성이 덜 중요하다"로 일반화하면 과장입니다. 언제 틀리느냐(시기별)와 극단 구간에서는 특성이 크게 작용합니다.',
  rel:['inputs','conditional','extreme98'],s:[14,18],q:[6]},
 {id:'extreme98',g:'stat',n:'98% 극단 구간',en:'98% interval',
- one:'1%·99% 분위수 사이. 극단 위험을 보는 구간. Chronos-2만 이런 극단 분위수를 직접 낸다.',
+ one:'1%·99% 분위수 사이. 극단 위험을 보는 구간. 네 모델이 공통으로 내는 분위수는 0.1~0.9라서, 0.01~0.99를 직접 내는 Chronos-2로만 확인했다.',
  easy:'80% 구간에서 "꼬리가 무해"해 보인 것이 극단 구간에서도 그런지 확인한 것입니다.',
- ex:'꼬리: 4개 조건 중 3개에서 −0.8~−1.0%p. 전환 빈도·크기: 8개 조건 모두 −0.6~−1.0%p.',
+ ex:'Chronos-2 4개 조건 기준. 꼬리: 4개 조건 중 3개에서 −0.8~−1.0%p. 전환 빈도 4개·크기 4개: 8개 모두 −0.6~−1.0%p. 참고로 Chronos-2의 L1 98% 커버리지는 이미 97.9~99.6%로 높은 편.',
  num:'이론 계산이 예상한 크기(약 1%p)와 비슷합니다.',
  trap:'한 모델로만 확인했습니다. 다른 모델에서의 재검증은 향후 연구.',
  rel:['tailparadox','tail','regime'],s:[15,17,27,28],q:[5,6]},
@@ -749,7 +751,7 @@ const FIG = {
   topk:()=>tableHTML(['Chronos-T5 수익률','기본(top-k 50)','제한 해제'],[['합성 L1','14.0~14.7%','76.0~78.6%'],['실제 10종목','16.9~17.6%','77.8~80.0%']]),
   conditional:()=>tableHTML(['실제 10종목(%)','평온한 달 (전 → 후)','변동이 큰 달 (전 → 후)'],[['TSFM 1년·수익률','85.3~89.0 → 82.3~83.2','67.0~73.6 → 77.5~78.9'],['TSFM 한 달·수익률','80.9~85.4 → 81.1~81.4','74.5~79.7 → 79.3~79.8'],['RW 1년','93.3 → 83.6','70.4 → 76.5']]),
   pinball:()=>tableHTML(['RW 대비 분위수 손실','조합 수','개선율'],[['유의하게 나쁨','12','−0.8 ~ −9.8%'],['차이 없음(1년·수익률)','3','−0.1 ~ +0.3%'],['유의하게 좋지만 실질 미만','1','+0.9%']]),
-  hyp:()=>tableHTML(['가설','내용','판정'],[['H1','군집↑ → 커버리지↓','일부 지지'],['H2','꼬리↑ → ↓','반대 방향'],['H3a','전환 잦음 → ↓','반대 방향'],['H3b','전환 큼 → ↓','미지지'],['H4','특성마다 다름','지지(군집 최불리)'],['H5','TSFM이 RW보다 분포 정확','미지지'],['H6','보정 후 80% 복원','지지(모든 경우)']]),
+  hyp:()=>tableHTML(['가설','내용','판정'],[['H1','군집↑ → 커버리지↓','일부 지지(2개 조건 실질 하락)'],['H2','꼬리↑ → ↓','미지지, 반대 방향(11개 상승)'],['H3a','전환 잦음 → ↓','미지지, 반대 방향(7개 상승)'],['H3b','전환 큼 → ↓','미지지'],['H4','특성마다 다름','16개 중 10개 지지, 모두 군집 최불리'],['H5','TSFM이 RW보다 분포 정확','미지지'],['H6','보정 후 80% 복원','지지(모든 경우)']]),
 };
 function tableHTML(h,rows){return `<table class="t"><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr>${rows.map(r=>`<tr>${r.map(x=>`<td>${x}</td>`).join('')}</tr>`).join('')}</table>`}
 
@@ -894,26 +896,26 @@ document.querySelectorAll('[data-nu]').forEach(b=>b.onclick=()=>{document.getEle
 const PAR={cl:{L2:.473,L3:.946,L4:.982,L5:.996},tl:{L2:11.28,L3:7.64,L4:4.39,L5:3.56},
   rf:{L2:[550.4,117.5],L3:[275.2,58.7],L4:[35.6,7.6],L5:[9.5,2.0]},rs:{L2:1.75,L3:2.50,L4:2.70,L5:3.19}};
 let genSeed=3;
-function genSeries(f,L,seed){
-  const N=532,W=200,sig=2.11, r=rng(seed), z=normals(r,N), u=Array.from({length:N},()=>r()), rc=rng(seed+7777);
-  const out=new Float64Array(N), base=new Float64Array(N);let state=0;
+function genSeries(f,L,seed,len=332){
+  const N=200+len,W=200,sig=2.11, r=rng(seed), z=normals(r,N), u=Array.from({length:N},()=>r()), rc=rng(seed+7777);
+  const out=new Float64Array(N), base=new Float64Array(N), vol=new Float64Array(N);let state=0;
   let s2=sig*sig;
   for(let t=0;t<N;t++){
     base[t]=sig*z[t];
-    if(f==='cl'){const p=PAR.cl[L],a=.1*p,b=.9*p,om=sig*sig*(1-p);const prev=t?out[t-1]:0;s2=t?om+a*prev*prev+b*s2:sig*sig;out[t]=Math.sqrt(s2)*z[t]}
-    else if(f==='tl'){const nu=PAR.tl[L];out[t]=sig*Math.sqrt((nu-2)/nu)*z[t]/Math.sqrt(2*gamma(rc,nu/2)/nu)}
+    if(f==='cl'){const p=PAR.cl[L],a=.1*p,b=.9*p,om=sig*sig*(1-p);const prev=t?out[t-1]:0;s2=t?om+a*prev*prev+b*s2:sig*sig;vol[t]=Math.sqrt(s2);out[t]=vol[t]*z[t]}
+    else if(f==='tl'){const nu=PAR.tl[L];vol[t]=sig;out[t]=sig*Math.sqrt((nu-2)/nu)*z[t]/Math.sqrt(2*gamma(rc,nu/2)/nu)}
     else{
       const [dc,dt]=f==='rf'?PAR.rf[L]:[35.6,7.6], ratio=f==='rf'?2.70:PAR.rs[L];
       const pc=dc/(dc+dt), sc=sig/Math.sqrt(pc+(1-pc)*ratio*ratio), st=ratio*sc;
       if(t===0) state=u[0]<pc?0:1; else {const stay=state===0?1-1/dc:1-1/dt; if(u[t]>stay) state=1-state}
-      out[t]=(state?st:sc)*z[t]; out['s'+t]=state;
+      vol[t]=state?st:sc;out[t]=vol[t]*z[t]; out['s'+t]=state;
     }
   }
-  return {out,base,W};
+  return {out,base,W,vol};
 }
 function drawGen(){
   const f=document.getElementById('gF').value,L=document.getElementById('gL').value;
-  const {out,base,W}=genSeries(f,L,genSeed);
+  const len=+document.getElementById('gN').value;const {out,base,W,vol}=genSeries(f,L,genSeed,len);
   const pv=PAR[f][L];document.getElementById('gPar').textContent=f==='cl'?'α+β '+pv:f==='tl'?'ν '+pv:f==='rf'?pv[0]+'/'+pv[1]+'일':'변동비 '+pv+'배';
   const sd=a=>{let m=0,n=0;for(let i=W;i<a.length;i++){m+=a[i]*a[i];n++}return Math.sqrt(m/n)};
   const ex=a=>{let k=0,n=0;for(let i=W;i<a.length;i++){if(Math.abs(a[i])>3*2.11)k++;n++}return (100*k/n).toFixed(1)+'%'};
@@ -925,12 +927,15 @@ function drawGen(){
   g.strokeStyle=css('--line');[y1,y2].forEach(y=>{g.beginPath();g.moveTo(30,y);g.lineTo(w-10,y);g.stroke()});
   const bars=(a,y,col)=>{g.strokeStyle=col;g.beginPath();for(let i=0;i<n;i++){const v=Math.max(-12,Math.min(12,a[i+W]));g.moveTo(X(i),y);g.lineTo(X(i),y-v*sc)}g.stroke()};
   bars(base,y1,css('--muted'));bars(out,y2,css('--orange'));
+  if(f!=='tl'){g.strokeStyle=css('--ink');g.lineWidth=1.2;[1,-1].forEach(sg=>{g.beginPath();for(let i=0;i<n;i++){const yy=y2-sg*Math.min(12,1.2816*vol[i+W])*sc;i?g.lineTo(X(i),yy):g.moveTo(X(i),yy)}g.stroke()});g.lineWidth=1;g.fillStyle=css('--ink');g.fillText('검은 선 = 그날의 참 80% 구간(±1.28σₜ)',34,h-4)}
   g.fillStyle=css('--muted');g.fillText('L1 (특성 없음)',34,16);g.fillStyle=css('--orange');g.fillText(L+' · '+document.getElementById('gF').selectedOptions[0].text+(f==='rf'||f==='rs'?' (음영 = 격변 국면)':''),34,y2-half+8);
-  g.fillStyle=css('--muted');g.fillText('±12%에서 자름 · 332일',w-160,h-4);
-  const notes={cl:'큰 변동이 한 시기에 몰리고 그 사이는 잔잔해집니다. L1에서 큰 날이 고르게 흩어진 것과 비교해 보세요.',tl:'극단적인 날이 시기와 무관하게 드문드문 튑니다. 대신 평소 막대는 L1보다 짧아집니다(분산이 같으니까).',rf:'짧은 격변 국면(음영)이 자주 옵니다. L2·L3은 지속이 길어 한 계열에서 전환이 거의 없습니다.',rs:'격변 국면의 변동이 평온 국면의 몇 배인지가 커집니다. 지속일은 35.6/7.6일로 고정.'};
+  g.fillStyle=css('--muted');g.fillText('±12%에서 자름 · '+n+'일',w-160,h-4);
+  const notes={cl:'군집 L5는 변동이 "큰" 데이터가 아니라, 같은 평균 변동(2.11%)이 드문 폭풍기에 "몰리는" 데이터입니다. 폭풍기에 분산이 몰리는 만큼 나머지 기간은 L1보다 잔잔합니다. 그래서 332일짜리 계열 하나에 폭풍기가 없으면 막대가 전부 L1보다 작아 보입니다. 실제 실험 데이터(계열 100개)로 확인하면 군집 L5는 전체로는 하루 변동 2.19%지만 계열별로는 중앙값 1.51%(하위 10% 1.03%, 상위 10% 3.10%)이고 100개 중 72개가 2.11%보다 잔잔합니다(L3 중앙값 2.10%, L4 2.05%). 분산이 소수 계열의 폭풍에서 나옵니다. "폭풍 있는 계열 찾기"를 눌러 보세요.',tl:'극단적인 날이 시기와 무관하게 드문드문 튑니다. 대신 평소 막대는 L1보다 짧아집니다(분산이 같으니까).',rf:'짧은 격변 국면(음영)이 자주 옵니다. L2·L3은 지속이 길어 한 계열에서 전환이 거의 없습니다.',rs:'격변 국면의 변동이 평온 국면의 몇 배인지가 커집니다. 지속일은 35.6/7.6일로 고정.'};
   document.getElementById('gNote').textContent=notes[f]+' 같은 난수를 쓰므로 막대의 방향(위/아래)은 L1과 같은 날에 같습니다.';
 }
 ['gF','gL'].forEach(i=>document.getElementById(i).addEventListener('input',drawGen));
+['gN'].forEach(i=>document.getElementById(i).addEventListener('input',drawGen));
+document.getElementById('gStorm').onclick=()=>{const f=document.getElementById('gF').value,L=document.getElementById('gL').value,len=+document.getElementById('gN').value;for(let k=1;k<=300;k++){const {vol,W}=genSeries(f,L,genSeed+k,len);let m=0;for(let i=W;i<vol.length;i++)m=Math.max(m,vol[i]);if(m>(f==='cl'?6:4.5)){genSeed+=k;break}}drawGen()};
 document.getElementById('gRe').onclick=()=>{genSeed++;drawGen()};
 
 /* ---- ④ ACI ---- */
