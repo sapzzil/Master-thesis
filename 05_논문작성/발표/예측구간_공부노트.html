@@ -155,6 +155,12 @@ canvas{width:100%;display:block;background:var(--bg);border-radius:8px}
     <button data-l="tail">② 꼬리의 역설</button>
     <button data-l="gen">③ 합성 데이터 만들기</button>
     <button data-l="aci">④ 사후보정 따라 하기</button>
+    <button data-l="pin">⑤ 분위수 손실 채점</button>
+    <button data-l="win">⑥ 과거 1년 vs 한 달</button>
+    <button data-l="var">⑦ VaR 백테스트</button>
+    <button data-l="vt">⑧ 변동성 목표 비중</button>
+    <button data-l="topk">⑨ top-k 문제 재현</button>
+    <button data-l="holm">⑩ 16번 검정하면</button>
   </div>
 
   <div class="lab" id="lab-cov">
@@ -224,6 +230,102 @@ canvas{width:100%;display:block;background:var(--bg);border-radius:8px}
     <canvas id="aciC" height="300"></canvas>
     <canvas id="aciA" height="120" style="margin-top:8px"></canvas>
     <p class="note">위: 회색 띠는 원래 구간, 파란 선은 보정한 구간, 점은 실제 수익률(주황 = 보정 구간 밖). 아래: 보정의 내부 목표 α<sub>t</sub>. 밖으로 나가면 α가 줄어(목표 커버리지가 올라가) 다음 구간이 넓어지고, 계속 들어오면 α가 늘어 좁아집니다. 갱신식 α<sub>t+1</sub> = clip(α<sub>t</sub> + γ(0.2 − 이탈), 0.02, 0.50).</p>
+  </div>
+
+  <div class="lab" id="lab-pin" hidden>
+    <h2>분위수 손실은 무엇을 벌주나</h2>
+    <p class="lead">커버리지는 80% 구간의 양 끝 두 점만 봅니다. 분위수 손실은 9개 분위수를 모두 채점해서, 너무 넓은 구간(커버리지는 높음)과 중심이 틀린 구간도 벌줍니다. 실제 분포는 정규(하루 변동 2.11%)이고, 모델 분포의 중심과 폭을 바꿔 보세요.</p>
+    <div class="ctrl">
+      <label for="pM">폭 배율 <input id="pM" type="range" min="0.3" max="2.5" step="0.05" value="1"> <b id="pMv" style="font-family:var(--mono)">1.00</b></label>
+      <label for="pB">중심 치우침(σ 단위) <input id="pB" type="range" min="-1" max="1" step="0.05" value="0"> <b id="pBv" style="font-family:var(--mono)">0.00</b></label>
+    </div>
+    <div class="readout">
+      <div class="stat"><div class="v" id="pCov">—</div><div class="l">80% 커버리지</div></div>
+      <div class="stat"><div class="v" id="pLoss">—</div><div class="l">분위수 손실 (최적 대비)</div></div>
+    </div>
+    <canvas id="pinC" height="240"></canvas>
+    <canvas id="pinD" height="150" style="margin-top:8px"></canvas>
+    <p class="note">위: 폭 배율에 따른 커버리지(파랑)와 분위수 손실(주황, 최적 = 0%). 폭 1.6배면 커버리지는 95%를 넘지만 손실은 오히려 커집니다. 아래: 10% 분위수 하나를 채점하는 방식. 실제값이 분위수보다 아래면 0.9 × 거리, 위면 0.1 × 거리만큼 벌점이라, 10% 분위수는 "웬만하면 실제값이 위에 있도록" 낮게 잡는 게 정답입니다. 이 연구에서 TSFM 12개 조합이 RW보다 이 손실이 유의하게 컸습니다(H5).</p>
+  </div>
+
+  <div class="lab" id="lab-win" hidden>
+    <h2>과거를 얼마나 볼까: 평온한 시기와 격변기의 커버리지</h2>
+    <p class="lead">변동성 군집이 있는 데이터에서 RW(과거 변동 기준선)가 과거 21일 또는 252일로 구간을 그립니다. 평균은 80% 근처여도, 1년치 과거는 최근 변화를 늦게 따라가서 평온할 때 넓고 격변기에 좁습니다. 보정을 켜면 그 차이가 줄어듭니다(본문 6.6절 표 6-4의 원리).</p>
+    <div class="ctrl">
+      <label for="wD">데이터 <select id="wD"><option value="0.996">군집 L5 (α+β 0.996)</option><option value="0.982">군집 L4 (0.982)</option><option value="0">L1 (특성 없음)</option></select></label>
+      <label><input id="wA" type="checkbox"> 사후보정(ACI-CQR, 연속) 켜기</label>
+      <button id="wRe" type="button">다른 난수</button>
+    </div>
+    <div class="fig"><table class="t" id="wT"></table></div>
+    <canvas id="winC" height="280" style="margin-top:10px"></canvas>
+    <p class="note">3,024일을 만들어 21일(한 달)씩 묶고, 그 달에 실제로 나타난 변동(실현 변동성)의 하위 20% 달을 "평온", 상위 20% 달을 "격변"으로 나눴습니다(본문과 같은 방식). 그림은 마지막 600일, 회색 = 252일 구간, 파랑 = 21일 구간.</p>
+  </div>
+
+  <div class="lab" id="lab-var" hidden>
+    <h2>VaR 백테스트: 비율도 맞고, 흩어져 와야 한다</h2>
+    <p class="lead">80% 구간의 하단을 위험 한도(VaR 10%)로 씁니다. 한도를 넘은 날의 비율이 10%인지(Kupiec 검정)와, 넘은 날이 몰려 오지 않는지(Christoffersen 독립성 검정)를 봅니다.</p>
+    <div class="ctrl">
+      <label for="vD">데이터 <select id="vD"><option value="0.996">군집 L5</option><option value="0">L1 (특성 없음)</option></select></label>
+      <label for="vM">모델 <select id="vM"><option value="true">참 변동을 아는 모델</option><option value="rw252">RW 과거 252일</option><option value="rw21">RW 과거 21일</option><option value="narrow">참 변동의 0.8배 (좁음)</option><option value="wide">참 변동의 1.25배 (넓음)</option></select></label>
+      <label for="vN">기간 <select id="vN"><option value="250">250일 (1년)</option><option value="1000" selected>1,000일</option></select></label>
+      <button id="vRe" type="button">다른 난수</button>
+    </div>
+    <div class="readout">
+      <div class="stat"><div class="v" id="vRate">—</div><div class="l">한도 위반율 (목표 10%)</div></div>
+      <div class="stat"><div class="v" id="vK">—</div><div class="l">Kupiec p값 · 판정</div></div>
+      <div class="stat"><div class="v" id="vI">—</div><div class="l">독립성 p값 · 판정</div></div>
+      <div class="stat"><div class="v" id="vRun">—</div><div class="l">위반 다음 날 또 위반</div></div>
+    </div>
+    <canvas id="varC" height="220"></canvas>
+    <p class="note">아래 띠의 눈금 하나가 위반 하루. 군집 데이터에 RW 252일을 쓰면 비율은 10% 근처여도 격변기에 위반이 몰릴 수 있습니다. "다른 난수"를 여러 번 눌러 보면 독립성 검정에서 기각되는 경우가 나옵니다. 좁거나 넓은 모델은 비율 자체가 틀려 Kupiec에서 기각됩니다. 유의수준 5%, p ≥ 0.05면 통과. 위반 다음 날 또 위반하는 비율은 몰림이 없으면 10% 근처입니다.</p>
+  </div>
+
+  <div class="lab" id="lab-vt" hidden>
+    <h2>변동성 목표 비중: 구간 폭으로 얼마나 살지 정하기</h2>
+    <p class="lead">구간 폭으로 내일 변동을 추정(σ̂ = 80% 폭 ÷ 2.5631)하고, 비중 = min(1, 1% ÷ σ̂). 하루 변동을 1% 안팎으로 맞추려는 규칙입니다. 모델이 변동을 틀리게 보면 실제 변동이 목표에서 벗어납니다.</p>
+    <div class="ctrl">
+      <label for="tM">모델이 본 변동 ÷ 참 변동 <input id="tM" type="range" min="0.5" max="1.6" step="0.05" value="1"> <b id="tMv" style="font-family:var(--mono)">1.00</b></label>
+      <label for="tS">구간 출처 <select id="tS"><option value="true">참 변동 × 배율</option><option value="rw252">RW 과거 252일 × 배율</option></select></label>
+      <button id="tRe" type="button">다른 난수</button>
+    </div>
+    <div class="readout">
+      <div class="stat"><div class="v" id="tRv">—</div><div class="l">실현 변동 ÷ 목표 1%</div></div>
+      <div class="stat"><div class="v" id="tMdd">—</div><div class="l">최대 낙폭 (계속 보유 / 비중 조절)</div></div>
+      <div class="stat"><div class="v" id="tW">—</div><div class="l">평균 비중</div></div>
+    </div>
+    <canvas id="vtC" height="280"></canvas>
+    <p class="note">군집 L4(α+β 0.982) 데이터 2,000일(평균 수익 연 약 10%를 더함), 거래비용 없음. 회색 = 계속 보유, 주황 = 비중 조절(누적 가치, 로그 눈금). 논문(실제 10종목, 비용 반영)에서는 최대 낙폭 −33.5% → −17~−25%, 보정 후 실현 변동이 목표의 1.05~1.14배였습니다.</p>
+  </div>
+
+  <div class="lab" id="lab-topk" hidden>
+    <h2>Chronos-T5의 top-k = 50이 구간을 자른 이유</h2>
+    <p class="lead">Chronos-T5는 입력을 평균 절댓값으로 나눈 뒤, −15~+15를 4,096칸으로 나눠 다음 칸을 뽑습니다. 기본 설정은 확률이 높은 상위 k칸에서만 뽑습니다. 수익률 입력은 평균 절댓값이 작아 다음 값이 수백 칸에 퍼지는데, 가격 입력은 몇 칸에 몰립니다.</p>
+    <div class="ctrl">
+      <label for="kI">입력 <select id="kI"><option value="ret">수익률 (평균 0 근처)</option><option value="price">가격 (100원 근처)</option></select></label>
+      <label for="kK">top-k <input id="kK" type="range" min="0" max="7" step="1" value="2"> <b id="kKv" style="font-family:var(--mono)">50</b></label>
+    </div>
+    <div class="readout">
+      <div class="stat"><div class="v" id="kNeed">—</div><div class="l">80%를 담는 데 필요한 칸 수</div></div>
+      <div class="stat"><div class="v" id="kCov">—</div><div class="l">이 설정의 커버리지</div></div>
+      <div class="stat"><div class="v" id="kInt">—</div><div class="l">80% 구간 (수익률 %)</div></div>
+    </div>
+    <canvas id="topkC" height="240"></canvas>
+    <p class="note">단순화한 모형입니다. 모델이 다음 값의 분포를 정확히 안다고 가정하고(정규, 하루 변동 2.11%), 칸 나누기와 상위 k칸 제한만 흉내 냈습니다. 그래서 수치는 본문(합성 14.0~14.7%, 제한 해제 후 76.0~78.6%)과 같지 않지만, 수익률 입력에서만 무너지고 가격 입력은 멀쩡한 이유는 같습니다. 진한 막대 = 남는 칸, 옅은 막대 = 잘린 칸.</p>
+  </div>
+
+  <div class="lab" id="lab-holm" hidden>
+    <h2>효과가 없어도 16번 검정하면 하나쯤은 "유의"하다</h2>
+    <p class="lead">16개 조합을 각각 검정하면, 실제로는 아무 차이가 없어도 p &lt; 0.05가 하나쯤 나올 확률이 큽니다. Holm 보정은 p값을 작은 순으로 0.05/16, 0.05/15, …와 차례로 비교해서 이를 막습니다.</p>
+    <div class="ctrl">
+      <button id="hOne" type="button">효과 없는 검정 16개 한 번</button>
+      <button id="hMany" type="button">1,000번 반복</button>
+    </div>
+    <div class="readout">
+      <div class="stat"><div class="v" id="hRaw">—</div><div class="l">하나라도 유의 (보정 없이)</div></div>
+      <div class="stat"><div class="v" id="hHolm">—</div><div class="l">하나라도 유의 (Holm)</div></div>
+    </div>
+    <canvas id="holmC" height="240"></canvas>
+    <p class="note">점 = 이번 16개 검정의 p값(작은 순), 회색 선 = 보정 없는 기준 0.05, 주황 계단 = Holm 기준. 점이 회색 선 아래면 "보정 없이 유의", 주황 계단 아래(앞에서부터 연속으로)면 "Holm 후에도 유의". 이론값: 1 − 0.95¹⁶ ≈ 56%.</p>
   </div>
 </section>
 
@@ -598,6 +700,8 @@ const C = [
  trap:'',rel:['tsfm','moirai'],s:[19],q:[13]},
 ];
 const byId = Object.fromEntries(C.map(c=>[c.id,c]));
+const LABNAME={cov:'① 구간 폭과 커버리지',tail:'② 꼬리의 역설',gen:'③ 합성 데이터 만들기',aci:'④ 사후보정 따라 하기',pin:'⑤ 분위수 손실 채점',win:'⑥ 과거 1년 vs 한 달',var:'⑦ VaR 백테스트',vt:'⑧ 변동성 목표 비중',topk:'⑨ top-k 문제 재현',holm:'⑩ 16번 검정하면'};
+const C2L={interval:['cov'],coverage:['cov'],miscal:['cov'],width:['cov','pin'],sigma:['cov','gen'],tail:['tail','gen'],tailparadox:['tail','cov'],cluster:['gen','win'],regime:['gen'],synth:['gen'],levels:['gen'],crn:['gen'],rwdata:['gen'],posthoc:['aci','win'],aci:['aci'],cqr:['aci'],episode:['aci'],control:['aci'],pinball:['pin'],h5:['pin'],quantile:['pin'],rwmodel:['win','var'],garch:['win'],conditional:['win','var'],var:['var'],kupiec:['var'],christoffersen:['var'],voltarget:['vt'],sharpe:['vt'],mdd:['vt'],chronost5:['topk'],topk:['topk'],ret:['topk'],holm:['holm'],pvalue:['holm'],practical:['holm'],tests:['holm'],inputs:['topk'],extreme98:['tail']};
 const SL = {1:'표지',2:'한 장 요약',3:'배경',4:'모델이 내는 것',5:'커버리지',6:'왜 커버리지인가',7:'연구 질문',8:'가설',9:'설계 개요',10:'합성 데이터 ①',11:'합성 데이터 ②',12:'모델과 비교 대상',13:'RQ1 결과 ①',14:'RQ1 결과 ②',15:'RQ1 해석',16:'발견과 조치',17:'RQ1의 답',18:'RQ2 결과 ①',19:'RQ2 결과 ②',20:'RQ2의 답',21:'RQ3 방법',22:'RQ3 결과 ①',23:'RQ3 결과 ②',24:'RQ3 결과 ③',25:'탐색 분석',26:'결론',27:'기여',28:'한계'};
 
 /* ===================== 그림 (개념별 작은 도식) ===================== */
@@ -675,6 +779,7 @@ function renderDetail(){
    ${c.num?`<div class="sec"><h4>이 논문에서</h4><div class="box num">${c.num}</div></div>`:''}
    ${c.trap?`<div class="sec"><h4>헷갈리기 쉬운 점</h4><div class="box trap">${c.trap}</div></div>`:''}
    ${c.rel.length?`<div class="sec"><h4>같이 보면 좋은 개념</h4><div class="rel">${c.rel.filter(r=>byId[r]).map(r=>`<button data-id="${r}">${byId[r].n}</button>`).join('')}</div></div>`:''}
+   ${C2L[c.id]?`<div class="sec"><h4>직접 해보기</h4><div class="rel">${C2L[c.id].map(l=>`<button data-lab="${l}" style="border-color:var(--orange)">${LABNAME[l]} ↗</button>`).join('')}</div></div>`:''}
    ${where?`<div class="sec"><h4>발표에서 나오는 곳</h4><p class="where">${where}</p></div>`:''}
    <div class="navrow">${prev?`<button data-id="${prev.id}">← ${prev.n}</button>`:'<span></span>'}${next?`<button data-id="${next.id}">${next.n} →</button>`:'<span></span>'}</div>`;
 }
@@ -683,7 +788,7 @@ function openConcept(id,push=true){
   if(push) setHash('c-'+id);
   detailEl.scrollIntoView({block:'start',behavior:'smooth'});
 }
-document.addEventListener('click',e=>{const b=e.target.closest('[data-id]');if(b){openConcept(b.dataset.id)}});
+document.addEventListener('click',e=>{const l=e.target.closest('[data-lab]');if(l){openLab(l.dataset.lab);return}const b=e.target.closest('[data-id]');if(b){openConcept(b.dataset.id)}});
 qEl.addEventListener('input',renderList);
 
 /* ===================== 흐름도 ===================== */
@@ -738,7 +843,7 @@ const ZQ={80:1.2815516,95:1.959964,99:2.5758293};
 
 /* ===================== 캔버스 공통 ===================== */
 function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()}
-function setup(cv){const dpr=window.devicePixelRatio||1;const w=cv.clientWidth||600,h=+cv.getAttribute('height');cv.width=w*dpr;cv.height=h*dpr;cv.style.height=h+'px';const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,w,h);g.font='12px '+css('--sans');return [g,w,h]}
+function setup(cv){const dpr=window.devicePixelRatio||1;if(!cv.dataset.h)cv.dataset.h=cv.getAttribute('height');const w=cv.clientWidth||600,h=+cv.dataset.h;cv.width=w*dpr;cv.height=h*dpr;cv.style.height=h+'px';const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,w,h);g.font='12px '+css('--sans');return [g,w,h]}
 
 /* ---- ① 커버리지 ---- */
 let covSeed=11;
@@ -867,9 +972,176 @@ function drawACI(){
 ['aM','aG','aN'].forEach(i=>document.getElementById(i).addEventListener('input',drawACI));
 document.getElementById('aRe').onclick=()=>{aciSeed++;drawACI()};
 
+/* ---- 공통: GARCH 생성 ---- */
+function garchSeries(seed,N,p){const sig=2.11,r=rng(seed),z=normals(r,N+200),a=.1*p,b=.9*p,om=sig*sig*(1-p);const y=new Float64Array(N),s=new Float64Array(N);let s2=sig*sig,prev=0;for(let t=0;t<N+200;t++){if(t)s2=om+a*prev*prev+b*s2;const v=Math.sqrt(s2)*z[t];prev=v;if(t>=200){y[t-200]=v;s[t-200]=Math.sqrt(s2)}}return {y,s}}
+function rwBand(y,t,L){let m=0,q=0;for(let i=t-L;i<t;i++){m+=y[i]}m/=L;for(let i=t-L;i<t;i++)q+=(y[i]-m)*(y[i]-m);const sd=Math.sqrt(q/(L-1));return [m-Z90*sd,m+Z90*sd]}
+function sortedInsert(a,v){let lo=0,hi=a.length;while(lo<hi){const mid=(lo+hi)>>1;if(a[mid]<v)lo=mid+1;else hi=mid}a.splice(lo,0,v)}
+function aciSeq(lo,hi,y,gam,warm){const n=y.length,L=new Float64Array(n),U=new Float64Array(n),sc=[];let al=.2;for(let t=0;t<n;t++){L[t]=lo[t];U[t]=hi[t];const w=hi[t]-lo[t];if(t>=warm){const k=Math.ceil((sc.length+1)*(1-al));const s=k>sc.length?sc[sc.length-1]:sc[Math.max(1,k)-1];L[t]=lo[t]-s*w;U[t]=hi[t]+s*w;const out=y[t]<L[t]||y[t]>U[t];al=Math.min(.5,Math.max(.02,al+gam*(.2-(out?1:0))))}sortedInsert(sc,Math.max(lo[t]-y[t],y[t]-hi[t])/w)}return {L,U}}
+function Phi(x){const t=1/(1+0.2316419*Math.abs(x)),d=0.3989423*Math.exp(-x*x/2);let p=d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));return x>0?1-p:p}
+function chi1p(lr){return lr<=0?1:2*(1-Phi(Math.sqrt(lr)))}
+const xlogy=(x,y)=>x===0?0:x*Math.log(y);
+function axisText(g,txt,x,y){g.fillStyle=css('--muted');g.fillText(txt,x,y)}
+
+/* ---- ⑤ 분위수 손실 ---- */
+const TAUS=[.1,.2,.3,.4,.5,.6,.7,.8,.9], ZT=[-1.2815516,-0.8416212,-0.5244005,-0.2533471,0,0.2533471,0.5244005,0.8416212,1.2815516];
+const PIN_Y=(()=>{const r=rng(42);return normals(r,6000)})();
+function pinLoss(m,b){let s=0;for(let i=0;i<PIN_Y.length;i++){const y=PIN_Y[i];for(let j=0;j<9;j++){const q=b+m*ZT[j],tau=TAUS[j];s+=y<q?(1-tau)*(q-y):tau*(y-q)}}return s/PIN_Y.length/9}
+function pinCov(m,b){return Phi((b+m*Z90))-Phi(b-m*Z90)}
+let PIN_OPT=null;
+function drawPin(){
+  const m=+document.getElementById('pM').value,b=+document.getElementById('pB').value;
+  document.getElementById('pMv').textContent=m.toFixed(2);document.getElementById('pBv').textContent=b.toFixed(2);
+  if(PIN_OPT===null)PIN_OPT=pinLoss(1,0);
+  const rel=v=>(v/PIN_OPT-1)*100;
+  document.getElementById('pCov').textContent=(100*pinCov(m,b)).toFixed(1)+'%';
+  document.getElementById('pLoss').textContent='+'+Math.max(0,rel(pinLoss(m,b))).toFixed(1)+'%';
+  const [g,w,h]=setup(document.getElementById('pinC'));
+  const ms=[];for(let x=0.3;x<=2.501;x+=0.05)ms.push(+x.toFixed(2));
+  const X=v=>40+(v-0.3)/2.2*(w-80);
+  const losses=ms.map(x=>rel(pinLoss(x,b))), lmax=Math.max(60,...losses.filter(isFinite));
+  const Yc=c=>h-24-c*(h-40), Yl=l=>h-24-Math.min(l,lmax)/lmax*(h-40);
+  g.strokeStyle=css('--line');g.beginPath();g.moveTo(40,Yc(.8));g.lineTo(w-40,Yc(.8));g.stroke();
+  g.strokeStyle=css('--blue');g.lineWidth=2;g.beginPath();ms.forEach((x,i)=>{const yy=Yc(pinCov(x,b));i?g.lineTo(X(x),yy):g.moveTo(X(x),yy)});g.stroke();
+  g.strokeStyle=css('--orange');g.beginPath();ms.forEach((x,i)=>{const yy=Yl(losses[i]);i?g.lineTo(X(x),yy):g.moveTo(X(x),yy)});g.stroke();g.lineWidth=1;
+  g.strokeStyle=css('--ink');g.setLineDash([4,3]);g.beginPath();g.moveTo(X(m),12);g.lineTo(X(m),h-24);g.stroke();g.setLineDash([]);
+  axisText(g,'커버리지 80%',w-110,Yc(.8)-4);[0.5,1,1.5,2,2.5].forEach(v=>axisText(g,v+'배',X(v)-10,h-6));
+  g.fillStyle=css('--blue');g.fillText('커버리지',44,16);g.fillStyle=css('--orange');g.fillText('손실 (최적 대비 %, 위로 갈수록 나쁨)',110,16);
+  // 아래: 10% 분위수 채점
+  const [d,w2,h2]=setup(document.getElementById('pinD'));
+  const q=(b+m*ZT[0]), X2=v=>40+(v+3.5)/7*(w2-80), Y2=v=>h2-22-v*(h2-40)/3;
+  d.strokeStyle=css('--line');d.beginPath();d.moveTo(40,h2-22);d.lineTo(w2-40,h2-22);d.stroke();
+  d.strokeStyle=css('--orange');d.lineWidth=2;d.beginPath();for(let i=0;i<=200;i++){const y=-3.5+7*i/200;const l=y<q?0.9*(q-y):0.1*(y-q);const yy=Y2(Math.min(3,l));i?d.lineTo(X2(y),yy):d.moveTo(X2(y),yy)}d.stroke();d.lineWidth=1;
+  d.strokeStyle=css('--blue');d.beginPath();d.moveTo(X2(q),8);d.lineTo(X2(q),h2-22);d.stroke();
+  d.fillStyle=css('--blue');d.fillText('모델의 10% 분위수',X2(q)+4,18);[-3,-2,-1,0,1,2,3].forEach(v=>axisText(d,v+'σ',X2(v)-8,h2-6));axisText(d,'실제값 →',w2-70,h2-28);axisText(d,'벌점',4,16);
+}
+['pM','pB'].forEach(i=>document.getElementById(i).addEventListener('input',drawPin));
+
+/* ---- ⑥ 과거 창 길이 ---- */
+let winSeed=8;
+function drawWin(){
+  const p=+document.getElementById('wD').value, useA=document.getElementById('wA').checked, N=3024, W0=252;
+  const {y,s}=garchSeries(winSeed,N+W0,p);
+  const idx=[];for(let t=W0;t<N+W0;t++)idx.push(t);
+  const res={};
+  for(const L of [21,252]){
+    const lo=[],hi=[],yy=[];idx.forEach(t=>{const [a,b]=rwBand(y,t,L);lo.push(a);hi.push(b);yy.push(y[t])});
+    let LL=lo,UU=hi;if(useA){const r=aciSeq(lo,hi,yy,.05,20);LL=r.L;UU=r.U}
+    res[L]={lo:LL,hi:UU};
+  }
+  const nb=N/21,bv=[];for(let b=0;b<nb;b++){let q=0;for(let i=0;i<21;i++){const v=y[W0+b*21+i];q+=v*v}bv.push(Math.sqrt(q/21))}const sorted=[...bv].sort((a,b)=>a-b),q20=sorted[Math.floor(.2*nb)],q80=sorted[Math.floor(.8*nb)];const sv=idx.map((t,i)=>bv[Math.floor(i/21)]);
+  const cov=(L,f)=>{let k=0,n=0;idx.forEach((t,i)=>{if(i<20&&useA)return;if(!f(sv[i]))return;n++;if(y[t]>=res[L].lo[i]&&y[t]<=res[L].hi[i])k++});return n?(100*k/n).toFixed(1):'–'};
+  const row=L=>{const all=cov(L,()=>true),c=cov(L,v=>v<q20),v=cov(L,v=>v>=q80);return `<tr><td>RW 과거 ${L===21?'21일(한 달)':'252일(1년)'}</td><td>${all}</td><td>${c}</td><td>${v}</td><td>${(c-v).toFixed(1)}</td></tr>`};
+  document.getElementById('wT').innerHTML=`<tr><th>${useA?'보정 후':'보정 전'} 커버리지(%)</th><th>전체</th><th>평온(하위 20%)</th><th>격변(상위 20%)</th><th>차이(%p)</th></tr>`+row(21)+row(252);
+  const [g,w,h]=setup(document.getElementById('winC'));
+  const n0=idx.length-600,X=i=>34+(i-n0)*(w-44)/599,mid=h/2,sc=(h/2-12)/10,Y=v=>mid-Math.max(-10,Math.min(10,v))*sc;
+  const band=(L,col,fill)=>{g.beginPath();for(let i=n0;i<idx.length;i++)g.lineTo(X(i),Y(res[L].hi[i]));for(let i=idx.length-1;i>=n0;i--)g.lineTo(X(i),Y(res[L].lo[i]));g.closePath();if(fill){g.fillStyle=col;g.fill()}else{g.strokeStyle=col;g.stroke()}};
+  g.globalAlpha=.8;band(252,css('--line'),true);g.globalAlpha=1;band(21,css('--blue'),false);
+  for(let i=n0;i<idx.length;i++){const t=idx[i],out=y[t]<res[252].lo[i]||y[t]>res[252].hi[i];g.fillStyle=out?css('--orange'):css('--muted');g.beginPath();g.arc(X(i),Y(y[t]),1.8,0,7);g.fill()}
+  axisText(g,'+10%',2,Y(10)+10);axisText(g,'−10%',2,Y(-10));axisText(g,'주황 = 252일 구간 밖',w-140,16);
+}
+['wD','wA'].forEach(i=>document.getElementById(i).addEventListener('input',drawWin));
+document.getElementById('wRe').onclick=()=>{winSeed++;drawWin()};
+
+/* ---- ⑦ VaR 백테스트 ---- */
+let varSeed=21;
+function drawVar(){
+  const p=+document.getElementById('vD').value, md=document.getElementById('vM').value, N=+document.getElementById('vN').value, W0=252;
+  const {y,s}=garchSeries(varSeed,N+W0,p);
+  const v=[];for(let t=W0;t<N+W0;t++){let lo;if(md==='rw252')lo=rwBand(y,t,252)[0];else if(md==='rw21')lo=rwBand(y,t,21)[0];else{const k=md==='narrow'?.8:md==='wide'?1.25:1;lo=-Z90*s[t]*k}v.push(y[t]<lo?1:0)}
+  const x=v.reduce((a,b)=>a+b,0),n=v.length,ph=x/n,p0=.1;
+  const lrK=-2*(xlogy(n-x,1-p0)+xlogy(x,p0)-xlogy(n-x,1-ph)-xlogy(x,ph));
+  let n00=0,n01=0,n10=0,n11=0;for(let i=1;i<n;i++){const a=v[i-1],b=v[i];if(!a&&!b)n00++;else if(!a&&b)n01++;else if(a&&!b)n10++;else n11++}
+  const p01=n01/Math.max(1,n00+n01),p11=n11/Math.max(1,n10+n11),pp=(n01+n11)/Math.max(1,n00+n01+n10+n11);
+  const l0=xlogy(n00+n10,1-pp)+xlogy(n01+n11,pp),l1=xlogy(n00,1-p01)+xlogy(n01,p01)+xlogy(n10,1-p11)+xlogy(n11,p11);
+  const pK=chi1p(lrK),pI=chi1p(-2*(l0-l1));
+  const tag=pv=>pv>=.05?'통과':'기각';
+  document.getElementById('vRate').textContent=(100*ph).toFixed(1)+'%';
+  document.getElementById('vK').textContent=pK.toFixed(3)+' '+tag(pK);
+  document.getElementById('vI').textContent=pI.toFixed(3)+' '+tag(pI);
+  document.getElementById('vRun').textContent=(n10+n11?(100*p11).toFixed(0):'0')+'%';
+  const [g,w,h]=setup(document.getElementById('varC'));
+  const X=i=>34+i*(w-44)/(n-1),top=10,bh=h-70,mid=top+bh/2,sc=bh/2/10,Y=val=>mid-Math.max(-10,Math.min(10,val))*sc;
+  g.strokeStyle=css('--muted');g.beginPath();for(let i=0;i<n;i++){const t=i+W0;g.moveTo(X(i),mid);g.lineTo(X(i),Y(y[t]))}g.stroke();
+  g.fillStyle=css('--chip');g.fillRect(34,h-48,w-44,30);g.strokeStyle=css('--orange');g.beginPath();v.forEach((a,i)=>{if(a){g.moveTo(X(i),h-46);g.lineTo(X(i),h-20)}});g.stroke();
+  axisText(g,'수익률(±10%)',36,top+10);axisText(g,'위반한 날',36,h-4);
+}
+['vD','vM','vN'].forEach(i=>document.getElementById(i).addEventListener('input',drawVar));
+document.getElementById('vRe').onclick=()=>{varSeed++;drawVar()};
+
+/* ---- ⑧ 변동성 목표 ---- */
+let vtSeed=31;
+function drawVT(){
+  const m=+document.getElementById('tM').value, src=document.getElementById('tS').value, N=2000, W0=252;
+  document.getElementById('tMv').textContent=m.toFixed(2);
+  const {y,s}=garchSeries(vtSeed,N+W0,.982), drift=10/252;
+  let eb=0,ev=0,pb=0,pv=0,mb=0,mv=0,ss=0,ssum=0,wsum=0;const cb=[],cv=[];
+  for(let t=W0;t<N+W0;t++){
+    const sh= src==='true'? s[t]*m : (rwBand(y,t,252)[1]-rwBand(y,t,252)[0])/2.5631*m;
+    const wgt=Math.min(1,1/sh), r=y[t]+drift, rp=wgt*r;
+    eb+=r/100;ev+=rp/100;pb=Math.max(pb,eb);pv=Math.max(pv,ev);mb=Math.min(mb,eb-pb);mv=Math.min(mv,ev-pv);
+    ss+=rp*rp;ssum+=rp;wsum+=wgt;cb.push(eb);cv.push(ev);
+  }
+  const rv=Math.sqrt(ss/N-(ssum/N)**2);
+  document.getElementById('tRv').textContent=(rv/1).toFixed(2)+'배';
+  document.getElementById('tMdd').textContent=(100*(Math.exp(mb)-1)).toFixed(0)+'% / '+(100*(Math.exp(mv)-1)).toFixed(0)+'%';
+  document.getElementById('tW').textContent=(wsum/N).toFixed(2);
+  const [g,w,h]=setup(document.getElementById('vtC'));
+  const all=[...cb,...cv],lo=Math.min(0,...all),hi=Math.max(...all),X=i=>40+i*(w-50)/(N-1),Y=v=>h-20-(v-lo)/(hi-lo||1)*(h-36);
+  g.strokeStyle=css('--line');g.beginPath();g.moveTo(40,Y(0));g.lineTo(w-10,Y(0));g.stroke();
+  const line=(a,c,lw)=>{g.strokeStyle=c;g.lineWidth=lw;g.beginPath();a.forEach((v,i)=>i?g.lineTo(X(i),Y(v)):g.moveTo(X(i),Y(v)));g.stroke();g.lineWidth=1};
+  line(cb,css('--muted'),1.5);line(cv,css('--orange'),2);
+  axisText(g,'×'+Math.exp(hi).toFixed(1),2,Y(hi)+10);axisText(g,'×1',8,Y(0)+4);
+}
+['tM','tS'].forEach(i=>document.getElementById(i).addEventListener('input',drawVT));
+document.getElementById('tRe').onclick=()=>{vtSeed++;drawVT()};
+
+/* ---- ⑨ top-k ---- */
+const KS=[10,20,50,100,200,500,1000,4096];
+function drawTopk(){
+  const inp=document.getElementById('kI').value,k=KS[+document.getElementById('kK').value];document.getElementById('kKv').textContent=k===4096?'4096 (제한 없음)':k;
+  const sig=2.11, NB=4096, bw=30/NB;
+  let mu,sd,toRet;
+  if(inp==='ret'){const scale=sig*Math.sqrt(2/Math.PI);mu=0;sd=sig/scale;toRet=v=>v*scale}
+  else{const P=100,scale=P;mu=1;sd=(sig/100);toRet=v=>Math.log(v*scale/P)*100}
+  const c=i=>-15+(i+.5)*bw;const pr=new Float64Array(NB);let tot=0;for(let i=0;i<NB;i++){const z=(c(i)-mu)/sd;pr[i]=Math.exp(-z*z/2);tot+=pr[i]}for(let i=0;i<NB;i++)pr[i]/=tot;
+  const order=[...pr.keys()].sort((a,b)=>pr[b]-pr[a]);const keep=new Uint8Array(NB);let kt=0;for(let j=0;j<Math.min(k,NB);j++){keep[order[j]]=1;kt+=pr[order[j]]}
+  // 80%를 담는 칸 수(중심에서)
+  let acc=0,need=0;for(const j of order){acc+=pr[j];need++;if(acc>=.8)break}
+  // 잘린 분포의 10%,90% 분위수
+  let cum=0,q10=null,q90=null;for(let i=0;i<NB;i++){if(!keep[i])continue;cum+=pr[i]/kt;if(q10===null&&cum>=.1)q10=c(i);if(q90===null&&cum>=.9){q90=c(i);break}}
+  const lo=toRet(q10),hi=toRet(q90),covv=Phi(hi/sig)-Phi(lo/sig);
+  document.getElementById('kNeed').textContent=need+'칸';document.getElementById('kCov').textContent=(100*covv).toFixed(1)+'%';document.getElementById('kInt').textContent=lo.toFixed(2)+' ~ +'+hi.toFixed(2);
+  const [g,w,h]=setup(document.getElementById('topkC'));
+  const ctr=Math.round((mu+15)/bw),span=Math.max(60,Math.ceil(need*1.6)),a0=Math.max(0,ctr-span),a1=Math.min(NB-1,ctr+span),pmax=pr[ctr];
+  const X=i=>40+(i-a0)/(a1-a0)*(w-60),Y=v=>h-30-v/pmax*(h-50),bwpx=Math.max(1,(w-60)/(a1-a0)-0.3);
+  for(let i=a0;i<=a1;i++){g.fillStyle=keep[i]?css('--blue'):css('--line');g.fillRect(X(i),Y(pr[i]),bwpx,h-30-Y(pr[i]))}
+  axisText(g,'칸 (가운데 '+(a1-a0+1)+'칸만 표시)',40,h-10);axisText(g,'확률',4,16);
+  g.fillStyle=css('--orange');g.fillText('남은 칸 '+Math.min(k,NB)+'개가 담은 확률 '+(100*kt).toFixed(1)+'%',w-260,18);
+}
+['kI','kK'].forEach(i=>document.getElementById(i).addEventListener('input',drawTopk));
+
+/* ---- ⑩ Holm ---- */
+let holmR=rng(77),holmLast=null,holmStats=null;
+function holmTrial(){const ps=Array.from({length:16},()=>holmR()).sort((a,b)=>a-b);let rej=0;for(let i=0;i<16;i++){if(ps[i]<=.05/(16-i))rej++;else break}return {ps,raw:ps[0]<.05,holm:rej>0,rej}}
+function drawHolm(){
+  if(!holmLast){holmLast=holmTrial()}
+  if(holmStats){document.getElementById('hRaw').textContent=(100*holmStats.raw/holmStats.n).toFixed(1)+'%';document.getElementById('hHolm').textContent=(100*holmStats.holm/holmStats.n).toFixed(1)+'%'}
+  else{document.getElementById('hRaw').textContent=holmLast.raw?'예':'아니오';document.getElementById('hHolm').textContent=holmLast.holm?'예':'아니오'}
+  const [g,w,h]=setup(document.getElementById('holmC'));
+  const X=i=>50+i*(w-80)/15,ymax=.3,Y=v=>h-24-Math.min(v,ymax)/ymax*(h-40);
+  g.strokeStyle=css('--muted');g.setLineDash([4,3]);g.beginPath();g.moveTo(40,Y(.05));g.lineTo(w-20,Y(.05));g.stroke();g.setLineDash([]);
+  g.strokeStyle=css('--orange');g.lineWidth=2;g.beginPath();for(let i=0;i<16;i++){const yy=Y(.05/(16-i));i?g.lineTo(X(i)-((w-80)/30),yy):g.moveTo(X(0)-10,yy);g.lineTo(X(i)+((w-80)/30),yy)}g.stroke();g.lineWidth=1;
+  holmLast.ps.forEach((p,i)=>{g.fillStyle=p<.05?css('--blue'):css('--muted');g.beginPath();g.arc(X(i),Y(p),5,0,7);g.fill()});
+  axisText(g,'0.05',4,Y(.05)+4);axisText(g,'p (0.3 위는 위쪽에 모음)',4,14);axisText(g,'작은 순 1 … 16',w-120,h-6);
+}
+document.getElementById('hOne').onclick=()=>{holmLast=holmTrial();holmStats=null;drawHolm()};
+document.getElementById('hMany').onclick=()=>{let raw=0,hh=0;for(let i=0;i<1000;i++){const t=holmTrial();raw+=t.raw;hh+=t.holm;holmLast=t}holmStats={raw,holm:hh,n:1000};drawHolm()};
+
 let curLab='cov';
-document.querySelectorAll('#labPick button').forEach(b=>b.onclick=()=>{curLab=b.dataset.l;document.querySelectorAll('#labPick button').forEach(x=>x.classList.toggle('on',x===b));['cov','tail','gen','aci'].forEach(l=>document.getElementById('lab-'+l).hidden=l!==curLab);drawLab()});
-function drawLab(){({cov:drawCov,tail:drawTail,gen:drawGen,aci:drawACI})[curLab]()}
+document.querySelectorAll('#labPick button').forEach(b=>b.onclick=()=>{curLab=b.dataset.l;document.querySelectorAll('#labPick button').forEach(x=>x.classList.toggle('on',x===b));LABS.forEach(l=>document.getElementById('lab-'+l).hidden=l!==curLab);drawLab()});
+const LABS=['cov','tail','gen','aci','pin','win','var','vt','topk','holm'];
+function drawLab(){({cov:drawCov,tail:drawTail,gen:drawGen,aci:drawACI,pin:drawPin,win:drawWin,var:drawVar,vt:drawVT,topk:drawTopk,holm:drawHolm})[curLab]()}
+function openLab(l){curLab=l;document.querySelectorAll('#labPick button').forEach(x=>x.classList.toggle('on',x.dataset.l===l));LABS.forEach(x=>document.getElementById('lab-'+x).hidden=x!==l);showView('lab');window.scrollTo({top:0,behavior:'smooth'})}
 let rz;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{if(!document.getElementById('v-lab').hidden)drawLab()},150)});
 try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(!document.getElementById('v-lab').hidden)drawLab()})}catch(e){}
 
