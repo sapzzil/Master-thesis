@@ -27,7 +27,7 @@ nav.tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--line)
 nav.tabs button{font:inherit;font-size:14px;background:none;border:0;border-bottom:3px solid transparent;color:var(--muted);padding:8px 12px;cursor:pointer}
 nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--blue);font-weight:700}
 button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
-.view[hidden]{display:none!important}
+.view[hidden],[hidden]{display:none!important}
 
 /* 사전 */
 .dict{display:grid;grid-template-columns:290px minmax(0,1fr);gap:20px;align-items:start}
@@ -198,7 +198,7 @@ canvas{width:100%;display:block;background:var(--bg);border-radius:8px}
 
   <div class="lab" id="lab-gen" hidden>
     <h2>같은 난수로 특성 하나만 넣어 보기</h2>
-    <p class="lead">합성 데이터는 모든 시나리오가 같은 난수를 씁니다. 그래서 L1과 L5의 차이는 그 특성 하나 때문입니다. 특성과 강도를 골라 L1(회색)과 비교해 보세요. 하루 변동(표준편차)은 모두 2.11%로 같습니다.</p>
+    <p class="lead">합성 데이터는 모든 시나리오가 같은 난수를 씁니다. 그래서 L1과 L5의 차이는 그 특성 하나 때문입니다. 특성과 강도를 골라 L1(회색)과 비교해 보세요. 장기 평균 하루 변동(무조건부 표준편차)은 모두 2.11%로 같고, 0일째에는 모두 2.11%에서 출발합니다. 논문은 처음 200일(워밍업)을 버리고 그 뒤 332일만 평가에 씁니다.</p>
     <div class="ctrl">
       <label for="gF">특성 <select id="gF"><option value="cl">변동성 군집</option><option value="tl">두꺼운 꼬리</option><option value="rf">전환 빈도</option><option value="rs">전환 크기</option></select></label>
       <label for="gL">강도 <select id="gL"><option>L2</option><option>L3</option><option>L4</option><option selected>L5</option></select></label>
@@ -208,11 +208,12 @@ canvas{width:100%;display:block;background:var(--bg);border-radius:8px}
     </div>
     <div class="readout">
       <div class="stat"><div class="v" id="gPar">—</div><div class="l">이 단계의 값</div></div>
-      <div class="stat"><div class="v" id="gSd">—</div><div class="l">표본 하루 변동 (L1 / 선택)</div></div>
-      <div class="stat"><div class="v" id="g3s">—</div><div class="l">3σ 넘는 날 (L1 / 선택)</div></div>
+      <div class="stat"><div class="v" id="gSd">—</div><div class="l">평가 구간 하루 변동 (L1 / 선택)</div></div>
+      <div class="stat"><div class="v" id="g3s">—</div><div class="l">평가 구간 3σ 넘는 날 (L1 / 선택)</div></div>
     </div>
     <canvas id="genC" height="300"></canvas>
     <canvas id="genV" height="190" style="margin-top:8px"></canvas>
+    <canvas id="genM" height="210" style="margin-top:8px"></canvas>
     <p class="note" id="gNote2" style="color:var(--ink)"></p>
     <p class="note" id="gNote"></p>
   </div>
@@ -923,25 +924,44 @@ function drawGen(){
   const ex=a=>{let k=0,n=0;for(let i=W;i<a.length;i++){if(Math.abs(a[i])>3*2.11)k++;n++}return (100*k/n).toFixed(1)+'%'};
   document.getElementById('gSd').textContent=sd(base).toFixed(2)+' / '+sd(out).toFixed(2);
   document.getElementById('g3s').textContent=ex(base)+' / '+ex(out);
+  const N=out.length;
+  // ---- 막대: 0일째(워밍업 시작)부터 ----
   const [g,w,h]=setup(document.getElementById('genC'));
-  const n=out.length-W, X=i=>30+i*(w-40)/n, half=(h-30)/4, y1=10+half, y2=20+3*half, sc=half/12;
-  if(f==='rf'||f==='rs'){g.fillStyle=css('--orange-soft');for(let i=0;i<n;i++)if(out['s'+(i+W)])g.fillRect(X(i),y2-half,(w-40)/n+0.6,2*half)}
-  g.strokeStyle=css('--line');[y1,y2].forEach(y=>{g.beginPath();g.moveTo(30,y);g.lineTo(w-10,y);g.stroke()});
-  const bars=(a,y,col)=>{g.strokeStyle=col;g.beginPath();for(let i=0;i<n;i++){const v=Math.max(-12,Math.min(12,a[i+W]));g.moveTo(X(i),y);g.lineTo(X(i),y-v*sc)}g.stroke()};
+  const X=i=>34+i*(w-44)/N, half=(h-34)/4, y1=14+half, y2=24+3*half, sc=half/12;
+  g.fillStyle=css('--chip');g.fillRect(34,4,X(W)-34,h-22);
+  if(f==='rf'||f==='rs'){g.fillStyle=css('--orange-soft');for(let i=0;i<N;i++)if(out['s'+i])g.fillRect(X(i),y2-half,(w-44)/N+0.6,2*half)}
+  g.strokeStyle=css('--line');[y1,y2].forEach(y=>{g.beginPath();g.moveTo(34,y);g.lineTo(w-10,y);g.stroke()});
+  g.strokeStyle=css('--muted');g.setLineDash([3,3]);g.beginPath();g.moveTo(X(W),4);g.lineTo(X(W),h-18);g.stroke();g.setLineDash([]);
+  const bars=(a,y,col)=>{g.strokeStyle=col;g.beginPath();for(let i=0;i<N;i++){const v=Math.max(-12,Math.min(12,a[i]));g.moveTo(X(i),y);g.lineTo(X(i),y-v*sc)}g.stroke()};
   bars(base,y1,css('--muted'));bars(out,y2,css('--orange'));
-  if(f!=='tl'){g.strokeStyle=css('--ink');g.lineWidth=1.2;[1,-1].forEach(sg=>{g.beginPath();for(let i=0;i<n;i++){const yy=y2-sg*Math.min(12,1.2816*vol[i+W])*sc;i?g.lineTo(X(i),yy):g.moveTo(X(i),yy)}g.stroke()});g.lineWidth=1;g.fillStyle=css('--ink');g.fillText('검은 선 = 그날의 참 80% 구간(±1.28σₜ)',34,h-4)}
-  g.fillStyle=css('--muted');g.fillText('L1 (특성 없음)',34,16);g.fillStyle=css('--orange');g.fillText(L+' · '+document.getElementById('gF').selectedOptions[0].text+(f==='rf'||f==='rs'?' (음영 = 격변 국면)':''),34,y2-half+8);
-  g.fillStyle=css('--muted');g.fillText('±12%에서 자름 · '+n+'일',w-160,h-4);
-  const gv=document.getElementById('genV');gv.hidden=f!=='cl';document.getElementById('gNote2').textContent='';
+  if(f!=='tl'){g.strokeStyle=css('--ink');g.lineWidth=1.1;[1,-1].forEach(sg=>{g.beginPath();for(let i=0;i<N;i++){const yy=y2-sg*Math.min(12,Z90*vol[i])*sc;i?g.lineTo(X(i),yy):g.moveTo(X(i),yy)}g.stroke()});g.lineWidth=1}
+  g.fillStyle=css('--muted');g.fillText('L1 (특성 없음)',38,16);g.fillStyle=css('--orange');g.fillText(L+' · '+document.getElementById('gF').selectedOptions[0].text+(f==='rf'||f==='rs'?' (음영 = 격변 국면)':''),38,y2-half+6);
+  g.fillStyle=css('--muted');g.fillText('← 워밍업 200일 (버림)',38,h-4);g.fillText('평가에 쓰는 '+len+'일 →',X(W)+6,h-4);
+  if(f!=='tl'){g.fillStyle=css('--ink');g.fillText('검은 선 = 그날의 참 80% 구간',w-190,h-4)}
+  // ---- σt 비교 (군집만) ----
+  const gv=document.getElementById('genV'),gm=document.getElementById('genM');gv.hidden=gm.hidden=f!=='cl';document.getElementById('gNote2').textContent='';
   if(f==='cl'){
-    const [v,w3,h3]=setup(gv);const lv=['L3','L4','L5'],cols=[css('--muted'),css('--blue'),css('--orange')];
-    const lo=Math.log(0.3),hi=Math.log(16),Yv=x=>h3-18-(Math.log(Math.max(0.3,Math.min(16,x)))-lo)/(hi-lo)*(h3-30),Xv=i=>40+i*(w3-50)/(n-1);
-    [0.5,1,2.11,4,8].forEach(t=>{v.strokeStyle=css('--line');v.beginPath();v.moveTo(40,Yv(t));v.lineTo(w3-10,Yv(t));v.stroke();v.fillStyle=css('--muted');v.fillText(t+'%',4,Yv(t)+4)});
-    const st=[];lv.forEach((LL,k)=>{const r=genSeries('cl',LL,genSeed,len);let mx=0,mn=99;v.strokeStyle=cols[k];v.lineWidth=k===2?2:1.4;v.beginPath();for(let i=0;i<n;i++){const x=r.vol[i+W];mx=Math.max(mx,x);mn=Math.min(mn,x);i?v.lineTo(Xv(i),Yv(x)):v.moveTo(Xv(i),Yv(x))}v.stroke();st.push(LL+' '+mn.toFixed(2)+'~'+mx.toFixed(2)+'% ('+(mx/mn).toFixed(1)+'배)')});v.lineWidth=1;
-    v.fillStyle=css('--ink');v.fillText('같은 난수의 참 하루 변동 σₜ (로그 눈금) · 회색 L3, 파랑 L4, 주황 L5',44,12);
-    document.getElementById('gNote2').textContent='이 계열의 σₜ 범위: '+st.join(' · ');
+    const lv=['L3','L4','L5'],cols=[css('--muted'),css('--blue'),css('--orange')];
+    const axis=(v,w3,h3,title)=>{const lo=Math.log(0.25),hi=Math.log(12),Yv=x=>h3-18-(Math.log(Math.max(0.25,Math.min(12,x)))-lo)/(hi-lo)*(h3-34),Xv=i=>40+i*(w3-50)/(N-1);
+      v.fillStyle=css('--chip');v.fillRect(40,18,Xv(W)-40,h3-36);
+      [0.5,1,2.11,4,8].forEach(t=>{v.strokeStyle=t===2.11?css('--muted'):css('--line');v.beginPath();v.moveTo(40,Yv(t));v.lineTo(w3-10,Yv(t));v.stroke();v.fillStyle=css('--muted');v.fillText(t+'%',4,Yv(t)+4)});
+      v.fillStyle=css('--ink');v.fillText(title,44,12);v.fillStyle=css('--muted');v.fillText('워밍업',44,h3-4);v.fillText('평가 구간 →',Xv(W)+4,h3-4);return [Yv,Xv]};
+    // (가) 이 계열
+    let [v,w3,h3]=setup(gv);let [Yv,Xv]=axis(v,w3,h3,'(가) 이 계열의 참 하루 변동 σₜ · 0일째에 모두 2.11%에서 출발 (로그 눈금) · 회색 L3, 파랑 L4, 주황 L5');
+    const st=[];lv.forEach((LL,k)=>{const r=genSeries('cl',LL,genSeed,len);let mx=0,mn=99;v.strokeStyle=cols[k];v.lineWidth=k===2?2:1.3;v.beginPath();for(let i=0;i<N;i++){const x=r.vol[i];if(i>=W){mx=Math.max(mx,x);mn=Math.min(mn,x)}i?v.lineTo(Xv(i),Yv(x)):v.moveTo(Xv(i),Yv(x))}v.stroke();st.push(LL+' '+mn.toFixed(2)+'~'+mx.toFixed(2)+'%')});v.lineWidth=1;
+    document.getElementById('gNote2').textContent='이 계열의 평가 구간 σₜ 범위: '+st.join(' · ')+'. 계열 하나는 우연에 크게 좌우되므로 아래 (나)로 100개 계열의 일반적인 모습을 보세요.';
+    // (나) 100개 계열 중앙값과 10~90%
+    [v,w3,h3]=setup(gm);[Yv,Xv]=axis(v,w3,h3,'(나) 계열 100개: 굵은 선 = 날짜별 중앙값, 띠 = 10~90% 범위 (L4 파랑, L5 주황)');
+    const K=100,qs={};lv.forEach(LL=>{const M=[];for(let s=1;s<=K;s++)M.push(genSeries('cl',LL,1000+s,len).vol);const md=[],p10=[],p90=[];for(let i=0;i<N;i++){const c=M.map(a=>a[i]).sort((a,b)=>a-b);md.push(c[49]);p10.push(c[9]);p90.push(c[89])}qs[LL]={md,p10,p90}});
+    [['L4',1],['L5',2]].forEach(([LL,k])=>{const q=qs[LL];v.globalAlpha=.18;v.fillStyle=cols[k];v.beginPath();for(let i=0;i<N;i++)v.lineTo(Xv(i),Yv(q.p90[i]));for(let i=N-1;i>=0;i--)v.lineTo(Xv(i),Yv(q.p10[i]));v.closePath();v.fill();v.globalAlpha=1});
+    lv.forEach((LL,k)=>{const q=qs[LL];v.strokeStyle=cols[k];v.lineWidth=k===2?2.4:1.6;v.beginPath();for(let i=0;i<N;i++){i?v.lineTo(Xv(i),Yv(q.md[i])):v.moveTo(Xv(i),Yv(q.md[i]))}v.stroke()});v.lineWidth=1;
+    const e=N-1;v.fillStyle=css('--ink');v.fillText('마지막 날 중앙값 · 10~90%: L4 '+qs.L4.md[e].toFixed(2)+'% · '+qs.L4.p10[e].toFixed(2)+'~'+qs.L4.p90[e].toFixed(2)+'%   L5 '+qs.L5.md[e].toFixed(2)+'% · '+qs.L5.p10[e].toFixed(2)+'~'+qs.L5.p90[e].toFixed(2)+'%',Xv(W)+4,30);
   }
-  const notes={cl:'군집 L5는 변동이 "큰" 데이터가 아니라, 같은 평균 변동(2.11%)이 드문 폭풍기에 "몰리는" 데이터입니다. 폭풍기에 분산이 몰리는 만큼 나머지 기간은 L1보다 잔잔합니다. 그래서 332일짜리 계열 하나에 폭풍기가 없으면 막대가 전부 L1보다 작아 보입니다. 실제 실험 데이터(계열 100개)로 확인하면 군집 L5는 전체로는 하루 변동 2.19%지만 계열별로는 중앙값 1.51%(하위 10% 1.03%, 상위 10% 3.10%)이고 100개 중 72개가 2.11%보다 잔잔합니다(L3 중앙값 2.10%, L4 2.05%). 분산이 소수 계열의 폭풍에서 나옵니다. "폭풍 있는 계열 찾기"를 눌러 보세요. L4가 L5보다 더 극적으로 보이는 것도 정상입니다. α+β가 크다는 것은 변동이 "크다"가 아니라 "오래 간다"는 뜻이라, L5는 한 번 잔잔해지면 오래(충격 반감기 173일, L4는 38일) 아주 낮은 수준(최저 약 0.4%, L4는 약 0.8%)까지 내려가 머뭅니다. 그래서 같은 난수로 비교하면 막대의 절대 크기는 대부분 L4가 크지만(이 생성기 300개 계열 중 최대 σₜ 79%, 평균 σₜ 87%가 L4 쪽이 큼), 계열 안에서 변동이 오르내리는 폭(상대적 흔들림)은 거의 항상 L5가 큽니다(99% 이상). 아래 로그 눈금 그림에서 주황선이 가장 깊이 내려가고 가장 크게 오르내리는 것을 보세요.',tl:'극단적인 날이 시기와 무관하게 드문드문 튑니다. 대신 평소 막대는 L1보다 짧아집니다(분산이 같으니까).',rf:'짧은 격변 국면(음영)이 자주 옵니다. L2·L3은 지속이 길어 한 계열에서 전환이 거의 없습니다.',rs:'격변 국면의 변동이 평온 국면의 몇 배인지가 커집니다. 지속일은 35.6/7.6일로 고정.'};
+  const notes={
+    cl:'읽는 법: 모든 단계는 0일째에 같은 2.11%에서 출발하고, 같은 난수를 씁니다. 무조건부(장기 평균) 분산도 모두 2.11%²로 같습니다. α+β는 변동이 "얼마나 큰가"가 아니라 "한 번 바뀐 변동이 얼마나 오래 가는가"입니다(충격이 절반으로 주는 데 L3 12일, L4 38일, L5 173일). 그래서 (나)에서 보듯 시간이 지나면 L5는 중앙값과 10~90% 띠 전체가 2.11% 아래로 내려갑니다. 그런데도 장기 평균이 2.11%인 것은 띠 밖의 소수 계열에서 아주 큰 폭풍이 나기 때문입니다(이 생성기 계열 1,000개 기준 평가 구간 하루 변동: L5 중앙값 1.47%, 상위 5% 3.6% 이상, 상위 1% 7.2% 이상, 최대 14%. L4는 1.94%, 3.0%, 4.3%, 7.8%). 계열 하나만 보면 L4가 더 요란해 보이는 경우가 많은 것도 이 때문입니다. 실제 실험 데이터 100개 계열(평가 구간)도 L5 계열별 하루 변동 중앙값 1.51%(10~90%: 1.03~3.10%), 전체 2.19%로 같은 모습입니다. 실제 GOOG의 α(0.066)를 그대로 써도 중앙값 1.77%, 100개 중 70개가 2.11% 미만으로 비슷하므로, 높은 지속성 자체의 성질입니다.',
+    tl:'극단적인 날이 시기와 무관하게 드문드문 튑니다. 대신 평소 막대는 L1보다 짧아집니다(분산이 같으니까).',
+    rf:'짧은 격변 국면(음영)이 자주 옵니다. L2·L3은 지속이 길어 한 계열에서 전환이 거의 없습니다.',
+    rs:'격변 국면의 변동이 평온 국면의 몇 배인지가 커집니다. 지속일은 35.6/7.6일로 고정.'};
   document.getElementById('gNote').textContent=notes[f]+' 같은 난수를 쓰므로 막대의 방향(위/아래)은 L1과 같은 날에 같습니다.';
 }
 ['gF','gL'].forEach(i=>document.getElementById(i).addEventListener('input',drawGen));
