@@ -1,0 +1,909 @@
+<title>예측구간 공부 노트</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 노트 앱. 위쪽 탭(사전·흐름도·실험실·복습) + 사전은 왼쪽 목록/오른쪽 설명. 발표 슬라이드와 같은 파랑(개념)·주황(결과) 체계 */
+:root{
+  --bg:#F3F5F8; --panel:#FFFFFF; --ink:#172033; --text:#2D3648; --muted:#647086; --line:#DDE2EA;
+  --blue:#2B5C8A; --blue-soft:#E3ECF5; --orange:#B9581C; --orange-soft:#F7E9DD; --good:#2F7A4F; --bad:#B23A3A;
+  --chip:#EEF1F5;
+  --sans:'IBM Plex Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11161F; --panel:#18202C; --ink:#EEF2F7; --text:#CDD5E1; --muted:#8C97AA; --line:#2A3445;
+  --blue:#7FB0E0; --blue-soft:#1C2C40; --orange:#F0A167; --orange-soft:#33251B; --good:#6CC28F; --bad:#E88383; --chip:#222C3B; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11161F; --panel:#18202C; --ink:#EEF2F7; --text:#CDD5E1; --muted:#8C97AA; --line:#2A3445;
+  --blue:#7FB0E0; --blue-soft:#1C2C40; --orange:#F0A167; --orange-soft:#33251B; --good:#6CC28F; --bad:#E88383; --chip:#222C3B; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.65;margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:14px}
+h1{font-size:22px;color:var(--ink);margin:0;letter-spacing:-.3px}
+.sub{color:var(--muted);font-size:13px;margin:2px 0 0}
+nav.tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin-bottom:18px}
+nav.tabs button{font:inherit;font-size:14px;background:none;border:0;border-bottom:3px solid transparent;color:var(--muted);padding:8px 12px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--blue);font-weight:700}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.view[hidden]{display:none!important}
+
+/* 사전 */
+.dict{display:grid;grid-template-columns:290px minmax(0,1fr);gap:20px;align-items:start}
+.side{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px}
+.side input{width:100%;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.grp{margin-top:12px}
+.grp h3{font-size:11.5px;letter-spacing:1px;color:var(--muted);margin:0 0 4px;font-weight:700}
+.grp button{display:block;width:100%;text-align:left;font:inherit;font-size:14px;background:none;border:0;border-radius:6px;padding:5px 8px;color:var(--text);cursor:pointer}
+.grp button:hover{background:var(--chip)}
+.grp button.on{background:var(--blue-soft);color:var(--ink);font-weight:700}
+.grp button .k{color:var(--muted);font-size:12px;margin-left:4px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:24px 26px;min-width:0}
+.crumb{font-size:12px;letter-spacing:1px;color:var(--blue);font-weight:700}
+.card h2{font-size:26px;color:var(--ink);margin:2px 0 2px;letter-spacing:-.4px;text-wrap:balance}
+.en{color:var(--muted);font-size:13px;font-family:var(--mono)}
+.one{font-size:17px;color:var(--ink);margin:14px 0 4px;max-width:68ch}
+.sec{margin-top:18px}
+.sec h4{font-size:12px;letter-spacing:1px;color:var(--muted);margin:0 0 6px}
+.sec p{margin:0 0 8px;max-width:70ch}
+.box{border-radius:8px;padding:12px 14px;max-width:72ch}
+.box.ex{background:var(--blue-soft)}
+.box.num{background:var(--orange-soft)}
+.box.trap{border:1px dashed var(--line)}
+.num-k{color:var(--orange);font-weight:700}
+.rel{display:flex;flex-wrap:wrap;gap:6px}
+.rel button{font:inherit;font-size:13px;background:var(--chip);border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:3px 10px;cursor:pointer}
+.rel button:hover{border-color:var(--blue)}
+.where{font-size:13px;color:var(--muted)}
+.fig{margin-top:6px;overflow-x:auto}
+.fig svg{max-width:100%;height:auto;display:block}
+table.t{border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums}
+table.t th,table.t td{border-bottom:1px solid var(--line);padding:5px 10px;text-align:left}
+table.t th{color:var(--muted);font-weight:500}
+.navrow{display:flex;justify-content:space-between;gap:8px;margin-top:22px;border-top:1px solid var(--line);padding-top:12px}
+.navrow button{font:inherit;font-size:13px;background:none;border:1px solid var(--line);border-radius:8px;padding:6px 12px;color:var(--text);cursor:pointer;max-width:48%;text-align:left}
+
+/* 흐름도 */
+.flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.col{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px}
+.col h3{margin:0 0 2px;font-size:14px;color:var(--ink)}
+.col .q{font-size:12.5px;color:var(--muted);margin:0 0 10px}
+.col.res h3{color:var(--orange)}
+.col button{display:block;width:100%;text-align:left;font:inherit;font-size:13.5px;background:var(--chip);border:1px solid transparent;border-radius:6px;padding:6px 8px;margin-bottom:6px;color:var(--ink);cursor:pointer}
+.col button:hover{border-color:var(--blue)}
+.story{margin-top:18px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 22px}
+.story ol{margin:0;padding-left:20px}
+.story li{margin-bottom:6px;max-width:80ch}
+.story a{color:var(--blue);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+
+/* 실험실 */
+.lab-pick{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.lab-pick button{font:inherit;font-size:13.5px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 14px;color:var(--text);cursor:pointer}
+.lab-pick button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.lab{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px 22px}
+.lab h2{margin:0;font-size:20px;color:var(--ink)}
+.lab .lead{color:var(--text);max-width:75ch;margin:6px 0 14px}
+.ctrl{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:center;margin-bottom:12px;font-size:14px}
+.ctrl label{display:flex;align-items:center;gap:8px}
+.ctrl input[type=range]{width:200px;max-width:52vw}
+.ctrl select,.ctrl button{font:inherit;font-size:13.5px;padding:5px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.readout{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+.stat{background:var(--bg);border-radius:8px;padding:8px 14px;min-width:130px}
+.stat .v{font-family:var(--mono);font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums}
+.stat .l{font-size:12px;color:var(--muted)}
+canvas{width:100%;display:block;background:var(--bg);border-radius:8px}
+.note{font-size:13px;color:var(--muted);margin-top:8px;max-width:80ch}
+
+/* 카드 복습 */
+.fc-top{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
+.fc{background:var(--panel);border:1px solid var(--line);border-radius:12px;min-height:260px;padding:28px;display:flex;flex-direction:column;justify-content:center;cursor:pointer;max-width:760px;margin:0 auto}
+.fc .front{font-size:28px;color:var(--ink);font-weight:700;text-align:center}
+.fc .hint{text-align:center;color:var(--muted);font-size:13px;margin-top:8px}
+.fc .back p{margin:0 0 10px}
+.fc-btns{display:flex;justify-content:center;gap:10px;margin-top:14px}
+.fc-btns button{font:inherit;padding:8px 18px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.fc-btns .ok{border-color:var(--good);color:var(--good)}
+.fc-btns .again{border-color:var(--orange);color:var(--orange)}
+.small{font-size:13px;color:var(--muted)}
+
+@media (max-width:860px){
+  .dict{grid-template-columns:1fr}
+  .side{position:static;max-height:300px}
+  .flow{grid-template-columns:1fr 1fr}
+}
+@media (max-width:520px){.flow{grid-template-columns:1fr}.card{padding:18px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+<header class="top">
+  <div>
+    <h1>예측구간 공부 노트</h1>
+    <p class="sub">사전학습 시계열 모델의 금융 수익률 예측구간 · 발표 연습용 개념 사전과 실험실</p>
+  </div>
+  <p class="sub" id="progress"></p>
+</header>
+<nav class="tabs" role="tablist">
+  <button role="tab" data-v="concepts" aria-selected="true">개념 사전</button>
+  <button role="tab" data-v="map" aria-selected="false">논문 흐름도</button>
+  <button role="tab" data-v="lab" aria-selected="false">직접 해보기</button>
+  <button role="tab" data-v="cards" aria-selected="false">카드 복습</button>
+</nav>
+
+<section class="view" id="v-concepts">
+  <div class="dict">
+    <aside class="side">
+      <input id="q" type="search" placeholder="용어 찾기 (예: 커버리지, VaR)" aria-label="용어 찾기">
+      <div id="list"></div>
+    </aside>
+    <article class="card" id="detail"></article>
+  </div>
+</section>
+
+<section class="view" id="v-map" hidden>
+  <div class="flow" id="flow"></div>
+  <div class="story">
+    <h3 style="margin:0 0 10px;color:var(--ink);font-size:16px">발표를 한 문단씩 따라가기</h3>
+    <ol id="storyList"></ol>
+  </div>
+</section>
+
+<section class="view" id="v-lab" hidden>
+  <div class="lab-pick" id="labPick">
+    <button data-l="cov" class="on">① 구간 폭과 커버리지</button>
+    <button data-l="tail">② 꼬리의 역설</button>
+    <button data-l="gen">③ 합성 데이터 만들기</button>
+    <button data-l="aci">④ 사후보정 따라 하기</button>
+  </div>
+
+  <div class="lab" id="lab-cov">
+    <h2>구간 폭을 바꾸면 커버리지가 어떻게 되나</h2>
+    <p class="lead">오늘 가격 100원. 실제 하루 변동은 2.11%(10종목 중앙값). 모델이 변동을 얼마로 보느냐에 따라 80% 구간의 폭이 바뀝니다. 100일 동안 다음 날 실제 가격이 구간에 들어왔는지 셉니다.</p>
+    <div class="ctrl">
+      <label for="covM">모델이 본 변동 ÷ 실제 변동 <input id="covM" type="range" min="0.3" max="1.8" step="0.05" value="1"> <b id="covMv" style="font-family:var(--mono)">1.00</b></label>
+      <label for="covD">실제 분포 <select id="covD"><option value="n">정규 (특성 없음, L1)</option><option value="t">꼬리 두꺼움 (ν = 3.56, L5)</option></select></label>
+      <button id="covRe" type="button">다른 100일 뽑기</button>
+    </div>
+    <div class="readout">
+      <div class="stat"><div class="v" id="covBand">—</div><div class="l">80% 구간 (원)</div></div>
+      <div class="stat"><div class="v" id="covHit">—</div><div class="l">100일 중 들어온 날</div></div>
+      <div class="stat"><div class="v" id="covLong">—</div><div class="l">20,000일로 본 커버리지</div></div>
+    </div>
+    <canvas id="covC" height="260"></canvas>
+    <p class="note" id="covNote"></p>
+  </div>
+
+  <div class="lab" id="lab-tail" hidden>
+    <h2>꼬리가 두꺼운데 왜 80% 커버리지는 올라가나</h2>
+    <p class="lead">분산(평균 변동)을 똑같이 맞추면, 꼬리가 두꺼운 분포는 가끔 아주 큰 값이 나오는 대신 평소에는 가운데에 더 몰립니다. 그래서 분산으로 그린 80% 구간에는 오히려 더 많이 들어오고, 99%처럼 바깥쪽 구간에서는 덜 들어옵니다.</p>
+    <div class="ctrl">
+      <label for="nu">꼬리 두께 ν (작을수록 두꺼움) <input id="nu" type="range" min="2.6" max="30" step="0.02" value="3.56"> <b id="nuv" style="font-family:var(--mono)">3.56</b></label>
+      <button type="button" data-nu="3.56">L5 (META 3.56)</button>
+      <button type="button" data-nu="4.39">L4 (중앙값 4.39)</button>
+      <button type="button" data-nu="7.64">L3 (7.64)</button>
+    </div>
+    <canvas id="tailC" height="280"></canvas>
+    <div class="fig" style="margin-top:12px">
+      <table class="t" id="tailT"></table>
+    </div>
+    <p class="note">정규분포 기준으로 그린 구간에 t분포 값이 들어올 확률을 수치 적분으로 계산합니다. ν = 3.56에서 80% 구간 86.6%, 99% 구간 97.8%가 나오면 본문 표 4-3과 같은 값입니다. 99%에서 1.2%p 하락은 한도를 넘는 날이 1%에서 2.2%로 두 배 넘게 는다는 뜻입니다.</p>
+  </div>
+
+  <div class="lab" id="lab-gen" hidden>
+    <h2>같은 난수로 특성 하나만 넣어 보기</h2>
+    <p class="lead">합성 데이터는 모든 시나리오가 같은 난수를 씁니다. 그래서 L1과 L5의 차이는 그 특성 하나 때문입니다. 특성과 강도를 골라 L1(회색)과 비교해 보세요. 하루 변동(표준편차)은 모두 2.11%로 같습니다.</p>
+    <div class="ctrl">
+      <label for="gF">특성 <select id="gF"><option value="cl">변동성 군집</option><option value="tl">두꺼운 꼬리</option><option value="rf">전환 빈도</option><option value="rs">전환 크기</option></select></label>
+      <label for="gL">강도 <select id="gL"><option>L2</option><option>L3</option><option>L4</option><option selected>L5</option></select></label>
+      <button id="gRe" type="button">다른 계열 번호</button>
+    </div>
+    <div class="readout">
+      <div class="stat"><div class="v" id="gPar">—</div><div class="l">이 단계의 값</div></div>
+      <div class="stat"><div class="v" id="gSd">—</div><div class="l">표본 하루 변동 (L1 / 선택)</div></div>
+      <div class="stat"><div class="v" id="g3s">—</div><div class="l">3σ 넘는 날 (L1 / 선택)</div></div>
+    </div>
+    <canvas id="genC" height="300"></canvas>
+    <p class="note" id="gNote"></p>
+  </div>
+
+  <div class="lab" id="lab-aci" hidden>
+    <h2>ACI-CQR 사후보정을 하루씩 따라가기</h2>
+    <p class="lead">모델이 낸 구간이 너무 좁거나 넓어도, 지난 이탈 기록을 보고 매일 구간을 넓히거나 좁혀서 평균 80%로 맞춥니다. 모델 자체는 건드리지 않습니다. 실제 수익률은 정규분포(하루 변동 2.11%)이고, 준비 20일 뒤부터 채점합니다.</p>
+    <div class="ctrl">
+      <label for="aM">원래 모델의 구간 <select id="aM"><option value="0.55">너무 좁음 (실제 변동의 0.55배)</option><option value="1">정확함 (1배)</option><option value="1.45">너무 넓음 (1.45배)</option></select></label>
+      <label for="aG">갱신 속도 γ <select id="aG"><option value="0.005">0.005</option><option value="0.02">0.02</option><option value="0.05" selected>0.05 (본문)</option><option value="0.1">0.1</option></select></label>
+      <label for="aN">채점 일수 <select id="aN"><option value="60">60일 (에피소드 1개)</option><option value="600" selected>600일</option></select></label>
+      <button id="aRe" type="button">다른 난수</button>
+    </div>
+    <div class="readout">
+      <div class="stat"><div class="v" id="aBase">—</div><div class="l">보정 전 커버리지</div></div>
+      <div class="stat"><div class="v" id="aCal">—</div><div class="l">보정 후 커버리지</div></div>
+      <div class="stat"><div class="v" id="aW">—</div><div class="l">보정 후 평균 폭 ÷ 원래 폭</div></div>
+    </div>
+    <canvas id="aciC" height="300"></canvas>
+    <canvas id="aciA" height="120" style="margin-top:8px"></canvas>
+    <p class="note">위: 회색 띠는 원래 구간, 파란 선은 보정한 구간, 점은 실제 수익률(주황 = 보정 구간 밖). 아래: 보정의 내부 목표 α<sub>t</sub>. 밖으로 나가면 α가 줄어(목표 커버리지가 올라가) 다음 구간이 넓어지고, 계속 들어오면 α가 늘어 좁아집니다. 갱신식 α<sub>t+1</sub> = clip(α<sub>t</sub> + γ(0.2 − 이탈), 0.02, 0.50).</p>
+  </div>
+</section>
+
+<section class="view" id="v-cards" hidden>
+  <div class="fc-top">
+    <label class="small" for="fcG">범위 <select id="fcG" style="font:inherit;padding:4px 8px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink)"></select></label>
+    <span class="small" id="fcStat"></span>
+    <button id="fcReset" type="button" class="small" style="font:inherit;font-size:13px;background:none;border:1px solid var(--line);border-radius:8px;padding:4px 10px;color:var(--text);cursor:pointer">기록 지우기</button>
+  </div>
+  <div class="fc" id="fc" tabindex="0" role="button" aria-label="카드 뒤집기"></div>
+  <div class="fc-btns">
+    <button class="again" id="fcAgain" type="button">다시 볼래요</button>
+    <button class="ok" id="fcOk" type="button">설명할 수 있어요</button>
+  </div>
+  <p class="small" style="text-align:center;margin-top:10px">카드를 누르거나 스페이스바로 뒤집고, 뒷면을 소리 내어 설명해 본 뒤 고르세요. 기록은 이 브라우저에만 남습니다.</p>
+</section>
+</div>
+
+<script>
+/* ===================== 개념 데이터 ===================== */
+const G = [
+ ['basic','기본 개념'],['fin','금융 데이터의 특성'],['design','실험 설계'],['stat','평가와 통계'],['cal','사후보정'],['use','실무 활용'],['model','모델']
+];
+// s: 발표 슬라이드 번호, q: 예상 질문 번호
+const C = [
+/* ---- 기본 ---- */
+{id:'tsfm',g:'basic',n:'TSFM (시계열 파운데이션 모델)',en:'Time Series Foundation Model',
+ one:'아주 많은 시계열로 미리 학습해 두고, 새 데이터에는 추가 학습 없이 바로 예측을 내는 모델.',
+ easy:'언어 모델이 책을 많이 읽어 둔 뒤 처음 보는 질문에 답하듯, TSFM은 날씨·전력·교통 같은 수많은 시계열을 미리 학습해 둡니다. 주가를 넣으면 주가용으로 다시 학습하지 않고 곧바로 내일을 예측합니다.',
+ ex:'이 연구의 TSFM 4종: Chronos-T5(base), Chronos-2, TimesFM-2.5, Moirai-2.0(small). 2024년 이후 공개.',
+ num:'4종 × 입력 설정 4개 = 16개 조합을 평가했습니다.',
+ trap:'"금융을 전혀 모르는 모델"은 아닙니다. 예를 들어 Moirai 학습 데이터에도 경제·금융이 약 0.1% 들어 있습니다.',
+ rel:['zeroshot','dist','models16','leak'],s:[3,12],q:[10]},
+{id:'zeroshot',g:'basic',n:'제로샷',en:'zero-shot',
+ one:'모델을 그 데이터로 추가 학습(파인튜닝)하지 않고, 받은 그대로 쓰는 것.',
+ easy:'학원에 다시 보내지 않고 원래 실력만으로 시험을 보게 하는 셈입니다. 이 연구는 실무에서 가장 흔한 사용법인 "내려받아 바로 쓰기"를 그대로 평가했습니다.',
+ ex:'그래서 오차를 고칠 때도 모델을 다시 학습하지 않고 출력만 고치는 사후보정을 택했습니다.',
+ num:'',trap:'제로샷이라서 나쁘다는 결론이 아니라, 제로샷으로 쓸 때 무엇이 틀어지고 어떻게 바로잡는지가 질문입니다.',
+ rel:['tsfm','posthoc'],s:[3],q:[]},
+{id:'dist',g:'basic',n:'분포 예측과 점 예측',en:'probabilistic vs point forecast',
+ one:'점 예측은 숫자 하나("내일 100원"), 분포 예측은 내일 가능한 값들과 그 가능성 전체.',
+ easy:'모델의 진짜 출력은 분포 하나입니다. 점 예측은 그 분포의 가운데 값(중앙값)을 꺼낸 것이고, 예측구간은 분포의 양 끝을 꺼낸 것입니다. 같은 출력에서 필요한 숫자를 다르게 꺼내 쓸 뿐입니다.',
+ ex:'오늘 100원 → 분위수 9개 97.3, 98.2, 98.9, 99.5, 100.0, 100.5, 101.1, 101.8, 102.7원. 점 예측은 100.0원, 80% 구간은 97.3~102.7원.',
+ num:'선행연구(Rahimikia 외 2025, Noguer i Alonso·Franklin 2026)는 점 예측만 비교했고 구간은 보지 않았습니다. 이 연구의 출발점입니다.',
+ trap:'"점 예측을 여러 번 해서 줄 세운다"는 것은 Chronos-T5만의 방식입니다. 나머지 세 모델은 분위수를 바로 냅니다.',
+ rel:['quantile','interval','chronost5'],s:[4],q:[1]},
+{id:'quantile',g:'basic',n:'분위수',en:'quantile',
+ one:'"아래에서 몇 % 지점의 값"인가. 10% 분위수는 내일 값이 이보다 작을 확률이 10%인 값.',
+ easy:'키 순서로 100명을 줄 세웠을 때 10번째 사람의 키가 10% 분위수입니다. 모델은 내일 가격에 대해 10%, 20%, …, 90% 지점 9개를 냅니다.',
+ ex:'10% 분위수 97.3원 = "내일 97.3원 아래로 갈 확률 10%". 90% 분위수 102.7원 = "102.7원 아래일 확률 90%, 위로 갈 확률 10%".',
+ num:'채점은 9개 분위수를 모두 씁니다(분위수 손실). 커버리지는 그중 10%와 90% 두 개만 씁니다.',
+ trap:'분위수가 오름차순이 아니면(분위수 교차) 정렬한 뒤 채점했습니다.',
+ rel:['dist','interval','pinball'],s:[4],q:[1]},
+{id:'interval',g:'basic',n:'80% 예측구간',en:'80% prediction interval',
+ one:'10% 분위수부터 90% 분위수까지. 아래 10%, 위 10%를 빼고 남는 가운데 80%.',
+ easy:'"내일 가격은 80% 확률로 이 범위 안"이라는 약속입니다. 80%라는 숫자는 누가 검증한 성능이 아니라 10%·90%라는 분위수 이름에서 정의상 나오는 것입니다.',
+ ex:'97.3~102.7원(±2.7%). 하단 97.3원은 "내일 이보다 떨어질 확률 10%" = VaR 10%와 같은 숫자입니다.',
+ num:'왜 80%인가: TimesFM-2.5와 Moirai-2는 10%~90% 분위수만 냅니다. 네 모델을 같은 조건으로 비교할 수 있는 가장 넓은 구간이 80%입니다.',
+ trap:'"80% 구간"이 실제로 80%를 맞히는지가 바로 이 연구의 질문입니다. 이름만 80%일 수 있습니다.',
+ rel:['coverage','quantile','var','extreme98'],s:[4,5],q:[2]},
+{id:'coverage',g:'basic',n:'커버리지',en:'coverage',
+ one:'다음 날 실제 가격이 어제 낸 구간 안에 들어온 날의 비율.',
+ easy:'매일 구간을 내고, 다음 날 실제로 찍힌 가격이 그 안이면 "맞음", 밖이면 "틀림". 이걸 여러 날 모아 맞은 비율을 냅니다. 모델이 뽑은 값이 구간 안에 드는지가 아니라, 실제 가격이 드는지를 봅니다.',
+ ex:'100일 중 80일 들어오면 커버리지 80%. 98.5~101.5원처럼 좁으면 약 52일, 95~105원처럼 넓으면 약 98일.',
+ num:'TSFM 16개 조합의 커버리지는 특성 없는 데이터에서도 75~88%. 실제 주가에서는 76~88%(채점 17,700건).',
+ trap:'높다고 좋은 게 아닙니다. 80%보다 낮으면 위험을 작게 본 것(과소), 높으면 불필요하게 넓게 본 것(과대). 둘 다 오차입니다.',
+ rel:['interval','miscal','width','practical'],s:[5,6],q:[1]},
+{id:'miscal',g:'basic',n:'과소·과대 커버리지',en:'under / over-coverage',
+ one:'과소: 실제보다 구간이 좁아 자주 벗어남. 과대: 필요 이상으로 넓어 거의 다 맞음.',
+ easy:'과소는 위험을 작게 보는 것이라 한도를 넘는 날이 약속보다 잦습니다. 과대는 위험을 크게 봐서 투자를 필요 이상 줄이게 됩니다.',
+ ex:'과소의 예: Chronos-T5 한 달·가격 75%. 과대의 예: TimesFM-2.5 1년·가격 88%. 극단적 과소: 기본 설정 Chronos-T5 수익률 14%.',
+ num:'L1에서 16개 중 절반(8개)이 78~82% 밖이었습니다.',
+ trap:'',rel:['coverage','timesfm','topk'],s:[13],q:[9]},
+{id:'width',g:'basic',n:'구간 폭',en:'interval width',
+ one:'90% 분위수 − 10% 분위수. 좁을수록 날카로운 예측이지만, 커버리지가 맞을 때만 의미가 있다.',
+ easy:'"항상 −100%~+100%"라고 하면 커버리지는 100%지만 쓸모가 없습니다. 그래서 커버리지와 폭을 같이 봅니다.',
+ ex:'오늘 100원, 하루 변동 2.11%의 정규분포면 80% 구간 폭은 약 5.4원(±2.7%).',
+ num:'보정 후 구간은 이상적인 구간보다 5~48% 넓었습니다(1년 5~24%, 한 달 14~48%).',
+ trap:'',rel:['coverage','oraclewidth','control'],s:[23],q:[12]},
+/* ---- 금융 ---- */
+{id:'ret',g:'fin',n:'로그수익률과 가격 입력',en:'log return vs price',
+ one:'로그수익률 = ln(오늘 가격 ÷ 어제 가격). 가격 입력은 가격 수준을 그대로 넣는 것.',
+ easy:'100원에서 102원이 되면 로그수익률은 약 +2%. 수익률은 매일 0 근처에서 오르내리고, 가격은 이어진 선입니다. 같은 정보라도 모델에 어떤 형태로 넣느냐에 따라 구간이 달라졌습니다.',
+ ex:'가격으로 넣으면 모델이 가격 분위수 q를 내고, ln(q ÷ 오늘 가격)으로 바꿔 수익률 기준으로 채점합니다.',
+ num:'같은 TimesFM-2.5 1년: 가격 입력 88%, 수익률 입력 79%.',
+ trap:'',rel:['inputs','timesfm'],s:[12],q:[9]},
+{id:'sigma',g:'fin',n:'하루 변동 (표준편차 σ)',en:'daily volatility',
+ one:'하루 수익률이 보통 얼마나 흔들리는지. 수익률의 표준편차.',
+ easy:'σ = 2.11%면 하루에 대략 ±2% 안팎으로 움직이는 종목입니다. 정규분포라면 80% 구간은 ±1.28σ = ±2.7%입니다.',
+ ex:'합성 데이터의 2.11%는 실제 10종목 일별 표준편차의 중앙값(한국전력 2.10%, 삼성전자 2.11% 사이).',
+ num:'모든 합성 시나리오가 평균 0, 하루 변동 2.11%로 같습니다. 바뀌는 것은 변동의 "형태"뿐입니다.',
+ trap:'',rel:['synth','cluster','tail'],s:[10],q:[4]},
+{id:'rwdata',g:'fin',n:'랜덤워크 (L1 데이터)',en:'random walk',
+ one:'수익률이 매일 서로 독립적으로, 같은 정규분포에서 뽑히는 가장 단순한 주가 움직임.',
+ easy:'동전 던지기처럼 어제와 무관하게 매일 오르내립니다. 수익률로 보면 평균 0·변동 2.11%의 정규분포, 가격으로 보면 추세 없는 랜덤워크입니다. 금융 특성이 하나도 없는 기준 상태라서 L1이라 부릅니다.',
+ ex:'여기에 특성을 하나씩 얹어 L2~L5를 만듭니다.',
+ num:'특성이 없는 L1에서도 TSFM 커버리지가 75~88%로 갈렸습니다.',
+ trap:'데이터 L1(랜덤워크 데이터)과 비교 모델 RW(과거 변동 기준선)는 이름만 비슷한 별개입니다. 둘 다 랜덤워크 가정에서 나왔을 뿐입니다.',
+ rel:['levels','rwmodel','synth'],s:[10,13],q:[3]},
+{id:'cluster',g:'fin',n:'변동성 군집',en:'volatility clustering',
+ one:'크게 움직인 날 뒤에는 한동안 크게 움직이는 날이 이어지는 성질.',
+ easy:'폭풍이 오면 며칠은 계속 거친 날씨인 것과 같습니다. 2020년 3월 전후처럼 큰 움직임이 몰려 옵니다. GARCH(1,1) 모형의 지속성 α+β로 세기를 잽니다. 0이면 어제와 무관, 1에 가까울수록 오래 갑니다.',
+ ex:'L3 0.946(한국전력), L4 0.982(중앙값), L5 0.996(GOOG).',
+ num:'TSFM에서 예상대로 커버리지를 낮춘 특성은 군집뿐이었고, 2%p 넘게 떨어진 것은 2개 조합(−2.0~−2.5%p). 특성끼리 비교하면 16개 중 10개에서 가장 불리(H4).',
+ trap:'',rel:['garch','tail','levels','hyp'],s:[10,14],q:[4]},
+{id:'tail',g:'fin',n:'두꺼운 꼬리',en:'fat tails',
+ one:'정규분포가 예상하는 것보다 극단적인 날(폭락·폭등)이 훨씬 자주 오는 성질.',
+ easy:'정규분포라면 평소 변동의 3배를 넘는 날은 0.27%인데, 실제 10종목은 1.3~1.8%(5~7배)였습니다. Student-t 분포의 자유도 ν로 표현하며 ν가 작을수록 꼬리가 두껍습니다. 군집과 달리 극단값이 특정 시기에 몰리지 않고 흩어져 옵니다.',
+ ex:'L3 ν = 7.64(SK하이닉스), L4 4.39, L5 3.56(META). 3σ 초과일 L1 0.27% → 꼬리 L5 1.39%.',
+ num:'80% 구간에서는 꼬리를 두껍게 하면 커버리지가 오히려 올랐습니다(11개 조합 유의한 상승). 이유는 "꼬리의 역설" 참고.',
+ trap:'꼬리가 무해하다는 뜻이 아닙니다. 98%·99% 같은 바깥 구간에서는 방향이 바뀌어 커버리지를 낮춥니다.',
+ rel:['tailparadox','extreme98','cluster'],s:[10,14,15],q:[4,5]},
+{id:'tailparadox',g:'fin',n:'꼬리의 역설',en:'fat tails raise 80% coverage',
+ one:'분산을 같게 맞추면, 꼬리가 두꺼운 분포는 가운데에 더 몰려서 80% 구간에는 더 많이 들어온다.',
+ easy:'평균 변동이 같으려면, 가끔 아주 큰 값이 나오는 분포는 그 대가로 평소에는 더 얌전해야 합니다. 그래서 분산으로 그린 80% 구간 안에는 더 자주 들어오고, 99% 구간처럼 바깥쪽에서는 극단값 때문에 덜 들어옵니다.',
+ ex:'이론값(ν = 3.56): 80% 구간 86.6%, 95% 구간 95.2%, 99% 구간 97.8%.',
+ num:'RW 1년이 꼬리 L5에서 86.3%로 이론값(86.6%)을 그대로 따랐습니다. 99%에서 1.2%p 하락은 한도 초과일이 1% → 2.2%로 두 배 넘게 는다는 뜻.',
+ trap:'"80% 구간에서 꼬리는 불리하지 않다"를 극단 위험에 그대로 쓰면 틀립니다. 국면 전환도 전체로 보면 꼬리가 두꺼운 분포(정규분포의 혼합)라 같은 원리입니다.',
+ rel:['tail','extreme98','rwmodel'],s:[15],q:[5,6]},
+{id:'regime',g:'fin',n:'국면 전환 (빈도·크기)',en:'regime switching',
+ one:'시장이 평온한 상태와 격변 상태를 오가는 성질. 얼마나 자주 바뀌나(빈도)와 얼마나 다르나(크기)로 나눴다.',
+ easy:'2국면 마르코프 전환 모형으로 잽니다. "내일도 같은 상태일 확률 p"를 추정하면 평균 지속일은 1/(1−p). 격변기 변동 ÷ 평온기 변동이 변동비(크기)입니다. 빈도와 크기를 나누지 않으면 어느 쪽이 영향을 주는지 알 수 없어서 두 축으로 분리했습니다.',
+ ex:'전환 빈도: L3 평온 275/격변 59일 → L5 9.5/2일. 전환 크기(변동비): L3 2.50배 → L5 3.19배(삼성전자).',
+ num:'80% 구간에서 잦은 전환은 커버리지를 오히려 높였고(7개 조합 유의), 전환 크기는 영향이 없었습니다. Chronos-2의 98% 구간에서는 빈도·크기 모두 8개 조건 전부에서 −0.6~−1.0%p.',
+ trap:'전환 빈도 L5만 실측 최대의 2배로, 실측 범위를 넘는 스트레스입니다. L2·L3은 한 계열에서 전환이 0~2번이라 "자주 바뀜"보다 "계열마다 변동 수준이 다름"에 가깝습니다.',
+ rel:['levels','tailparadox','extreme98'],s:[10,11,14],q:[4,5]},
+/* ---- 설계 ---- */
+{id:'synth',g:'design',n:'실측 기반 합성 데이터',en:'calibrated synthetic data',
+ one:'정답 분포를 알고 특성을 하나씩 켜고 끌 수 있게 직접 만든 가짜 주가. 세기는 실제 10종목에서 잰 값.',
+ easy:'실제 주가에는 군집·꼬리·전환이 다 섞여 있어서 무엇 때문에 틀렸는지 가릴 수 없습니다. 그래서 특성 없는 L1에 특성을 하나씩만 얹은 데이터를 만들었고, 세기를 임의로 정하지 않으려고 실제 종목에서 측정했습니다.',
+ ex:'3단계: ① 실제 10종목(2015~2026)에 GARCH-t·마르코프 전환 적합 → ② 가장 약한 값 L3, 중앙값 L4, 가장 센 값 L5 → ③ L1에 하나씩 얹어 생성.',
+ num:'17개 시나리오 × 계열 100개. 계열 하나 532일(워밍업 200 + 과거 252 + 에피소드 80). 시나리오당 채점 6,000건.',
+ trap:'합성이 실제를 "대표"하는지(Q07)와 특성의 효과를 "드러낼 만큼 셌는지"(Q05)는 다른 질문입니다.',
+ rel:['levels','crn','oracle','rwdata'],s:[9,10,11],q:[4,5,7]},
+{id:'levels',g:'design',n:'L1~L5 강도 단계',en:'intensity levels',
+ one:'L1 특성 없음, L3 실측 최약, L4 실측 중앙값, L5 실측 최강. L2는 L1과 L3의 중간.',
+ easy:'"얼마나 세게 넣었나"를 실제 종목 기준으로 정한 눈금입니다. 측정 전에 이 규칙을 먼저 정해 두어서, 결과를 보고 세기를 고를 수 없게 했습니다.',
+ ex:'군집 α+β 0 / 0.473 / 0.946 / 0.982 / 0.996. 꼬리 ν ∞ / 11.28 / 7.64 / 4.39 / 3.56.',
+ num:'시나리오 17개 = L1 1개 + 4개 특성 × L2~L5.',
+ trap:'위기 수준(실측보다 센 값)과 특성 결합은 실험하지 않았습니다. 예외는 전환 빈도 L5(실측 최대 이탈확률 × 2).',
+ rel:['synth','cluster','tail','regime'],s:[10],q:[4,5]},
+{id:'crn',g:'design',n:'공통 난수',en:'common random numbers',
+ one:'모든 시나리오가 같은 난수를 써서, 같은 계열 번호의 L1과 L5 차이가 오직 특성 때문이게 하는 장치.',
+ easy:'같은 주사위 결과에 규칙만 바꿔 적용하는 것과 같습니다. L1과 L5가 다른 난수였다면 차이가 우연인지 특성인지 가릴 수 없습니다.',
+ ex:'"직접 해보기 ③"에서 특성을 바꿔도 회색 L1과 같은 날에 같은 방향으로 움직이는 것을 볼 수 있습니다.',
+ num:'그래서 검정도 같은 계열 번호끼리 짝지어(Wilcoxon 부호순위) 비교했습니다.',
+ trap:'',rel:['synth','tests'],s:[10,11],q:[]},
+{id:'episode',g:'design',n:'에피소드 (준비 20일 + 채점 60일)',en:'episode',
+ one:'평가의 기본 단위. 80일 중 앞 20일은 보정 기록을 쌓는 데만 쓰고, 뒤 60일로 모든 지표를 계산.',
+ easy:'80% 구간은 평균 5일에 한 번 벗어나므로, 60일이면 이탈이 약 12번 쌓입니다. 보정이 작동하는지 볼 수 있는 최소한의 기록입니다.',
+ ex:'실제 주가도 종목별로 80일씩 끊어 295개 에피소드, 채점 17,700건. 끊지 않고 이어서 보정한 결과도 보조로 보고.',
+ num:'예측 전체는 24,132건(종목당 2,381~2,443일), 그중 채점이 17,700건.',
+ trap:'"17,700일"이 아니라 종목 × 날짜 17,700건입니다.',
+ rel:['aci','synth'],s:[9],q:[1,14]},
+{id:'inputs',g:'design',n:'입력 설정 4개',en:'input settings',
+ one:'과거 21일("한 달") 또는 252일("1년") × 수익률 또는 가격. 예) "한 달·가격" = 과거 21일 가격.',
+ easy:'같은 모델이라도 과거를 얼마나 보여 주고 어떤 형태로 넣느냐가 결과를 크게 바꿨습니다. 이 연구의 가장 큰 발견이 여기서 나옵니다.',
+ ex:'TimesFM-2.5 1년: 가격 88%, 수익률 79%.',
+ num:'커버리지 변동의 90%(합성) / 92%(실제)가 모델·조합 차이, 특성은 7%, 종목은 1%.',
+ trap:'',rel:['ret','vardecomp','models16'],s:[12,13],q:[6]},
+{id:'models16',g:'design',n:'16개 조합',en:'16 model × setting combos',
+ one:'TSFM 4종 × 입력 설정 4개. 결과 표의 한 줄이 한 조합.',
+ easy:'"모델이 좋다/나쁘다"보다 "어떤 모델을 어떤 설정으로 쓰느냐"를 한 단위로 봅니다.',
+ ex:'기준 모형 3개(RW 한 달·1년, GARCH-t 1년)를 더하면 19개 모델·조건.',
+ num:'합성 340개(TSFM 272 + 기준 51 + 오라클 17)와 실제 19개 모두 보정으로 복원.',
+ trap:'',rel:['tsfm','inputs','rwmodel','garch'],s:[12],q:[]},
+{id:'oracle',g:'design',n:'오라클 모형',en:'oracle',
+ one:'데이터를 만든 참 분포의 분위수를 그대로 내는 가상의 완벽한 모델.',
+ easy:'정답지를 보고 답하는 학생입니다. 이 학생도 80%가 안 나오면 데이터 생성이나 채점 코드가 틀린 것이라, 실험 장치가 맞는지 확인하는 용도입니다.',
+ ex:'17개 시나리오 모두 79.3~80.2%.',
+ num:'합성에서만 가능합니다. 참 분포를 알아서 "80%를 맞추는 가장 좁은 구간"도 계산할 수 있습니다.',
+ trap:'',rel:['synth','oraclewidth'],s:[11],q:[7]},
+{id:'rwmodel',g:'design',n:'RW (과거 변동 기준선)',en:'random-walk baseline',
+ one:'과거 수익률의 평균·표준편차로 내일의 정규분포를 그리는 가장 단순한 예측 방법.',
+ easy:'"방향은 모르니 중심은 거의 0, 폭은 최근 변동 크기만큼"이라고 답하는 방법입니다. 학습도 패턴 분석도 없습니다. 특성이 없다고 가정하므로, 특성을 넣은 데이터에서는 그 가정이 틀린 만큼 커버리지가 흔들립니다.',
+ ex:'과거 21일 또는 252일 사용.',
+ num:'같은 합성 데이터에서 RW 1년의 L5−L1: 군집 +2.3, 꼬리 +6.8, 전환 빈도 +5.5, 전환 크기 +7.0%p. TSFM은 대부분 3%p 안. 실제 주가 분포 정확도에서는 RW를 넘은 TSFM 조합이 없었습니다(H5 미지지).',
+ trap:'RW가 크게 흔들렸다는 사실이 "합성 데이터에 특성이 충분히 들어갔다"는 증거(양성 대조)입니다.',
+ rel:['rwdata','garch','h5','tailparadox'],s:[12,14,19],q:[3,5,10]},
+{id:'garch',g:'design',n:'GARCH(1,1)-t',en:'GARCH with Student-t',
+ one:'오늘 변동² = 기본값 + α×(어제 수익률)² + β×(어제 변동)², 충격은 t분포. 군집과 꼬리를 직접 담은 계량 모형.',
+ easy:'"어제 크게 움직였으면 오늘도 크게"를 식으로 쓴 것입니다. 두 가지 용도로 썼습니다. ① 실제 종목의 군집(α+β)과 꼬리(ν) 세기 측정 ② 비교 기준 모형.',
+ ex:'비교 모형으로는 과거 252일로 매일 다시 추정. 추정이 실패하면 그날만 RW로 대체(사전에 정함).',
+ num:'분위수 손실 19개 중 최소. TSFM 1년 조합 8개 모두 GARCH-t보다 손실이 컸습니다(수익률 0.4~1.5%, 가격 2.2~5.1%).',
+ trap:'',rel:['cluster','tail','rwmodel','h5'],s:[12,19],q:[4]},
+{id:'prereg',g:'design',n:'사전 고정',en:'pre-registration',
+ one:'실험 전에 가설·판정 기준·코드·단계값을 정해 git 커밋으로 기록해 둔 것.',
+ easy:'결과를 보고 나서 기준을 바꾸면 원하는 결론을 고를 수 있습니다. 그걸 막으려고 먼저 정하고 시점을 남겼습니다.',
+ ex:'예외로 바꾼 것 하나(Chronos-T5 top-k)는 바꾸기 전 결과까지 부록 A.3에 함께 실었습니다.',
+ num:'',trap:'',rel:['topk','hyp'],s:[8,9,16],q:[8]},
+{id:'hyp',g:'design',n:'가설 H1~H6',en:'hypotheses',
+ one:'기존 관점(금융 특성은 예측에 불리하다)을 그대로 가설로 두고 검정했다.',
+ easy:'H1 군집↑ → 커버리지↓, H2 꼬리↑ → ↓, H3a 전환 잦음 → ↓, H3b 전환 큼 → ↓, H4 특성마다 정도가 다름, H5 실제 주가에서 TSFM이 RW보다 분포 정확, H6 보정 후 80% 복원.',
+ ex:'판정: H1은 일부 지지, H2·H3a는 반대 방향, H3b 미지지, H4 지지(군집 최불리), H5 미지지, H6 지지.',
+ num:'',trap:'"가설이 기각됐다 = 실패"가 아니라, 통념이 80% 구간에서는 성립하지 않는다는 결과입니다.',
+ rel:['cluster','tail','regime','h5','aci'],s:[8,17],q:[]},
+/* ---- 통계 ---- */
+{id:'pinball',g:'stat',n:'분위수 손실 (pinball)',en:'quantile / pinball loss',
+ one:'9개 분위수가 실제값에 얼마나 맞았는지 채점한 손실의 평균. 분포 전체의 정확도. 작을수록 좋다.',
+ easy:'10% 분위수라면 실제값이 그보다 아래일 때 크게 벌점, 위일 때 작게 벌점을 주는 식으로 비대칭 채점합니다. 9개를 평균하면 CRPS(분포 예측의 대표 점수)의 근사가 됩니다. 커버리지가 "양 끝 두 점"만 본다면 이건 분포 전체를 봅니다.',
+ ex:'구간이 맞으면서 좁을수록 손실이 작습니다.',
+ num:'RW 대비: 12개 조합 유의하게 나쁨(−0.8~−9.8%), 3개 차이 없음(1년·수익률), 1개 유의하게 좋지만 실질 기준 미만(Chronos-2 1년·수익률 +0.9%).',
+ trap:'',rel:['h5','improve','quantile'],s:[19],q:[10]},
+{id:'h5',g:'stat',n:'H5: 분포 정확도',en:'H5',
+ one:'실제 주가에서 TSFM의 분위수 손실이 RW보다 작은가. 결과는 미지지.',
+ easy:'일별 수익률은 방향을 거의 예측할 수 없어서, "중심 0, 폭은 최근 변동"인 RW가 이미 정답에 가깝습니다. 그래서 TSFM이 이기기 어렵습니다.',
+ ex:'최선의 조합(1년·수익률)에서 RW와 같은 수준.',
+ num:'공개 이후 기간만 봐도 양상이 같았습니다.',
+ trap:'',rel:['pinball','rwmodel','garch','direction'],s:[19,20],q:[10]},
+{id:'improve',g:'stat',n:'개선율',en:'improvement over RW',
+ one:'(RW 손실 − TSFM 손실) ÷ RW 손실. 양수면 TSFM이 낫다.',
+ easy:'+1%면 RW보다 손실이 1% 작다는 뜻, −9.8%면 9.8% 크다는 뜻입니다.',
+ ex:'Chronos-2 1년·수익률 +0.9%: 유의하지만 실질 기준 2%에 못 미침.',
+ num:'',trap:'',rel:['pinball','practical'],s:[19],q:[15]},
+{id:'practical',g:'stat',n:'실질 기준',en:'practical threshold',
+ one:'통계적으로 유의해도 이 크기보다 작으면 "유의하나 작음"으로 구분. 커버리지 2%p, 분위수 손실 2%.',
+ easy:'표본이 크면 아주 작은 차이도 유의하게 나옵니다. 그래서 "실무에서 의미 있는 크기"를 먼저 정해 두었습니다. 2%p는 시나리오당 6,000건의 표본 오차(약 ±1%p)보다 확실히 큰 값입니다.',
+ ex:'커버리지 78~82%(80 ± 2%p)를 "맞는 범위"로 봅니다.',
+ num:'L1에서 16개 중 8개가 이 범위 밖.',
+ trap:'',rel:['holm','coverage'],s:[5,8],q:[]},
+{id:'holm',g:'stat',n:'Holm 보정',en:'Holm correction',
+ one:'여러 번 검정하면 우연히 유의한 결과가 나오기 쉬워서, 기준을 더 엄격하게 조정하는 방법.',
+ easy:'16개 조합을 각각 검정하면 하나쯤은 우연히 p < 0.05가 나올 수 있습니다. Holm은 p값을 작은 순으로 정렬해 첫 번째는 0.05/16, 다음은 0.05/15 … 식으로 차례로 비교합니다.',
+ ex:'묶음 = 가설·비교마다 TSFM 4개 × 조건 4개 = 16개.',
+ num:'판정: Holm 보정 후 p < 0.05 이면서 실질 기준 이상이어야 "지지".',
+ trap:'',rel:['practical','tests','pvalue'],s:[8],q:[]},
+{id:'pvalue',g:'stat',n:'p값과 유의성',en:'p-value',
+ one:'차이가 사실은 없는데도 이만큼(또는 더 큰) 차이가 우연히 나올 확률.',
+ easy:'작을수록 "우연으로 보기 어렵다". 보통 0.05 미만이면 유의하다고 합니다. 크기와는 다른 개념이라, 유의해도 작은 차이일 수 있습니다.',
+ ex:'"합성이 짐작(모두 80%)보다 실제에 더 가깝다": 19개 중 12개, p = 0.07 → 확실하다고 말하지 않음.',
+ num:'',trap:'',rel:['holm','practical'],s:[18],q:[7]},
+{id:'tests',g:'stat',n:'검정 방법',en:'statistical tests',
+ one:'H1~H3b: Wilcoxon 부호순위(같은 계열끼리 짝지음). H4: Friedman. H5: 달력 월 단위 t검정. H6: 클러스터 부트스트랩.',
+ easy:'핵심은 "독립인 묶음"을 단위로 쓴 것입니다. 같은 날 10종목은 서로 연관되고, 연속된 날도 독립이 아니라서 날짜를 하나하나 독립 관측으로 세지 않았습니다. 합성은 계열 100개, 실제는 달력 월이 단위입니다.',
+ ex:'',num:'',trap:'',rel:['holm','bootstrap','crn'],s:[8],q:[]},
+{id:'bootstrap',g:'stat',n:'부트스트랩 신뢰구간',en:'bootstrap CI',
+ one:'가진 데이터를 묶음 단위로 다시 뽑기를 반복(2,000회)해서 결과가 얼마나 흔들리는지 재는 방법.',
+ easy:'"다른 기간이 뽑혔으면 커버리지가 얼마였을까"를 흉내 냅니다. 묶음(계열·달력 월)째로 뽑아야 연관된 날들을 독립으로 착각하지 않습니다.',
+ ex:'H6 판정: 보정 후 커버리지의 90% 신뢰구간이 77~83% 안이면 "복원".',
+ num:'',trap:'',rel:['aci','tests'],s:[21,22],q:[11]},
+{id:'vardecomp',g:'stat',n:'분산 분해',en:'variance decomposition',
+ one:'커버리지가 들쭉날쭉한 정도를 "무엇 때문인지"로 나눈 것.',
+ easy:'커버리지 차이 전체를 100으로 놓고, 모델·조합이 다르기 때문인 몫과 특성(또는 종목)이 다르기 때문인 몫을 나눕니다.',
+ ex:'합성: 모델·조합 90%, 특성 7%. 실제: 모델·조합 92%, 종목 1%.',
+ num:'"평균 수준은 모델과 설정이 정한다"의 핵심 근거입니다.',
+ trap:'"특성이 덜 중요하다"로 일반화하면 과장입니다. 언제 틀리느냐(시기별)와 극단 구간에서는 특성이 크게 작용합니다.',
+ rel:['inputs','conditional','extreme98'],s:[14,18],q:[6]},
+{id:'extreme98',g:'stat',n:'98% 극단 구간',en:'98% interval',
+ one:'1%·99% 분위수 사이. 극단 위험을 보는 구간. Chronos-2만 이런 극단 분위수를 직접 낸다.',
+ easy:'80% 구간에서 "꼬리가 무해"해 보인 것이 극단 구간에서도 그런지 확인한 것입니다.',
+ ex:'꼬리: 4개 조건 중 3개에서 −0.8~−1.0%p. 전환 빈도·크기: 8개 조건 모두 −0.6~−1.0%p.',
+ num:'이론 계산이 예상한 크기(약 1%p)와 비슷합니다.',
+ trap:'한 모델로만 확인했습니다. 다른 모델에서의 재검증은 향후 연구.',
+ rel:['tailparadox','tail','regime'],s:[15,17,27,28],q:[5,6]},
+{id:'conditional',g:'stat',n:'평균 커버리지와 시기별 커버리지',en:'unconditional vs conditional',
+ one:'평균(비조건부)은 전체 기간의 비율. 시기별(조건부)은 평온한 달, 변동이 큰 달을 따로 본 비율.',
+ easy:'평온기 90%, 위기 30%여도 평균은 80%가 될 수 있습니다. 그래서 판정은 평균 기준임을 밝히고, 시기별로 따로 확인했습니다.',
+ ex:'평온한 달 = 종목·달력 월별 실현 변동성 하위 20%, 변동이 큰 달 = 상위 20%.',
+ num:'두 시기 차이: 보정 전 평균 10.1%p(최대 22.8%p) → 보정 후 2.9%p. 1년 조합은 변동이 큰 달에 76~79%로 조금 낮게 남음.',
+ trap:'',rel:['aci','vardecomp','christoffersen'],s:[24],q:[11]},
+/* ---- 보정 ---- */
+{id:'posthoc',g:'cal',n:'사후보정',en:'post-hoc calibration',
+ one:'모델은 그대로 두고, 모델이 낸 구간만 매일 넓히거나 좁히는 것. 재학습이 필요 없다.',
+ easy:'시계가 늘 5분 빠르면 시계를 뜯지 않고 "5분 빼고 읽기"를 하는 것과 비슷합니다. 다만 얼마를 뺄지 미리 모르니, 매일 맞았는지 보고 조금씩 조정합니다.',
+ ex:'계산 비용이 거의 없고, 모델 구조와 무관해 새 모델에도 그대로 쓸 수 있습니다.',
+ num:'합성 340개, 실제 19개 모든 경우에서 평균 80% 복원(보정 후 79.8~80.7%, 실제 79.9~80.3%).',
+ trap:'평균 수준만 맞춥니다. 날마다 넓어지고 좁아지는 양상은 원래 모델 것을 따르므로, 모델·설정 점검이 보정보다 먼저입니다.',
+ rel:['aci','cqr','control','conditional'],s:[21,22],q:[11,12]},
+{id:'cqr',g:'cal',n:'CQR (콘포멀 분위수 회귀)',en:'Conformalized Quantile Regression',
+ one:'모델이 낸 분위수 구간을, 지난 이탈 점수의 분위수만큼 양쪽으로 넓히거나 좁히는 방법(Romano 외 2019).',
+ easy:'매일 "얼마나 벗어났나"를 점수로 남깁니다. 점수 s = max(하단 − 실제, 실제 − 상단) ÷ 구간 폭. 안에 들어오면 음수, 밖이면 양수. 오늘은 지난 점수들 중 적당한 순위의 값 × 오늘 폭만큼 양쪽을 조정합니다(음수면 좁힘).',
+ ex:'폭으로 나누기 때문에 변동이 큰 날과 작은 날의 이탈을 같은 눈금으로 비교할 수 있습니다.',
+ num:'',trap:'',rel:['aci','posthoc'],s:[21],q:[12]},
+{id:'aci',g:'cal',n:'ACI (적응형 콘포멀 추론)',en:'Adaptive Conformal Inference',
+ one:'벗어나면 다음 구간을 조금 넓히고, 들어오면 조금 좁히는 갱신 규칙(Gibbs·Candès 2021).',
+ easy:'내부 목표 α를 둡니다(처음 0.20). 오늘 벗어났으면 α = 0.20 + 0.05 × (0.2 − 1) = 0.16으로 줄어 목표 커버리지가 84%로 올라가고, 다음 구간이 넓어집니다. 들어왔으면 α가 조금 늘어 좁아집니다. 시장이 바뀌어도 따라가는 이유입니다.',
+ ex:'α_{t+1} = clip(α_t + γ(α − 이탈), 0.02, 0.50). α = 0.20, γ = 0.05(사전 고정). 오늘 쓰는 점수 순위 k = ⌈(n+1)(1−α_t)⌉.',
+ num:'γ를 0.005~0.1로 바꿔도 실제 19개 모두 복원(보정 후 79.8~80.9%).',
+ trap:'"ACI-CQR"은 기존 두 방법의 결합이고 새 방법을 제안한 것은 아닙니다.',
+ rel:['cqr','posthoc','episode','bootstrap'],s:[21],q:[11,12]},
+{id:'control',g:'cal',n:'대조군 (일괄 확대)',en:'uniform widening control',
+ one:'원래 구간을 보정과 같은 평균 폭이 되도록 한꺼번에 넓힌 비교 대상.',
+ easy:'"보정 효과가 그냥 넓혀서 생긴 것 아니냐"에 답하려고 둔 것입니다. 같은 평균 폭이면 대조군이 더 많이 맞혔습니다(폭 효율은 대조군이 낫다). 하지만 몇 배로 넓힐지는 결과를 다 본 뒤에야 알 수 있고, 조합마다 0.8~1.3배로 달라 좁혀야 하는 경우도 있습니다.',
+ ex:'보정은 그 배율을 모르는 상태에서 매일의 실제값만 보고 80%에 갑니다.',
+ num:'대조군 커버리지: 합성 81~86%, 실제 82~83%.',
+ trap:'',rel:['posthoc','width','oraclewidth'],s:[23],q:[12]},
+{id:'oraclewidth',g:'cal',n:'이상적인 구간 폭',en:'oracle width',
+ one:'참 분포를 알 때 80%를 맞추는 가장 좁은 구간의 폭. 합성 데이터에서만 계산할 수 있다.',
+ easy:'보정의 대가를 재는 자입니다. 보정 구간이 이상적인 구간보다 얼마나 넓은지 = 위험을 그만큼 크게 잡는 비용.',
+ ex:'보정 구간은 이상보다 5~48% 넓음(과거 1년 5~24%, 한 달 14~48%).',
+ num:'원래 목표에 가까웠던 모델은 폭이 거의 그대로였습니다.',
+ trap:'',rel:['width','oracle','control'],s:[23],q:[12]},
+/* ---- 활용 ---- */
+{id:'var',g:'use',n:'VaR (위험 한도)',en:'Value at Risk',
+ one:'"내일 이보다 더 잃을 확률이 10%"인 손실 금액. 80% 구간의 하단이 곧 VaR 10%.',
+ easy:'1억 원 투자, 구간 −2.7%~+2.7%라면 "내일 270만 원 넘게 잃을 확률 10%". 이 숫자로 투자 금액, 대비 자금, 손절 기준을 정합니다. 그래서 구간이 맞는지가 곧 위험 관리가 맞는지입니다.',
+ ex:'은행 시장위험 규정(바젤)도 VaR 모형을 "한도를 넘은 날이 약속한 비율만큼인가"로 사후 점검합니다.',
+ num:'구간 하단을 한도로 쓰면 위반율이 보정 전 5.5~11.9% → 보정 후 8.6~10.8%. 10종목 중 8종목 이상 통과한 조합 8개 → 14개.',
+ trap:'',rel:['interval','kupiec','christoffersen'],s:[6,25],q:[11]},
+{id:'kupiec',g:'use',n:'Kupiec 검정 (위반율)',en:'Kupiec test',
+ one:'한도를 넘은 날의 비율이 약속한 10%와 통계적으로 같은지 보는 검정.',
+ easy:'250일 중 25번 넘으면 정상, 50번 넘으면 기각입니다.',
+ ex:'TimesFM 1년·가격은 위반율 5.5%로 너무 보수적이라 통과 0종목 → 보정 후 9.0%(6종목).',
+ num:'',trap:'이미 맞던 일부 조합(Chronos-T5 한 달·가격 등)은 보정 후 오히려 10%보다 낮아져 통과 종목이 줄었습니다(10 → 2).',
+ rel:['var','christoffersen'],s:[25],q:[11]},
+{id:'christoffersen',g:'use',n:'Christoffersen 검정 (독립성)',en:'independence test',
+ one:'한도 위반이 며칠씩 몰려 오지 않고 흩어져 오는지 보는 검정.',
+ easy:'250일 중 25번으로 비율은 맞아도, 그게 한 주에 몰려 있으면 위험 관리는 실패입니다.',
+ ex:'보정 후 1년·수익률 조합은 4개 TSFM 모두 10종목 중 9종목 이상 통과.',
+ num:'한 달·가격 조합은 몰림이 남았습니다(TimesFM·Moirai 통과 0종목).',
+ trap:'',rel:['var','kupiec','conditional'],s:[24,25],q:[11]},
+{id:'voltarget',g:'use',n:'변동성 목표 비중 조절',en:'volatility targeting',
+ one:'구간 폭으로 내일 변동을 추정해서, 하루 변동이 1% 안팎이 되도록 보유 비중을 정하는 규칙.',
+ easy:'변동이 클 것 같으면 덜 사고, 작을 것 같으면 더 삽니다. σ̂ = 80% 구간 폭 ÷ 2.5631, 비중 = min(1, 1% ÷ σ̂). 방향이 아니라 구간 폭을 직접 쓰는 활용입니다.',
+ ex:'10종목 동일비중, 2017-02~2026-09, 거래비용 반영(탐색 분석).',
+ num:'최대 낙폭 −33.5%(계속 보유) → −17~−25%. 보정 후 실현 변동이 목표의 1.05~1.14배. 하지만 RW 구간보다 나은 TSFM 조합은 없었고, 보정한 Chronos-T5 2개 조합은 샤프가 RW보다 유의하게 낮았습니다.',
+ trap:'',rel:['sharpe','mdd','width'],s:[25],q:[12]},
+{id:'sharpe',g:'use',n:'샤프 비율',en:'Sharpe ratio',
+ one:'수익 ÷ 변동. 위험 1단위당 얼마나 벌었나. 클수록 좋다.',
+ easy:'수익률만 보면 위험을 얼마나 졌는지 모릅니다. 같은 수익이면 덜 흔들린 쪽이 낫습니다.',
+ ex:'계속 보유 1.25, 비중 조절 1.15~1.37.',num:'',trap:'',rel:['voltarget','mdd'],s:[25],q:[12]},
+{id:'mdd',g:'use',n:'최대 낙폭',en:'maximum drawdown',
+ one:'고점에서 저점까지 가장 크게 떨어진 비율. "가장 심하게 물렸을 때 얼마나 잃었나".',
+ easy:'',ex:'계속 보유 −33.5% → 비중 조절 −17~−25%.',num:'',trap:'',rel:['voltarget','sharpe'],s:[25],q:[]},
+{id:'direction',g:'use',n:'방향 매매',en:'directional trading',
+ one:'예측 중앙값이 0보다 크면 사고, 작으면 파는 규칙.',
+ easy:'구간이 아니라 방향을 쓰는 활용입니다. 이 연구의 대상(구간)과 대비하려고 넣었습니다.',
+ ex:'방향 적중률 49.3~51.6%, 매일 "오른다"고 답했을 때(50.1%)와 다르지 않음.',
+ num:'모든 TSFM 방향 매매가 계속 보유(연 25.4%)보다 못했습니다(비용 반영 연 −1.0~16.4%).',
+ trap:'"구간은 방향이 아니라 위험의 크기를 잴 때 쓸모가 있다"는 결론의 근거입니다.',
+ rel:['h5','voltarget'],s:[25],q:[10,15]},
+/* ---- 모델 ---- */
+{id:'chronost5',g:'model',n:'Chronos-T5',en:'amazon/chronos-t5-base',
+ one:'값을 4,096칸(토큰)으로 나눠 다음 칸을 뽑는 언어 모델식 TSFM. 200번 뽑아 줄 세워 분위수를 계산.',
+ easy:'입력을 평균 절댓값으로 나눈 뒤 [−15, +15]를 4,096칸으로 쪼개 "다음 단어 고르기"처럼 다음 칸을 고릅니다. 200번 뽑으면 20번째·180번째 값이 80% 구간의 양 끝입니다.',
+ ex:'GPU 1장 제약으로 large 대신 base(한 번 예측 0.028초 대 0.109초).',
+ num:'가격 입력 74~78%로 과소. 수익률 입력은 기본 설정에서 14%까지 무너짐(top-k 참고).',
+ trap:'',rel:['topk','dist','tsfm'],s:[12,16],q:[1,8]},
+{id:'topk',g:'model',n:'top-k = 50 문제',en:'sampling restriction',
+ one:'라이브러리 기본값이 "확률 상위 50칸에서만 뽑기"라서, 수익률 입력에서 분포의 양 끝이 잘려 나간 것.',
+ easy:'수익률처럼 평균이 0 근처인 입력은 나눗셈 기준(평균 절댓값)이 작아 퍼짐이 상대적으로 커서, 80% 구간에 수백 칸이 필요합니다. 상위 50칸만 쓰면 양 끝이 잘려 구간이 엄청 좁아집니다.',
+ ex:'본 실행 결과 점검 중 발견 → 원인 점검(가격 입력은 영향 없음, 값 크기와 무관) → 제한만 풀어 수익률 조건 2개를 다시 예측. 나머지 코드·시드·채점은 그대로.',
+ num:'합성 L1 14.0~14.7% → 76.0~78.6%. 실제 16.9~17.6% → 77.8~80.0%. 다른 모델 판정은 하나도 바뀌지 않음.',
+ trap:'기준은 "예측을 잘라 내는 제약인가". 그래서 TimesFM의 연속 분위수 헤드(권장 설정)는 그대로 두었습니다.',
+ rel:['chronost5','prereg','timesfm'],s:[16],q:[8]},
+{id:'chronos2',g:'model',n:'Chronos-2',en:'amazon/chronos-2',
+ one:'분위수를 직접 출력하는 Chronos 후속 모델. 1%·99% 같은 극단 분위수도 낸다.',
+ easy:'그래서 98% 극단 구간 확인을 이 모델로만 했습니다.',
+ ex:'로그 거래량을 추가 입력으로 넣어 본 확인도 이 모델로 했습니다(1년·수익률 +1.0% 그대로, 한 달·수익률 −7.3% → −6.4%).',
+ num:'1년·수익률에서 RW 대비 +0.9%로 유일하게 유의한 개선(실질 기준 미만).',
+ trap:'',rel:['extreme98','h5'],s:[15,19],q:[15]},
+{id:'timesfm',g:'model',n:'TimesFM-2.5',en:'google/timesfm-2.5-200m',
+ one:'구글의 패치 기반 TSFM. 평균과 0.1~0.9 분위수를 낸다.',
+ easy:'1년·가격 조건에서만 유독 구간이 넓어 88%가 나왔습니다. 추세 때문이 아닙니다. 평균 0인 합성 데이터에서도 같은 크기였습니다.',
+ ex:'입력 정규화를 끄거나, 크기를 바꾸거나, 로그 가격을 넣어도 87.4~87.7%. 연속 분위수 헤드를 끄면 83~84%로 일부만 줄어듦.',
+ num:'합성 17개 시나리오 86.8~88.4%, 실제 87.7%. 같은 패치 방식 Moirai-2는 같은 조건에서 79.7%.',
+ trap:'원인은 일부만 밝혔습니다. 실무적 의미는 "이런 경우를 합성 점검으로 미리 가려낼 수 있다".',
+ rel:['miscal','patch','ret'],s:[13,22],q:[9]},
+{id:'moirai',g:'model',n:'Moirai-2.0',en:'Salesforce/moirai-2.0-R-small',
+ one:'세일즈포스의 TSFM. 분위수를 직접 출력. small 크기 사용.',
+ easy:'',ex:'학습 데이터(LOTSA)의 경제·금융 비중은 약 0.1%.',
+ num:'1년·가격 79.7%로 TimesFM과 대비됨.',trap:'',rel:['timesfm','leak'],s:[12],q:[13]},
+{id:'patch',g:'model',n:'패치',en:'patching',
+ one:'시계열을 하루씩이 아니라 여러 날 묶음 단위로 잘라 모델에 넣는 방식.',
+ easy:'문장을 글자가 아니라 단어 묶음으로 읽는 것과 비슷합니다. 과거 21일 조건에서는 TimesFM-2.5와 Moirai-2가 패치 길이보다 짧은 입력을 채워 넣어(패딩) 처리합니다.',
+ ex:'',num:'',trap:'',rel:['timesfm','moirai'],s:[],q:[9]},
+{id:'leak',g:'model',n:'학습 데이터 누출',en:'data leakage',
+ one:'평가 기간의 주가가 모델 학습 데이터에 이미 들어 있어서 결과가 좋게 나올 가능성.',
+ easy:'시험지 답이 교재에 있었을 수 있다는 걱정입니다. 그래서 각 모델이 공개된 이후 기간만 따로 계산했습니다.',
+ ex:'공개 이후에도 TimesFM 1년·가격 과대(84%)와 RW 대비 손실 양상은 같거나 약간 나빴습니다.',
+ num:'1년·수익률 TSFM 커버리지가 2.5~5.4%p 떨어졌지만, 학습과 무관한 RW·GARCH-t도 1.8~3.8%p 떨어짐 → 대부분 그 기간 시장 상황. TSFM 추가 하락 0.7~2.0%p는 기간이 짧아(약 1~2.5년) 판단 보류.',
+ trap:'',rel:['tsfm','moirai'],s:[19],q:[13]},
+];
+const byId = Object.fromEntries(C.map(c=>[c.id,c]));
+const SL = {1:'표지',2:'한 장 요약',3:'배경',4:'모델이 내는 것',5:'커버리지',6:'왜 커버리지인가',7:'연구 질문',8:'가설',9:'설계 개요',10:'합성 데이터 ①',11:'합성 데이터 ②',12:'모델과 비교 대상',13:'RQ1 결과 ①',14:'RQ1 결과 ②',15:'RQ1 해석',16:'발견과 조치',17:'RQ1의 답',18:'RQ2 결과 ①',19:'RQ2 결과 ②',20:'RQ2의 답',21:'RQ3 방법',22:'RQ3 결과 ①',23:'RQ3 결과 ②',24:'RQ3 결과 ③',25:'탐색 분석',26:'결론',27:'기여',28:'한계'};
+
+/* ===================== 그림 (개념별 작은 도식) ===================== */
+const Q9=[97.3,98.2,98.9,99.5,100.0,100.5,101.1,101.8,102.7];
+function svgQuant(){
+  const x=v=>40+(v-96.5)/(103.5-96.5)*520;
+  let s=`<svg viewBox="0 0 600 120" role="img" aria-label="분위수 9개와 80% 구간"><rect x="${x(97.3)}" y="34" width="${x(102.7)-x(97.3)}" height="30" rx="4" fill="var(--blue-soft)"/>`;
+  Q9.forEach((v,i)=>{s+=`<line x1="${x(v)}" x2="${x(v)}" y1="28" y2="70" stroke="${i===4?'var(--orange)':'var(--blue)'}" stroke-width="${i===4?3:1.5}"/><text x="${x(v)}" y="22" text-anchor="middle" font-size="11" fill="var(--muted)">${(i+1)*10}%</text><text x="${x(v)}" y="88" text-anchor="middle" font-size="11" fill="var(--text)">${v.toFixed(1)}</text>`});
+  s+=`<text x="${x(100)}" y="112" text-anchor="middle" font-size="12" fill="var(--orange)">점 예측(중앙값)</text><text x="${x(97.3)}" y="112" font-size="12" fill="var(--blue)">80% 구간 97.3~102.7원 →</text></svg>`;return s;
+}
+function svgCoverage(){
+  // 20일: 들어옴/벗어남 예시 (16/20 = 80%)
+  const out=new Set([3,9,14,18]);let s=`<svg viewBox="0 0 600 130" role="img" aria-label="20일 중 16일이 구간 안에 들어온 예시">`;
+  const rnd=[.2,-.5,.7,1.6,-.1,.4,-.8,.3,.0,-1.7,.6,-.3,.5,.2,1.5,-.6,.1,-.4,-1.6,.3];
+  for(let i=0;i<20;i++){const cx=30+i*28;s+=`<rect x="${cx-9}" y="35" width="18" height="60" rx="3" fill="var(--blue-soft)"/>`;const y=65-rnd[i]*20;s+=`<circle cx="${cx}" cy="${y}" r="5" fill="${out.has(i)?'var(--orange)':'var(--blue)'}"/>`}
+  s+=`<text x="30" y="20" font-size="12" fill="var(--muted)">매일의 80% 구간(띠)과 다음 날 실제 값(점)</text><text x="30" y="122" font-size="12" fill="var(--text)">20일 중 16일 안 → 커버리지 80%  ·  주황 = 벗어난 날</text></svg>`;return s;
+}
+function svgThreeWidths(){
+  const rows=[['너무 좁음 98.5~101.5원',1.5,'≈ 52%','var(--orange)'],['맞음 97.3~102.7원',2.7,'≈ 80%','var(--blue)'],['너무 넓음 95~105원',5,'≈ 98%','var(--muted)']];
+  const x=v=>300+v*50;let s=`<svg viewBox="0 0 600 130" role="img" aria-label="구간 폭별 커버리지">`;
+  rows.forEach((r,i)=>{const y=20+i*38;s+=`<rect x="${x(-r[1])}" y="${y}" width="${x(r[1])-x(-r[1])}" height="20" rx="4" fill="var(--chip)" stroke="${r[3]}"/><text x="10" y="${y+15}" font-size="12" fill="var(--text)">${r[0]}</text><text x="${x(r[1])+8}" y="${y+15}" font-size="12" fill="${r[3]}">${r[2]}</text>`});
+  s+=`<line x1="300" x2="300" y1="12" y2="120" stroke="var(--line)"/><text x="300" y="128" font-size="11" text-anchor="middle" fill="var(--muted)">100원</text></svg>`;return s;
+}
+function svgPipeline(){
+  const st=['① 측정: 실제 10종목에서 특성 세기','② 합성: L1에 하나씩 얹기 (RQ1)','③ 실증: 실제 주가 2017~2026 (RQ2)','④ 보정: 두 환경 모두 (RQ3)'];
+  let s=`<svg viewBox="0 0 600 70" role="img" aria-label="연구 설계 4단계">`;
+  st.forEach((t,i)=>{const x=5+i*150;s+=`<rect x="${x}" y="10" width="138" height="50" rx="6" fill="var(--blue-soft)"/><foreignObject x="${x+6}" y="13" width="126" height="46"><div xmlns="http://www.w3.org/1999/xhtml" style="font-size:11.5px;line-height:1.35;color:var(--ink)">${t}</div></foreignObject>`;if(i<3)s+=`<path d="M${x+140} 35 l8 0" stroke="var(--muted)" stroke-width="2"/>`});
+  return s+`</svg>`;
+}
+function svgACI(){
+  return `<svg viewBox="0 0 600 120" role="img" aria-label="ACI 갱신 순서">
+  <rect x="5" y="20" width="170" height="70" rx="6" fill="var(--blue-soft)"/><text x="15" y="42" font-size="12.5" fill="var(--ink)" font-weight="700">① 모델이 구간을 냄</text><text x="15" y="62" font-size="11.5" fill="var(--text)">10%·90% 분위수</text><text x="15" y="78" font-size="11.5" fill="var(--text)">(원래 구간)</text>
+  <path d="M178 55 h20" stroke="var(--muted)" stroke-width="2"/>
+  <rect x="200" y="20" width="190" height="70" rx="6" fill="var(--blue-soft)"/><text x="210" y="42" font-size="12.5" fill="var(--ink)" font-weight="700">② 이탈 기록으로 조정</text><text x="210" y="62" font-size="11.5" fill="var(--text)">지난 점수의 (1−α)번째 값</text><text x="210" y="78" font-size="11.5" fill="var(--text)">× 오늘 폭만큼 양쪽</text>
+  <path d="M393 55 h20" stroke="var(--muted)" stroke-width="2"/>
+  <rect x="415" y="20" width="180" height="70" rx="6" fill="var(--orange-soft)"/><text x="425" y="42" font-size="12.5" fill="var(--ink)" font-weight="700">③ 결과 보고 α 갱신</text><text x="425" y="62" font-size="11.5" fill="var(--text)">벗어남 → α↓ → 넓힘</text><text x="425" y="78" font-size="11.5" fill="var(--text)">들어옴 → α↑ → 좁힘</text>
+  <path d="M505 92 C505 115, 90 115, 90 92" fill="none" stroke="var(--muted)" stroke-dasharray="4 3"/><text x="300" y="116" font-size="11" text-anchor="middle" fill="var(--muted)">다음 날 반복</text></svg>`;
+}
+const FIG = {
+  dist:svgQuant, quantile:svgQuant, interval:svgQuant, coverage:svgCoverage, miscal:svgThreeWidths, width:svgThreeWidths,
+  synth:svgPipeline, aci:svgACI, cqr:svgACI, posthoc:svgACI,
+  levels:()=>tableHTML(['특성','L1','L2','L3','L4','L5'],[['군집 α+β','0','0.473','0.946','0.982','0.996'],['꼬리 ν','∞','11.28','7.64','4.39','3.56'],['전환 빈도(평온/격변 일)','없음','550/118','275/59','35.6/7.6','9.5/2.0'],['전환 크기(변동비)','1.00','1.75','2.50','2.70','3.19']]),
+  tailparadox:()=>tableHTML(['이론 커버리지','80% 구간','95% 구간','99% 구간'],[['정규(L1)','80.0','95.0','99.0'],['꼬리 L5 (ν = 3.56)','86.6','95.2','97.8']]),
+  rwmodel:()=>tableHTML(['L5 − L1 (%p)','군집','꼬리','전환 빈도','전환 크기'],[['TSFM 16개 조합','−2.5 ~ +0.9','+0.2 ~ +3.2','−0.9 ~ +1.9','−1.5 ~ +1.4'],['RW 1년','+2.3','+6.8','+5.5','+7.0']]),
+  topk:()=>tableHTML(['Chronos-T5 수익률','기본(top-k 50)','제한 해제'],[['합성 L1','14.0~14.7%','76.0~78.6%'],['실제 10종목','16.9~17.6%','77.8~80.0%']]),
+  conditional:()=>tableHTML(['실제 10종목(%)','평온한 달 (전 → 후)','변동이 큰 달 (전 → 후)'],[['TSFM 1년·수익률','85.3~89.0 → 82.3~83.2','67.0~73.6 → 77.5~78.9'],['TSFM 한 달·수익률','80.9~85.4 → 81.1~81.4','74.5~79.7 → 79.3~79.8'],['RW 1년','93.3 → 83.6','70.4 → 76.5']]),
+  pinball:()=>tableHTML(['RW 대비 분위수 손실','조합 수','개선율'],[['유의하게 나쁨','12','−0.8 ~ −9.8%'],['차이 없음(1년·수익률)','3','−0.1 ~ +0.3%'],['유의하게 좋지만 실질 미만','1','+0.9%']]),
+  hyp:()=>tableHTML(['가설','내용','판정'],[['H1','군집↑ → 커버리지↓','일부 지지'],['H2','꼬리↑ → ↓','반대 방향'],['H3a','전환 잦음 → ↓','반대 방향'],['H3b','전환 큼 → ↓','미지지'],['H4','특성마다 다름','지지(군집 최불리)'],['H5','TSFM이 RW보다 분포 정확','미지지'],['H6','보정 후 80% 복원','지지(모든 경우)']]),
+};
+function tableHTML(h,rows){return `<table class="t"><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr>${rows.map(r=>`<tr>${r.map(x=>`<td>${x}</td>`).join('')}</tr>`).join('')}</table>`}
+
+/* ===================== 사전 화면 ===================== */
+const listEl=document.getElementById('list'), detailEl=document.getElementById('detail'), qEl=document.getElementById('q');
+let cur='coverage';
+function renderList(){
+  const q=qEl.value.trim().toLowerCase();
+  listEl.innerHTML=G.map(([g,gn])=>{
+    const items=C.filter(c=>c.g===g && (!q || (c.n+c.en+c.one+c.easy).toLowerCase().includes(q)));
+    if(!items.length) return '';
+    return `<div class="grp"><h3>${gn}</h3>${items.map(c=>`<button data-id="${c.id}" class="${c.id===cur?'on':''}">${c.n}</button>`).join('')}</div>`;
+  }).join('') || '<p class="small" style="margin-top:12px">찾는 용어가 없습니다. 다른 말로 찾아 보세요.</p>';
+}
+function esc(s){return s}
+function renderDetail(){
+  const c=byId[cur]; const gname=G.find(g=>g[0]===c.g)[1];
+  const idx=C.indexOf(c), prev=C[idx-1], next=C[idx+1];
+  const where=[...c.s.map(n=>`슬라이드 ${n} ${SL[n]||''}`), ...c.q.map(n=>`예상 질문 Q${String(n).padStart(2,'0')}`)].join(' · ');
+  detailEl.innerHTML=`
+   <div class="crumb">${gname}</div>
+   <h2>${c.n}</h2><div class="en">${c.en}</div>
+   <p class="one">${c.one}</p>
+   ${c.easy?`<div class="sec"><h4>쉽게 풀면</h4><p>${c.easy}</p></div>`:''}
+   ${FIG[c.id]?`<div class="sec"><h4>그림으로</h4><div class="fig">${FIG[c.id]()}</div></div>`:''}
+   ${c.ex?`<div class="sec"><h4>예시</h4><div class="box ex">${c.ex}</div></div>`:''}
+   ${c.num?`<div class="sec"><h4>이 논문에서</h4><div class="box num">${c.num}</div></div>`:''}
+   ${c.trap?`<div class="sec"><h4>헷갈리기 쉬운 점</h4><div class="box trap">${c.trap}</div></div>`:''}
+   ${c.rel.length?`<div class="sec"><h4>같이 보면 좋은 개념</h4><div class="rel">${c.rel.filter(r=>byId[r]).map(r=>`<button data-id="${r}">${byId[r].n}</button>`).join('')}</div></div>`:''}
+   ${where?`<div class="sec"><h4>발표에서 나오는 곳</h4><p class="where">${where}</p></div>`:''}
+   <div class="navrow">${prev?`<button data-id="${prev.id}">← ${prev.n}</button>`:'<span></span>'}${next?`<button data-id="${next.id}">${next.n} →</button>`:'<span></span>'}</div>`;
+}
+function openConcept(id,push=true){
+  if(!byId[id])return; cur=id; renderList(); renderDetail(); showView('concepts',false);
+  if(push) setHash('c-'+id);
+  detailEl.scrollIntoView({block:'start',behavior:'smooth'});
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-id]');if(b){openConcept(b.dataset.id)}});
+qEl.addEventListener('input',renderList);
+
+/* ===================== 흐름도 ===================== */
+const FLOW=[
+ ['문제','TSFM 구간을 믿어도 되나?',['tsfm','dist','interval','coverage','var'],false],
+ ['원인 후보','특성 때문인가, 설정 때문인가?',['cluster','tail','regime','inputs','ret'],false],
+ ['실험 장치','어떻게 가려내나?',['synth','levels','crn','oracle','rwmodel','prereg'],false],
+ ['발견','무엇이 나왔나?',['miscal','vardecomp','tailparadox','extreme98','h5','topk'],true],
+ ['처방과 쓰임','어떻게 쓰나?',['aci','control','conditional','var','voltarget'],true],
+];
+document.getElementById('flow').innerHTML=FLOW.map(([t,q,ids,res])=>`<div class="col ${res?'res':''}"><h3>${t}</h3><p class="q">${q}</p>${ids.map(i=>`<button data-id="${i}">${byId[i].n}</button>`).join('')}</div>`).join('');
+const STORY=[
+ ['TSFM은 점 예측과 함께 예측구간을 내지만, 금융에서 그 구간이 약속한 비율만큼 맞는지는 아무도 확인하지 않았다.',['tsfm','interval']],
+ ['구간이 맞는지는 커버리지로 잰다. 위험 관리는 구간의 끝(VaR)을 숫자 그대로 쓰기 때문에 이게 중요하다.',['coverage','var']],
+ ['틀어진다면 원인은 금융 특성(군집·꼬리·전환)인가, 모델과 입력 설정인가? 이를 가리려고 특성을 하나씩만 넣은 합성 데이터를 실측 세기로 만들었다.',['synth','levels','cluster']],
+ ['특성이 없어도 커버리지는 75~88%로 갈렸고, 특성을 최강으로 넣어도 대부분 3%p 안에서만 움직였다. 같은 데이터에서 RW는 최대 7%p 흔들렸으니 특성은 충분히 들어갔다.',['miscal','rwmodel']],
+ ['꼬리와 잦은 전환은 오히려 80% 커버리지를 높였다. 분산이 같으면 꼬리 두꺼운 분포가 가운데에 몰리기 때문이고, 98% 구간에서는 방향이 바뀐다.',['tailparadox','extreme98']],
+ ['실제 주가에서도 커버리지 변동의 92%가 모델·조합이었고, 분포 정확도는 RW를 넘지 못했다.',['vardecomp','h5']],
+ ['모델을 고치지 않는 ACI-CQR 보정으로 모든 경우 평균 80%가 돌아왔다. 대가는 5~48% 넓은 구간이고, 시기별 차이는 일부 남는다.',['aci','oraclewidth','conditional']],
+ ['결론: 평균 수준은 모델과 설정이 정하고, 금융 특성은 언제 틀리는지와 극단 구간에 작용한다. TSFM 구간은 점검과 보정을 거쳐 위험 측정에 쓴다.',['vardecomp','posthoc']],
+];
+document.getElementById('storyList').innerHTML=STORY.map(([t,ids])=>`<li>${t} <span class="small">→ ${ids.map(i=>`<a data-id="${i}" tabindex="0">${byId[i].n}</a>`).join(', ')}</span></li>`).join('');
+
+/* ===================== 탭/해시 ===================== */
+const tabs=[...document.querySelectorAll('nav.tabs button')];
+function showView(v,push=true){
+  tabs.forEach(t=>t.setAttribute('aria-selected',t.dataset.v===v));
+  ['concepts','map','lab','cards'].forEach(x=>document.getElementById('v-'+x).hidden=x!==v);
+  if(v==='lab') drawLab(); if(v==='cards') renderCard();
+  if(push) setHash(v);
+}
+function setHash(h){try{history.replaceState(null,'','#'+h)}catch(e){}}
+tabs.forEach(t=>t.addEventListener('click',()=>showView(t.dataset.v)));
+
+/* ===================== 난수 ===================== */
+function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function normals(r,n){const o=new Float64Array(n);for(let i=0;i<n;i+=2){let u=r()||1e-12,v=r();const m=Math.sqrt(-2*Math.log(u));o[i]=m*Math.cos(2*Math.PI*v);if(i+1<n)o[i+1]=m*Math.sin(2*Math.PI*v)}return o}
+function gamma(r,k){ // Marsaglia-Tsang, k>0
+  if(k<1){return gamma(r,k+1)*Math.pow(r()||1e-12,1/k)}
+  const d=k-1/3,c=1/Math.sqrt(9*d);
+  for(;;){let x,v;do{const u=r()||1e-12,w=r();x=Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*w);v=1+c*x}while(v<=0);v=v*v*v;const u=r();if(u<1-0.0331*x*x*x*x||Math.log(u)<0.5*x*x+d*(1-v+Math.log(v)))return d*v}
+}
+const Z90=1.2815516;
+function lgam(x){const g=7,p=[0.99999999999980993,676.5203681218851,-1259.1392167224028,771.32342877765313,-176.61502916214059,12.507343278686905,-0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];if(x<0.5)return Math.log(Math.PI/Math.sin(Math.PI*x))-lgam(1-x);x-=1;let a=p[0];const t=x+g+0.5;for(let i=1;i<9;i++)a+=p[i]/(x+i);return 0.5*Math.log(2*Math.PI)+(x+0.5)*Math.log(t)-t+Math.log(a)}
+function tpdfStd(x,nu){ // 분산 1로 맞춘 t분포 밀도
+  const s=Math.sqrt((nu-2)/nu), y=x/s;
+  return Math.exp(lgam((nu+1)/2)-lgam(nu/2)-0.5*Math.log(nu*Math.PI)-(nu+1)/2*Math.log(1+y*y/nu))/s;
+}
+function npdf(x){return Math.exp(-x*x/2)/Math.sqrt(2*Math.PI)}
+function integ(f,a,b,n=4000){const h=(b-a)/n;let s=f(a)+f(b);for(let i=1;i<n;i++)s+=(i%2?4:2)*f(a+i*h);return s*h/3}
+const ZQ={80:1.2815516,95:1.959964,99:2.5758293};
+
+/* ===================== 캔버스 공통 ===================== */
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()}
+function setup(cv){const dpr=window.devicePixelRatio||1;const w=cv.clientWidth||600,h=+cv.getAttribute('height');cv.width=w*dpr;cv.height=h*dpr;cv.style.height=h+'px';const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,w,h);g.font='12px '+css('--sans');return [g,w,h]}
+
+/* ---- ① 커버리지 ---- */
+let covSeed=11;
+function drawCov(){
+  const m=+document.getElementById('covM').value, dist=document.getElementById('covD').value;
+  document.getElementById('covMv').textContent=m.toFixed(2);
+  const sig=2.11, half=Z90*sig*m;
+  const r=rng(covSeed), z=normals(r,100), nu=3.56, sc=Math.sqrt((nu-2)/nu);
+  const draw=i=> dist==='n'? z[i]*sig : sig*sc*z[i]/Math.sqrt(2*gamma(r,nu/2)/nu);
+  const ys=[];let hit=0;for(let i=0;i<100;i++){const y=draw(i);ys.push(y);if(Math.abs(y)<=half)hit++}
+  // 긴 표본
+  const r2=rng(999), z2=normals(r2,20000);let hl=0;for(let i=0;i<20000;i++){const y=dist==='n'?z2[i]*sig:sig*sc*z2[i]/Math.sqrt(2*gamma(r2,nu/2)/nu);if(Math.abs(y)<=half)hl++}
+  document.getElementById('covBand').textContent=`${(100*Math.exp(-half/100)).toFixed(1)}~${(100*Math.exp(half/100)).toFixed(1)}`;
+  document.getElementById('covHit').textContent=`${hit}일`;
+  document.getElementById('covLong').textContent=`${(hl/200).toFixed(1)}%`;
+  const [g,w,h]=setup(document.getElementById('covC'));
+  const top=16,bot=h-24,mid=(top+bot)/2,yr=8;const Y=v=>mid-v/yr*(bot-top)/2;
+  g.fillStyle=css('--blue-soft');g.fillRect(40,Y(half),w-50,Y(-half)-Y(half));
+  g.strokeStyle=css('--line');g.beginPath();g.moveTo(40,mid);g.lineTo(w-10,mid);g.stroke();
+  g.fillStyle=css('--muted');g.fillText('+'+half.toFixed(1)+'%',2,Y(half)+4);g.fillText('−'+half.toFixed(1)+'%',2,Y(-half)+4);g.fillText('0',24,mid+4);
+  ys.forEach((y,i)=>{const x=46+i*(w-60)/99;const yy=Math.max(top,Math.min(bot,Y(y)));g.fillStyle=Math.abs(y)<=half?css('--blue'):css('--orange');g.beginPath();g.arc(x,yy,3.2,0,7);g.fill();if(Math.abs(y)>yr){g.fillText('▲',x-4,yy+(y>0?10:-2))}});
+  g.fillStyle=css('--muted');g.fillText('100일 →',w-58,h-6);
+  const note=m<0.9?'모델이 변동을 실제보다 작게 봐서 구간이 좁습니다. 자주 벗어나니 위험을 과소평가한 상태(과소 커버리지)입니다.':m>1.1?'구간이 필요 이상으로 넓습니다. 거의 다 맞지만 위험을 과대평가한 상태(과대 커버리지)입니다.':'모델이 변동을 정확히 봤습니다.';
+  document.getElementById('covNote').textContent=note+(dist==='t'?' 꼬리가 두꺼운 분포에서는 변동을 정확히 봐도(1.00) 80%가 아니라 약 86~87%가 나옵니다. 꼬리의 역설입니다.':' 100일 표본은 우연에 따라 ±4일 정도 흔들립니다. 그래서 논문은 시나리오당 6,000건을 채점했습니다.');
+}
+['covM','covD'].forEach(i=>document.getElementById(i).addEventListener('input',drawCov));
+document.getElementById('covRe').onclick=()=>{covSeed++;drawCov()};
+
+/* ---- ② 꼬리 ---- */
+function drawTail(){
+  const nu=+document.getElementById('nu').value;document.getElementById('nuv').textContent=nu.toFixed(2);
+  const [g,w,h]=setup(document.getElementById('tailC'));
+  const X=x=>20+(x+4.5)/9*(w-40), maxd=0.75, Yd=d=>h-24-d/maxd*(h-44);
+  g.fillStyle=css('--blue-soft');g.fillRect(X(-Z90),14,X(Z90)-X(-Z90),h-38);
+  g.strokeStyle=css('--line');g.beginPath();g.moveTo(20,h-24);g.lineTo(w-20,h-24);g.stroke();
+  const curve=(f,col,wd)=>{g.strokeStyle=col;g.lineWidth=wd;g.beginPath();for(let i=0;i<=400;i++){const x=-4.5+9*i/400;const y=Yd(Math.min(f(x),maxd));i?g.lineTo(X(x),y):g.moveTo(X(x),y)}g.stroke();g.lineWidth=1};
+  curve(npdf,css('--muted'),2);curve(x=>tpdfStd(x,nu),css('--orange'),2.5);
+  g.fillStyle=css('--muted');[-3,-2,-1,0,1,2,3].forEach(k=>g.fillText(k+'σ',X(k)-8,h-8));
+  g.fillStyle=css('--blue');g.fillText('80% 구간 (±1.28σ)',X(-Z90)+4,28);
+  g.fillStyle=css('--muted');g.fillText('— 정규(L1)',w-150,24);g.fillStyle=css('--orange');g.fillText('— t분포 ν = '+nu.toFixed(2),w-150,40);
+  const rows=[80,95,99].map(p=>{const a=ZQ[p];const c=2*integ(x=>tpdfStd(x,nu),0,a)*100;return [p+'% 구간',p.toFixed(1),c.toFixed(1),(c-p>=0?'+':'')+(c-p).toFixed(1)]});
+  document.getElementById('tailT').innerHTML=`<tr><th>정규분포로 그린 구간</th><th>정규라면</th><th>t분포 실제</th><th>차이(%p)</th></tr>`+rows.map(r=>`<tr>${r.map(x=>`<td>${x}</td>`).join('')}</tr>`).join('');
+}
+document.getElementById('nu').addEventListener('input',drawTail);
+document.querySelectorAll('[data-nu]').forEach(b=>b.onclick=()=>{document.getElementById('nu').value=b.dataset.nu;drawTail()});
+
+/* ---- ③ 합성 데이터 ---- */
+const PAR={cl:{L2:.473,L3:.946,L4:.982,L5:.996},tl:{L2:11.28,L3:7.64,L4:4.39,L5:3.56},
+  rf:{L2:[550.4,117.5],L3:[275.2,58.7],L4:[35.6,7.6],L5:[9.5,2.0]},rs:{L2:1.75,L3:2.50,L4:2.70,L5:3.19}};
+let genSeed=3;
+function genSeries(f,L,seed){
+  const N=532,W=200,sig=2.11, r=rng(seed), z=normals(r,N), u=Array.from({length:N},()=>r()), rc=rng(seed+7777);
+  const out=new Float64Array(N), base=new Float64Array(N);let state=0;
+  let s2=sig*sig;
+  for(let t=0;t<N;t++){
+    base[t]=sig*z[t];
+    if(f==='cl'){const p=PAR.cl[L],a=.1*p,b=.9*p,om=sig*sig*(1-p);const prev=t?out[t-1]:0;s2=t?om+a*prev*prev+b*s2:sig*sig;out[t]=Math.sqrt(s2)*z[t]}
+    else if(f==='tl'){const nu=PAR.tl[L];out[t]=sig*Math.sqrt((nu-2)/nu)*z[t]/Math.sqrt(2*gamma(rc,nu/2)/nu)}
+    else{
+      const [dc,dt]=f==='rf'?PAR.rf[L]:[35.6,7.6], ratio=f==='rf'?2.70:PAR.rs[L];
+      const pc=dc/(dc+dt), sc=sig/Math.sqrt(pc+(1-pc)*ratio*ratio), st=ratio*sc;
+      if(t===0) state=u[0]<pc?0:1; else {const stay=state===0?1-1/dc:1-1/dt; if(u[t]>stay) state=1-state}
+      out[t]=(state?st:sc)*z[t]; out['s'+t]=state;
+    }
+  }
+  return {out,base,W};
+}
+function drawGen(){
+  const f=document.getElementById('gF').value,L=document.getElementById('gL').value;
+  const {out,base,W}=genSeries(f,L,genSeed);
+  const pv=PAR[f][L];document.getElementById('gPar').textContent=f==='cl'?'α+β '+pv:f==='tl'?'ν '+pv:f==='rf'?pv[0]+'/'+pv[1]+'일':'변동비 '+pv+'배';
+  const sd=a=>{let m=0,n=0;for(let i=W;i<a.length;i++){m+=a[i]*a[i];n++}return Math.sqrt(m/n)};
+  const ex=a=>{let k=0,n=0;for(let i=W;i<a.length;i++){if(Math.abs(a[i])>3*2.11)k++;n++}return (100*k/n).toFixed(1)+'%'};
+  document.getElementById('gSd').textContent=sd(base).toFixed(2)+' / '+sd(out).toFixed(2);
+  document.getElementById('g3s').textContent=ex(base)+' / '+ex(out);
+  const [g,w,h]=setup(document.getElementById('genC'));
+  const n=out.length-W, X=i=>30+i*(w-40)/n, half=(h-30)/4, y1=10+half, y2=20+3*half, sc=half/12;
+  if(f==='rf'||f==='rs'){g.fillStyle=css('--orange-soft');for(let i=0;i<n;i++)if(out['s'+(i+W)])g.fillRect(X(i),y2-half,(w-40)/n+0.6,2*half)}
+  g.strokeStyle=css('--line');[y1,y2].forEach(y=>{g.beginPath();g.moveTo(30,y);g.lineTo(w-10,y);g.stroke()});
+  const bars=(a,y,col)=>{g.strokeStyle=col;g.beginPath();for(let i=0;i<n;i++){const v=Math.max(-12,Math.min(12,a[i+W]));g.moveTo(X(i),y);g.lineTo(X(i),y-v*sc)}g.stroke()};
+  bars(base,y1,css('--muted'));bars(out,y2,css('--orange'));
+  g.fillStyle=css('--muted');g.fillText('L1 (특성 없음)',34,16);g.fillStyle=css('--orange');g.fillText(L+' · '+document.getElementById('gF').selectedOptions[0].text+(f==='rf'||f==='rs'?' (음영 = 격변 국면)':''),34,y2-half+8);
+  g.fillStyle=css('--muted');g.fillText('±12%에서 자름 · 332일',w-160,h-4);
+  const notes={cl:'큰 변동이 한 시기에 몰리고 그 사이는 잔잔해집니다. L1에서 큰 날이 고르게 흩어진 것과 비교해 보세요.',tl:'극단적인 날이 시기와 무관하게 드문드문 튑니다. 대신 평소 막대는 L1보다 짧아집니다(분산이 같으니까).',rf:'짧은 격변 국면(음영)이 자주 옵니다. L2·L3은 지속이 길어 한 계열에서 전환이 거의 없습니다.',rs:'격변 국면의 변동이 평온 국면의 몇 배인지가 커집니다. 지속일은 35.6/7.6일로 고정.'};
+  document.getElementById('gNote').textContent=notes[f]+' 같은 난수를 쓰므로 막대의 방향(위/아래)은 L1과 같은 날에 같습니다.';
+}
+['gF','gL'].forEach(i=>document.getElementById(i).addEventListener('input',drawGen));
+document.getElementById('gRe').onclick=()=>{genSeed++;drawGen()};
+
+/* ---- ④ ACI ---- */
+let aciSeed=5;
+function drawACI(){
+  const m=+document.getElementById('aM').value, gam=+document.getElementById('aG').value, N=+document.getElementById('aN').value;
+  const sig=2.11, warm=20, T=warm+N, r=rng(aciSeed), z=normals(r,T);
+  const base=Z90*sig*m; let alpha=.2; const scores=[]; const rec=[];
+  let hb=0,hc=0,wsum=0;
+  for(let t=0;t<T;t++){
+    const y=z[t]*sig, l=-base, u=base;
+    let L=l,U=u,at=alpha;
+    if(t>=warm){
+      const n=scores.length, srt=[...scores].sort((a,b)=>a-b);
+      let k=Math.ceil((n+1)*(1-alpha)); const s=k>n?srt[n-1]:srt[Math.max(1,k)-1];
+      const adj=s*(u-l); L=l-adj; U=u+adj;
+      const inB=y>=l&&y<=u, inC=y>=L&&y<=U; if(inB)hb++; if(inC)hc++; wsum+=(U-L)/(u-l);
+      alpha=Math.min(.5,Math.max(.02,alpha+gam*(.2-(inC?0:1))));
+    }
+    scores.push(Math.max(l-y,y-u)/(u-l));
+    rec.push({y,L,U,at,t});
+  }
+  document.getElementById('aBase').textContent=(100*hb/N).toFixed(1)+'%';
+  document.getElementById('aCal').textContent=(100*hc/N).toFixed(1)+'%';
+  document.getElementById('aW').textContent=(wsum/N).toFixed(2)+'배';
+  const [g,w,h]=setup(document.getElementById('aciC'));
+  const X=t=>34+t*(w-44)/(T-1), mid=h/2, sc=(h/2-14)/8, Y=v=>mid-Math.max(-8,Math.min(8,v))*sc;
+  g.fillStyle=css('--line');g.globalAlpha=.7;g.fillRect(34,Y(base),w-44,Y(-base)-Y(base));g.globalAlpha=1;
+  g.fillStyle=css('--bg');g.globalAlpha=.6;g.fillRect(34,8,X(warm)-34,h-16);g.globalAlpha=1;
+  g.strokeStyle=css('--blue');g.lineWidth=1.6;['U','L'].forEach(k=>{g.beginPath();rec.forEach((p,i)=>{if(p.t<warm)return;const yy=Y(p[k]);p.t===warm?g.moveTo(X(p.t),yy):g.lineTo(X(p.t),yy)});g.stroke()});g.lineWidth=1;
+  rec.forEach(p=>{const out=p.t>=warm&&(p.y<p.L||p.y>p.U);g.fillStyle=out?css('--orange'):css('--muted');g.beginPath();g.arc(X(p.t),Y(p.y),N>100?1.7:3,0,7);g.fill()});
+  g.fillStyle=css('--muted');g.fillText('준비 20일',36,20);g.fillText('+8%',2,Y(8)+10);g.fillText('−8%',2,Y(-8));
+  const [a,w2,h2]=setup(document.getElementById('aciA'));
+  const Ya=v=>h2-14-(v-0)/(0.5)*(h2-24), X2=t=>34+t*(w2-44)/(T-1);
+  a.strokeStyle=css('--line');a.beginPath();a.moveTo(34,Ya(.2));a.lineTo(w2-10,Ya(.2));a.stroke();
+  a.strokeStyle=css('--orange');a.lineWidth=1.5;a.beginPath();rec.forEach((p,i)=>{const yy=Ya(p.at);i?a.lineTo(X2(p.t),yy):a.moveTo(X2(p.t),yy)});a.stroke();
+  a.fillStyle=css('--muted');a.fillText('0.20',2,Ya(.2)+4);a.fillText('α_t',2,14);a.fillText('0.5',w2-30,14);
+}
+['aM','aG','aN'].forEach(i=>document.getElementById(i).addEventListener('input',drawACI));
+document.getElementById('aRe').onclick=()=>{aciSeed++;drawACI()};
+
+let curLab='cov';
+document.querySelectorAll('#labPick button').forEach(b=>b.onclick=()=>{curLab=b.dataset.l;document.querySelectorAll('#labPick button').forEach(x=>x.classList.toggle('on',x===b));['cov','tail','gen','aci'].forEach(l=>document.getElementById('lab-'+l).hidden=l!==curLab);drawLab()});
+function drawLab(){({cov:drawCov,tail:drawTail,gen:drawGen,aci:drawACI})[curLab]()}
+let rz;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{if(!document.getElementById('v-lab').hidden)drawLab()},150)});
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(!document.getElementById('v-lab').hidden)drawLab()})}catch(e){}
+
+/* ===================== 카드 복습 ===================== */
+const KEY='tsfm-notes-known';
+let known=new Set();try{known=new Set(JSON.parse(localStorage.getItem(KEY)||'[]'))}catch(e){}
+function saveKnown(){try{localStorage.setItem(KEY,JSON.stringify([...known]))}catch(e){}}
+const fcG=document.getElementById('fcG');
+fcG.innerHTML=`<option value="all">전체</option>`+G.map(([g,n])=>`<option value="${g}">${n}</option>`).join('')+`<option value="todo">아직 모르는 것만</option>`;
+let deck=[],di=0,flipped=false;
+function buildDeck(){const v=fcG.value;deck=C.filter(c=>v==='all'?true:v==='todo'?!known.has(c.id):c.g===v);di=0;flipped=false}
+function renderCard(){
+  if(!deck.length)buildDeck();
+  const el=document.getElementById('fc');
+  document.getElementById('fcStat').textContent=`설명할 수 있는 개념 ${known.size} / ${C.length}`;
+  document.getElementById('progress').textContent=`복습 진도 ${known.size}/${C.length}`;
+  if(!deck.length){el.innerHTML=`<div class="front" style="font-size:20px">이 범위는 다 끝났어요</div><div class="hint">범위를 바꾸거나 기록을 지우세요.</div>`;return}
+  const c=deck[di%deck.length];
+  el.innerHTML=flipped?`<div class="back"><p style="color:var(--ink);font-weight:700;font-size:18px">${c.n}</p><p>${c.one}</p>${c.easy?`<p class="small">${c.easy}</p>`:''}${c.num?`<p class="small"><span class="num-k">이 논문:</span> ${c.num}</p>`:''}</div>`
+    :`<div class="front">${c.n}</div><div class="hint">${known.has(c.id)?'✓ 설명할 수 있다고 표시함 · ':''}${di%deck.length+1} / ${deck.length} · 소리 내어 설명해 본 뒤 뒤집기</div>`;
+}
+document.getElementById('fc').addEventListener('click',()=>{flipped=!flipped;renderCard()});
+document.getElementById('fc').addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();flipped=!flipped;renderCard()}});
+document.getElementById('fcOk').onclick=()=>{const c=deck[di%deck.length];if(c){known.add(c.id);saveKnown()}di++;flipped=false;if(fcG.value==='todo'){buildDeck()}renderCard()};
+document.getElementById('fcAgain').onclick=()=>{const c=deck[di%deck.length];if(c){known.delete(c.id);saveKnown()}di++;flipped=false;renderCard()};
+fcG.addEventListener('input',()=>{buildDeck();renderCard()});
+document.getElementById('fcReset').onclick=()=>{known.clear();saveKnown();buildDeck();renderCard()};
+
+/* ===================== 시작 ===================== */
+(function start(){
+  const h=(location.hash||'').slice(1);
+  renderList();renderDetail();
+  if(h.startsWith('c-')&&byId[h.slice(2)]){cur=h.slice(2);renderList();renderDetail();showView('concepts',false)}
+  else if(['map','lab','cards','concepts'].includes(h))showView(h,false);
+  document.getElementById('progress').textContent=`복습 진도 ${known.size}/${C.length}`;
+})();
+</script>
