@@ -119,6 +119,19 @@ canvas{width:100%;display:block;background:var(--bg);border-radius:8px}
 .qchip{font:inherit;font-size:12.5px;background:none;border:1px dashed var(--line);border-radius:6px;padding:3px 8px;color:var(--muted);cursor:pointer;text-align:left}
 .qchip:hover{border-color:var(--blue);color:var(--ink)}
 .star{color:var(--orange)}
+.talkidx{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;flex-wrap:wrap;gap:4px;align-items:center;background:var(--bg);padding:8px 0;border-bottom:1px solid var(--line);margin-top:14px}
+.talkidx button{font:inherit;font-size:12.5px;min-width:30px;padding:3px 7px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--text);cursor:pointer}
+.talkidx .small{margin-right:6px}
+.qchip.on{border-style:solid;border-color:var(--blue);color:var(--ink);background:var(--blue-soft)}
+.qa-in{margin-top:8px;background:var(--blue-soft);border-radius:8px;padding:10px 14px;max-width:90ch}.qa-in p{margin:6px 0}
+.linkbtn{font:inherit;font-size:13px;background:none;border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--blue);cursor:pointer}
+.backbtn{position:fixed;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30;font:inherit;font-size:14px;font-weight:700;padding:10px 16px;border-radius:999px;border:0;background:var(--ink);color:var(--bg);box-shadow:0 6px 20px rgba(0,0,0,.25);cursor:pointer;max-width:calc(100vw - 32px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.scrim{position:fixed;inset:0;background:rgba(10,15,25,.35);z-index:40}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100vw);background:var(--panel);z-index:50;box-shadow:-10px 0 30px rgba(0,0,0,.2);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-right:env(safe-area-inset-right,0px)}
+.drawer .dh{display:flex;align-items:center;gap:8px;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--line)}
+.drawer .dh button{font:inherit;font-size:13px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:5px 10px;color:var(--ink);cursor:pointer}
+.dscroll{overflow:auto;padding:16px 20px 40px;flex:1}
+.dscroll h2{font-size:22px;color:var(--ink);margin:2px 0}
 /* (구) 카드 복습 */
 .fc-top{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
 .fc{background:var(--panel);border:1px solid var(--line);border-radius:12px;min-height:260px;padding:28px;display:flex;flex-direction:column;justify-content:center;cursor:pointer;max-width:760px;margin:0 auto}
@@ -167,8 +180,9 @@ canvas{width:100%;display:block;background:var(--bg);border-radius:8px}
 <section class="view" id="v-talk" hidden>
   <p class="small" style="margin:0 0 10px">발표 연습할 때 옆에 띄워 두는 화면입니다. 먼저 맨 위 흐름도로 전체 줄거리를 잡고, 슬라이드마다 "쉽게 풀면"을 소리 내어 말해 보세요. 개념·실험·질문 버튼을 누르면 해당 화면으로 갑니다.</p>
   <div class="flow" id="flow"></div>
+  <div id="talkIdx" class="talkidx"></div>
   <div id="talkList" class="talk"></div>
-  <h2 id="qa" style="font-size:20px;color:var(--ink);margin:28px 0 10px">예상 질문 15개와 짧은 답</h2>
+  <h2 id="qa" class="tcard-anchor" style="font-size:20px;color:var(--ink);margin:28px 0 10px">예상 질문 15개와 짧은 답</h2>
   <p class="small" style="margin:0 0 10px">발표 자료 부록(슬라이드 31~45)의 짧은 답입니다. 말로 하는 긴 답변은 발표 자료의 발표자 노트에 있습니다.</p>
   <div id="qaList" class="talk"></div>
 </section>
@@ -428,6 +442,12 @@ canvas{width:100%;display:block;background:var(--bg);border-radius:8px}
 
 
 </div>
+<button id="backBtn" class="backbtn" type="button" hidden></button>
+<div id="scrim" class="scrim" hidden></div>
+<aside id="drawer" class="drawer" hidden aria-label="개념 설명">
+  <div class="dh"><button id="dBack" type="button" hidden></button><span class="small">개념 설명 · 지금 보던 화면은 그대로 있습니다</span><button id="dClose" type="button">닫기 ✕</button></div>
+  <div id="dBody" class="dscroll"></div>
+</aside>
 
 <script>
 /* ===================== 개념 데이터 ===================== */
@@ -892,11 +912,11 @@ function renderList(){
   }).join('') || '<p class="small" style="margin-top:12px">찾는 용어가 없습니다. 다른 말로 찾아 보세요.</p>';
 }
 function esc(s){return s}
-function renderDetail(){
-  const c=byId[cur]; const gname=G.find(g=>g[0]===c.g)[1];
-  const idx=C.indexOf(c), prev=C[idx-1], next=C[idx+1];
-  const where=c.s.map(n=>`슬라이드 ${n} ${SL[n]||''}`).join(' · ');const qs=c.q.map(n=>`<button data-q="${n}" class="qchip">Q${String(n).padStart(2,'0')} ${QA[n][0]}</button>`).join('');
-  detailEl.innerHTML=`
+function conceptHTML(c,inDrawer){
+  const gname=G.find(g=>g[0]===c.g)[1], idx=C.indexOf(c), prev=C[idx-1], next=C[idx+1];
+  const slides=c.s.map(n=>`<button data-slide="${n}" class="linkbtn">슬라이드 ${n} ${SL[n]||''}</button>`).join('');
+  const qs=c.q.map(n=>qChip(n)).join('');
+  return `
    <div class="crumb">${gname}${c.core?' · ★ 발표에 꼭 필요한 개념':''}</div>
    <h2>${c.n}</h2><div class="en">${c.en}</div>
    <p class="one">${c.one}</p>
@@ -905,19 +925,21 @@ function renderDetail(){
    ${c.ex?`<div class="sec"><h4>예시</h4><div class="box ex">${c.ex}</div></div>`:''}
    ${c.num?`<div class="sec"><h4>이 논문에서</h4><div class="box num">${c.num}</div></div>`:''}
    ${c.trap?`<div class="sec"><h4>헷갈리기 쉬운 점</h4><div class="box trap">${c.trap}</div></div>`:''}
-   ${c.rel.length?`<div class="sec"><h4>같이 보면 좋은 개념</h4><div class="rel">${c.rel.filter(r=>byId[r]).map(r=>`<button data-id="${r}">${byId[r].n}</button>`).join('')}</div></div>`:''}
+   ${qs?`<div class="sec"><h4>관련 예상 질문 <span class="small">(누르면 바로 아래에 답이 열립니다)</span></h4><div class="qrow">${qs}</div><div class="qans"></div></div>`:''}
+   ${c.rel.length?`<div class="sec"><h4>같이 보면 좋은 개념</h4><div class="rel">${c.rel.filter(r=>byId[r]).map(r=>`<button data-id="${r}">${byId[r].core?'★ ':''}${byId[r].n}</button>`).join('')}</div></div>`:''}
    ${C2L[c.id]?`<div class="sec"><h4>직접 해보기</h4><div class="rel">${C2L[c.id].map(l=>`<button data-lab="${l}" style="border-color:var(--orange)">${LABNAME[l]} ↗</button>`).join('')}</div></div>`:''}
-   ${where?`<div class="sec"><h4>발표에서 나오는 곳</h4><p class="where">${where}</p></div>`:''}
-   ${qs?`<div class="sec"><h4>관련 예상 질문</h4><div class="qrow">${qs}</div></div>`:''}
-   <div class="navrow">${prev?`<button data-id="${prev.id}">← ${prev.n}</button>`:'<span></span>'}${next?`<button data-id="${next.id}">${next.n} →</button>`:'<span></span>'}</div>`;
+   ${slides?`<div class="sec"><h4>발표에서 나오는 곳</h4><div class="rel">${slides}</div></div>`:''}
+   ${inDrawer?`<div class="navrow"><button data-full="${c.id}">개념 사전에서 크게 보기</button><span></span></div>`:
+   `<div class="navrow">${prev?`<button data-id="${prev.id}">← ${prev.n}</button>`:'<span></span>'}${next?`<button data-id="${next.id}">${next.n} →</button>`:'<span></span>'}</div>`}`;
 }
-function openConcept(id,push=true){
+function renderDetail(){detailEl.innerHTML=conceptHTML(byId[cur],false)}
+function openConcept(id){
   if(!byId[id])return; cur=id; renderList(); renderDetail(); showView('concepts',false);
-  if(push) setHash('c-'+id);
-  detailEl.scrollIntoView({block:'start',behavior:'smooth'});
+  setHash('c-'+id); saveState();
+  requestAnimationFrame(()=>{const r=detailEl.getBoundingClientRect();if(r.top<0||r.top>window.innerHeight*0.6)detailEl.scrollIntoView({block:'start'})});
 }
-document.addEventListener('click',e=>{const l=e.target.closest('[data-lab]');if(l){openLab(l.dataset.lab);return}const b=e.target.closest('[data-id]');if(b){openConcept(b.dataset.id)}});
 qEl.addEventListener('input',renderList);document.getElementById('coreOnly').addEventListener('input',renderList);
+qEl.addEventListener('keydown',e=>{if(e.key==='Enter'){const b=listEl.querySelector('button[data-id]');if(b){pushNav();openConcept(b.dataset.id)}}});
 
 /* ===================== 흐름도 ===================== */
 const FLOW=[
@@ -1003,22 +1025,69 @@ const QA={
 };
 
 function qChip(n){return `<button data-q="${n}" class="qchip">Q${String(n).padStart(2,'0')} ${QA[n][0]}</button>`}
-document.getElementById('talkList').innerHTML=SLIDES.map(sl=>`<article class="tcard"><div class="tno">슬라이드 ${sl.n}<span>${sl.e}</span></div><h3>${sl.t}</h3><p><b>쉽게 풀면</b> ${sl.say}</p>
+document.getElementById('talkIdx').innerHTML='<span class="small">바로 가기</span>'+SLIDES.map(sl=>`<button data-jump="sl-${sl.n}">${sl.n}</button>`).join('')+'<button data-jump="qa">예상 질문</button>';
+document.getElementById('talkList').innerHTML=SLIDES.map(sl=>`<article class="tcard" id="sl-${sl.n}" data-label="슬라이드 ${sl.n}"><div class="tno">슬라이드 ${sl.n}<span>${sl.e}</span></div><h3>${sl.t}</h3><p><b>쉽게 풀면</b> ${sl.say}</p>
  <div class="rel">${sl.c.filter(i=>byId[i]).map(i=>`<button data-id="${i}">${byId[i].core?'★ ':''}${byId[i].n}</button>`).join('')}${sl.l.map(l=>`<button data-lab="${l}" style="border-color:var(--orange)">${LABNAME[l]} ↗</button>`).join('')}</div>
- ${sl.q.length?`<div class="qrow">${sl.q.map(qChip).join('')}</div>`:''}</article>`).join('');
-document.getElementById('qaList').innerHTML=Object.entries(QA).map(([n,[q,a]])=>`<article class="tcard" id="qa${n}"><div class="tno">Q${String(n).padStart(2,'0')}</div><h3>${q}</h3><p>${a}</p></article>`).join('');
-document.addEventListener('click',e=>{const b=e.target.closest('[data-q]');if(!b)return;if(document.getElementById('v-talk').hidden)showView('talk');const el=document.getElementById('qa'+b.dataset.q);if(el){el.scrollIntoView({block:'center',behavior:'smooth'});el.classList.add('hl');setTimeout(()=>el.classList.remove('hl'),1600)}});
+ ${sl.q.length?`<div class="qrow">${sl.q.map(qChip).join('')}</div><div class="qans"></div>`:''}</article>`).join('');
+document.getElementById('qaList').innerHTML=Object.entries(QA).map(([n,[q,a]])=>`<article class="tcard" id="qa${n}" data-label="예상 질문 Q${String(n).padStart(2,'0')}"><div class="tno">Q${String(n).padStart(2,'0')}</div><h3>${q}</h3><p>${a}</p></article>`).join('');
+function toggleQ(btn){
+  const wrap=btn.closest('.sec,.tcard,.dbody'),box=wrap&&wrap.querySelector('.qans');if(!box)return;
+  const n=btn.dataset.q,open=box.dataset.n===n;
+  wrap.querySelectorAll('.qchip').forEach(x=>x.classList.toggle('on',!open&&x===btn));
+  if(open){box.innerHTML='';delete box.dataset.n;return}
+  box.dataset.n=n;box.innerHTML=`<div class="qa-in"><b>Q${String(n).padStart(2,'0')} ${QA[n][0]}</b><p>${QA[n][1]}</p><button class="linkbtn" data-qclose>닫기</button></div>`;
+}
+function jumpCard(id){const el=document.getElementById(id);if(!el)return;el.scrollIntoView({block:'start'});window.scrollBy(0,-60);el.classList.add('hl');setTimeout(()=>el.classList.remove('hl'),1500)}
+
+/* ===================== 이동 기록·돌아가기·옆 창 ===================== */
+let curView='concepts';const NAV=[];
+function viewLabel(){
+  if(curView==='concepts')return byId[cur].n;
+  if(curView==='lab')return LABNAME[curLab];
+  const cards=[...document.querySelectorAll('#v-talk .tcard')];for(const c of cards){if(c.getBoundingClientRect().bottom>90)return c.dataset.label||'발표 순서'}return '발표 순서';
+}
+function pushNav(){NAV.push({v:curView,c:cur,l:curLab,y:window.scrollY,label:viewLabel()});if(NAV.length>40)NAV.shift();updateBack()}
+function updateBack(){const b=document.getElementById('backBtn');if(!NAV.length){b.hidden=true;return}b.hidden=false;b.textContent='← '+NAV[NAV.length-1].label+'(으)로 돌아가기'}
+function goBack(){const st=NAV.pop();if(!st)return;closeDrawer();cur=st.c;renderList();renderDetail();setLab(st.l);showView(st.v,false);updateBack();saveState();requestAnimationFrame(()=>requestAnimationFrame(()=>window.scrollTo(0,st.y)))}
+document.getElementById('backBtn').onclick=goBack;
+const DST=[];let dCur=null;
+function renderDrawer(id){dCur=id;document.getElementById('dBody').innerHTML='<div class="dbody">'+conceptHTML(byId[id],true)+'</div>';document.getElementById('dBody').scrollTop=0;
+  const db=document.getElementById('dBack');db.hidden=!DST.length;if(DST.length)db.textContent='← '+byId[DST[DST.length-1]].n;
+  document.getElementById('drawer').hidden=false;document.getElementById('scrim').hidden=false}
+function openDrawer(id,fromInside){if(!byId[id])return;if(fromInside&&dCur){if(id===dCur)return;DST.push(dCur)}if(!fromInside)DST.length=0;renderDrawer(id)}
+function closeDrawer(){document.getElementById('drawer').hidden=true;document.getElementById('scrim').hidden=true;DST.length=0;dCur=null}
+document.getElementById('dClose').onclick=closeDrawer;document.getElementById('scrim').onclick=closeDrawer;
+document.getElementById('dBack').onclick=()=>{const id=DST.pop();if(id)renderDrawer(id)};
+document.addEventListener('keydown',e=>{const typing=/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName);
+  if(e.key==='Escape'){if(!document.getElementById('drawer').hidden)closeDrawer();return}
+  if(typing)return;
+  if((e.key==='Backspace')||(e.altKey&&e.key==='ArrowLeft')){if(!document.getElementById('drawer').hidden){closeDrawer();e.preventDefault();return}if(NAV.length){goBack();e.preventDefault()}}
+  if(curView==='concepts'&&(e.key==='ArrowRight'||e.key==='ArrowLeft')&&!e.altKey){const i=C.indexOf(byId[cur]),j=e.key==='ArrowRight'?i+1:i-1;if(C[j]){pushNav();openConcept(C[j].id)}}});
+document.addEventListener('click',e=>{
+  if(e.target.closest('[data-qclose]')){const box=e.target.closest('.qans');const w=box.closest('.sec,.tcard,.dbody');box.innerHTML='';delete box.dataset.n;w.querySelectorAll('.qchip').forEach(x=>x.classList.remove('on'));return}
+  const q=e.target.closest('[data-q]');if(q){toggleQ(q);return}
+  const j=e.target.closest('[data-jump]');if(j){jumpCard(j.dataset.jump);return}
+  const f=e.target.closest('[data-full]');if(f){const id=f.dataset.full;closeDrawer();pushNav();openConcept(id);return}
+  const sl=e.target.closest('[data-slide]');if(sl){closeDrawer();pushNav();showView('talk',false);saveState();jumpCard('sl-'+sl.dataset.slide);return}
+  const l=e.target.closest('[data-lab]');if(l){closeDrawer();pushNav();openLab(l.dataset.lab);return}
+  const b=e.target.closest('[data-id]');if(!b)return;
+  if(b.closest('#drawer')){openDrawer(b.dataset.id,true);return}
+  if(b.closest('#v-concepts')){if(b.dataset.id===cur)return;pushNav();openConcept(b.dataset.id);return}
+  openDrawer(b.dataset.id,false);
+});
+function saveState(){try{localStorage.setItem('tsfm-note-state',JSON.stringify({v:curView,c:cur,l:curLab}))}catch(e){}}
 
 /* ===================== 탭/해시 ===================== */
 const tabs=[...document.querySelectorAll('nav.tabs button')];
 function showView(v,push=true){
+  curView=v;
   tabs.forEach(t=>t.setAttribute('aria-selected',t.dataset.v===v));
   ['concepts','talk','lab'].forEach(x=>document.getElementById('v-'+x).hidden=x!==v);
   if(v==='lab') drawLab();
   if(push) setHash(v);
 }
 function setHash(h){try{history.replaceState(null,'','#'+h)}catch(e){}}
-tabs.forEach(t=>t.addEventListener('click',()=>showView(t.dataset.v)));
+tabs.forEach(t=>t.addEventListener('click',()=>{if(t.dataset.v===curView)return;closeDrawer();pushNav();showView(t.dataset.v);saveState();window.scrollTo(0,0)}));
 
 /* ===================== 난수 ===================== */
 function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
@@ -1455,10 +1524,11 @@ $('hOne').onclick=()=>{holmLast=holmTrial();drawHolm()};
 $('hMany').onclick=()=>{let raw=0,hh=0;for(let i=0;i<1000;i++){const t=holmTrial();raw+=t.raw;hh+=t.holm;holmLast=t}holmStats={raw,holm:hh};drawHolm()};
 
 let curLab='cov';
-document.querySelectorAll('#labPick button').forEach(b=>b.onclick=()=>{curLab=b.dataset.l;document.querySelectorAll('#labPick button').forEach(x=>x.classList.toggle('on',x===b));LABS.forEach(l=>document.getElementById('lab-'+l).hidden=l!==curLab);drawLab()});
+document.querySelectorAll('#labPick button').forEach(b=>b.onclick=()=>{if(b.dataset.l===curLab)return;pushNav();setLab(b.dataset.l);drawLab();saveState()});
 const LABS=['cov','tail','gen','aci','pin','win','var','vt','topk','holm'];
 function drawLab(){({cov:drawCov,tail:drawTail,gen:drawGen,aci:drawACI,pin:drawPin,win:drawWin,var:drawVar,vt:drawVT,topk:drawTopk,holm:drawHolm})[curLab]()}
-function openLab(l){curLab=l;document.querySelectorAll('#labPick button').forEach(x=>x.classList.toggle('on',x.dataset.l===l));LABS.forEach(x=>document.getElementById('lab-'+x).hidden=x!==l);showView('lab');window.scrollTo({top:0,behavior:'smooth'})}
+function setLab(l){curLab=l;document.querySelectorAll('#labPick button').forEach(x=>x.classList.toggle('on',x.dataset.l===l));LABS.forEach(x=>document.getElementById('lab-'+x).hidden=x!==l)}
+function openLab(l){setLab(l);showView('lab');saveState();window.scrollTo(0,0)}
 let rz;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{if(!document.getElementById('v-lab').hidden)drawLab()},150)});
 try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(!document.getElementById('v-lab').hidden)drawLab()})}catch(e){}
 
@@ -1466,8 +1536,11 @@ try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if
 (function start(){
   const h=(location.hash||'').slice(1);
   renderList();renderDetail();
+  let st=null;try{st=JSON.parse(localStorage.getItem('tsfm-note-state')||'null')}catch(e){}
   if(h.startsWith('c-')&&byId[h.slice(2)]){cur=h.slice(2);renderList();renderDetail();showView('concepts',false)}
   else if(['talk','lab','concepts'].includes(h))showView(h,false);
   else if(h==='map')showView('talk',false);
+  else if(st){if(byId[st.c]){cur=st.c;renderList();renderDetail()}if(LABS.includes(st.l))setLab(st.l);if(['talk','lab','concepts'].includes(st.v))showView(st.v,false)}
+  updateBack();
 })();
 </script>
