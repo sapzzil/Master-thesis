@@ -1,0 +1,42 @@
+<section id="r3how">
+<div class="head">
+<div class="head-l">
+<p class="chap">6. RQ3 처방: 고칠 수 있는가</p>
+<h2 class="title">6.1 사후보정 방법</h2>
+</div>
+<div class="nav">
+<p class="nav-label">지금 위치</p>
+<div class="nav-row"><p class="chip">도입</p><p class="chip">설계</p><p class="chip">RQ1</p><p class="chip">RQ2</p><p class="chip on">RQ3</p><p class="chip">결론</p></div>
+</div>
+</div>
+<hr class="rule">
+<p class="lead">이 오차를 고치기 위해 모델은 그대로 두고, 나온 구간만 매일 이탈 기록에 맞춰 조정한다</p>
+<div class="bar"><p class="bar-t">ACI-CQR: 매일 도는 순서 · 모델은 건드리지 않음(재학습 없음)</p><p class="tag">C2</p></div>
+<div class="d7">
+<div class="box"><p class="bt">① 원래 구간</p><p class="bd">TSFM의 10%·90% 분위수</p></div>
+<x-connector class="arr" head="end"></x-connector>
+<div class="box"><p class="bt">② 이탈 점수 기록</p><p class="bd">구간 밖으로 나간 거리 ÷ 구간 폭</p></div>
+<x-connector class="arr" head="end"></x-connector>
+<div class="box"><p class="bt">③ 구간 조정</p><p class="bd">기록 중 k번째 점수 × 폭만큼 넓히거나 좁힘</p></div>
+<x-connector class="arr" head="end"></x-connector>
+<div class="box final"><p class="bt">④ 보정 구간</p><p class="bd">그날의 위험 측정에 사용</p></div>
+<x-connector class="varr or c3" from="bl" head="end"></x-connector>
+<x-connector class="varr or c4" head="end"></x-connector>
+<div class="box fix c3"><p class="bt">⑥ 목표 수준 갱신</p><p class="bd">벗어났으면 다음 구간을 넓게, 들어왔으면 좁게</p></div>
+<x-connector class="arrl c6" from="tr" head="end"></x-connector>
+<div class="box fix c4"><p class="bt">⑤ 다음 날 실제값</p><p class="bd">구간 밖이면 1, 안이면 0</p></div>
+</div>
+<div class="group">
+<p class="gt">흔한 방식과의 차이</p>
+<div class="flow">
+<div class="box gray"><p class="bt">일괄 확대</p><p class="bd">몇 배로 넓힐지 결과를 봐야 앎</p></div>
+<x-connector class="arr big" head="end"></x-connector>
+<div class="box"><p class="bt">사후보정</p><p class="bd">그날까지의 실제값만 사용</p></div>
+<x-connector class="arr big" head="end"></x-connector>
+<div class="box ok"><p class="bt">배율을 몰라도 80%</p><p class="bd">좁은 구간은 넓히고 넓은 구간은 좁힘</p></div>
+</div>
+</div>
+<div class="check"><p class="ck">확인</p><p class="cktext">콘포멀 분위수 회귀(Romano 외 2019) + 적응형 콘포멀 추론(Gibbs·Candès 2021)의 결합, 새 방법 아님 · α = 0.20, γ = 0.05 실험 전 고정 · 준비 20일은 기록만 · 본문 3.5절, 2.5절</p></div>
+<p class="foot-l">김승민 · 석사학위논문 심사</p><p class="foot-r"></p>
+<aside>RQ3의 방법입니다. 사후보정은 모델을 고치지 않고, 모델이 낸 구간만 매일 조정합니다. 먼저 TSFM이 원래 구간을 냅니다. 그날까지 구간을 얼마나 벗어났는지를 구간 폭으로 나눈 점수로 기록해 두고, 그 기록 중 정해진 순위의 점수만큼 오늘 구간을 넓히거나 좁힙니다. 다음 날 실제값이 구간을 벗어났으면 목표 수준을 조정해 다음 구간을 조금 넓히고, 들어왔으면 조금 좁힙니다. 이걸 매일 반복합니다. 콘포멀 분위수 회귀와 적응형 콘포멀 추론이라는 기존 방법 두 개를 결합한 것이고, 제가 새로 만든 방법은 아닙니다. 재학습이 없고 계산 비용도 거의 없습니다. 그냥 구간을 몇 배로 넓히는 방법은 몇 배가 맞는지를 결과를 봐야 알 수 있지만, 이 방법은 그날까지의 실제값만 보고 조정합니다. 설정값은 실험 전에 고정했고, 보정 후 커버리지의 90% 신뢰구간이 77에서 83% 안에 들어오면 복원으로 판정했습니다.</aside>
+</section>

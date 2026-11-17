@@ -1,0 +1,27 @@
+<section id="r3a">
+<div class="head">
+<div class="head-l">
+<p class="chap">6. RQ3 처방: 고칠 수 있는가</p>
+<h2 class="title">6.2 복원</h2>
+</div>
+<div class="nav">
+<p class="nav-label">지금 위치</p>
+<div class="nav-row"><p class="chip">도입</p><p class="chip">설계</p><p class="chip">RQ1</p><p class="chip">RQ2</p><p class="chip on">RQ3</p><p class="chip">결론</p></div>
+</div>
+</div>
+<hr class="rule">
+<p class="lead">그 결과 합성 340개, 실제 19개 경우 모두 평균 커버리지가 80%로 돌아왔다</p>
+<div class="bar"><p class="bar-t">사후보정 전후 커버리지 · 빈 점 = 보정 전, 찬 점 = 보정 후</p><p class="tag">C2</p></div>
+<div class="body2">
+<img class="fig" src="/_blob/9b8576e505823f612c3ba437834440ce" alt="합성과 실제 데이터에서 모델·조건별 보정 전후 커버리지. 보정 전 점들은 넓게 흩어져 있고, 보정 후 점들은 모두 80% 선에 모인다" style="width:1120px;height:560px;">
+<div class="side">
+<div class="box ok"><p class="kpi">80%</p><p class="bd">합성 340개·실제 19개<br>모두 복원(H6 지지)</p></div>
+<div class="box"><p class="bt">보정 후 79.8~80.7%</p><p class="bd">실제 주가 79.9~80.3%</p></div>
+<p class="memo">88% → 80%: 넓은 구간은 좁힘<br>14% → 80%: 무너진 구간도 회복</p>
+<div class="box"><p class="bt">설정에 민감하지 않음</p><p class="bd">γ = 0.005~0.1에서도<br>19개 모두 복원</p></div>
+</div>
+</div>
+<div class="check"><p class="ck">확인</p><p class="cktext">방향이 반대인 오차(좁음·넓음)를 같은 방법이 고침 · GARCH-t 비정상 값 2건을 대체해도 결론 같음(표 6-3) · 본문 6.1~6.2절, 표 6-1, 표 6-2, 그림 6-1</p></div>
+<p class="foot-l">김승민 · 석사학위논문 심사</p><p class="foot-r"></p>
+<aside>결과입니다. 그림의 빈 점이 보정 전, 찬 점이 보정 후입니다. 합성 데이터 340개, 실제 주가 19개 모델·조건 모두에서 평균 커버리지가 80%로 돌아와 H6은 예외 없이 지지됐습니다. 보정 후 커버리지는 79.8에서 80.7% 사이였습니다. 중요한 점은 방향이 반대인 오차를 같은 방법이 고쳤다는 것입니다. 너무 좁았던 구간은 넓혔고, 88%로 너무 넓었던 TimesFM 1년·가격은 오히려 좁혔습니다. 기본 설정 때문에 14%로 무너졌던 Chronos-T5 구간도 80%로 돌아왔습니다. 갱신 속도를 0.005에서 0.1까지 바꿔도 19개 모두 복원돼서, 이 결과는 설정값에 크게 의존하지 않습니다.</aside>
+</section>

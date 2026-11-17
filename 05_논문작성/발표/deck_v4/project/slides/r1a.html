@@ -1,0 +1,28 @@
+<section id="r1a">
+<div class="head">
+<div class="head-l">
+<p class="chap">4. RQ1 진단: 오차는 어디서 오는가</p>
+<h2 class="title">4.1 특성 없는 데이터</h2>
+</div>
+<div class="nav">
+<p class="nav-label">지금 위치</p>
+<div class="nav-row"><p class="chip">도입</p><p class="chip">설계</p><p class="chip on">RQ1</p><p class="chip">RQ2</p><p class="chip">RQ3</p><p class="chip">결론</p></div>
+</div>
+</div>
+<hr class="rule">
+<p class="lead">그러나 특성이 전혀 없는 데이터에서도 커버리지는 이미 75~88%로 갈렸다</p>
+<div class="bar"><p class="bar-t">시나리오(행) × 모델·입력(열)별 보정 전 커버리지</p><p class="tag">N3</p></div>
+<div class="body2">
+<img class="fig" src="/_blob/5d00ba3718e5adb99582ec855d86f03e" alt="합성 데이터 17개 시나리오와 16개 모델·입력 조합별 보정 전 커버리지 히트맵. 맨 윗줄 L1에서 이미 75%에서 88%까지 갈리고, 색은 열 방향으로 바뀌며 행 방향으로는 거의 바뀌지 않는다" style="width:1060px;height:598px;">
+<div class="side">
+<div class="box"><p class="kpi">75~88%</p><p class="bd">맨 윗줄 L1(특성 없음)의 커버리지</p></div>
+<p class="memo">낮게: Chronos-T5 한 달·가격 75%<br>높게: TimesFM-2.5 1년·가격 88%</p>
+<div class="box prob"><p class="bt">16개 중 절반</p><p class="bd">맞는 범위 78~82% 밖</p></div>
+<div class="box"><p class="bt">같은 모델, 다른 입력</p><p class="bd">TimesFM-2.5 1년:<br>가격 88% ↔ 수익률 79%</p></div>
+<div class="box ok"><p class="bt">색은 세로로 바뀐다</p><p class="bd">모델·입력(열)에 따라 바뀌고<br>특성(행)으로는 거의 그대로</p></div>
+</div>
+</div>
+<div class="check"><p class="ck">확인</p><p class="cktext">L1에는 특성이 없으므로 여기서 생긴 차이는 금융 특성 탓일 수 없다 · 시나리오당 100계열 × 60일 = 6,000건 · 본문 4.1절 표 4-1, 그림 4-1</p></div>
+<p class="foot-l">김승민 · 석사학위논문 심사</p><p class="foot-r"></p>
+<aside>RQ1의 첫 번째 결과입니다. 그림의 행은 시나리오, 열은 모델과 입력 조합입니다. 맨 윗줄 L1은 금융 특성이 하나도 없는, 가장 쉬운 데이터입니다. 그런데도 커버리지가 낮게는 Chronos-T5 한 달·가격 75%, 높게는 TimesFM-2.5 1년·가격 88%까지 벌어졌고, 16개 중 절반이 78에서 82% 밖이었습니다. 같은 모델도 입력에 따라 달라서, TimesFM-2.5는 1년 과거를 가격으로 넣으면 88%, 수익률로 넣으면 79%였습니다. 그리고 그림을 보시면 색이 세로 방향, 즉 모델과 입력에 따라 뚜렷하게 바뀌고, 가로 방향, 즉 특성을 바꿔도 거의 바뀌지 않습니다. 이 데이터에는 특성이 없으니 여기서 생긴 차이는 금융 특성 탓일 수 없고, 모델과 입력 설정에서 왔다고 볼 수밖에 없습니다.</aside>
+</section>

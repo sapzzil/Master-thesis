@@ -1,0 +1,35 @@
+<section id="synthgen">
+<div class="head">
+<div class="head-l">
+<p class="chap">3. 연구 설계</p>
+<h2 class="title">3.2 합성 데이터</h2>
+</div>
+<div class="nav">
+<p class="nav-label">지금 위치</p>
+<div class="nav-row"><p class="chip">도입</p><p class="chip on">설계</p><p class="chip">RQ1</p><p class="chip">RQ2</p><p class="chip">RQ3</p><p class="chip">결론</p></div>
+</div>
+</div>
+<hr class="rule">
+<p class="lead">합성 데이터는 같은 난수 위에 실측 세기의 특성 하나만 얹어, 결과 차이가 그 특성 때문임을 보장한다</p>
+<div class="bar"><p class="bar-t">같은 난수, 특성 하나만 · 세기는 실제 10종목에서 측정(L3 최약 · L4 중앙 · L5 최강)</p><p class="tag">N2</p></div>
+<div class="body2">
+<div class="vflow" style="flex:1;">
+<div class="box gray"><p class="bt">계열마다 난수를 한 번만 뽑는다</p><p class="bd">모든 시나리오가 같은 난수를 함께 쓴다</p></div>
+<x-connector class="varr" head="end"></x-connector>
+<div class="feat4">
+<div class="box new"><p class="bt">변동성 군집</p><p class="bd">GARCH α+β</p><p class="bd">L3 0.946<br>L4 0.982<br>L5 0.996</p></div>
+<div class="box new"><p class="bt">두꺼운 꼬리</p><p class="bd">t분포 자유도 ν</p><p class="bd">L3 7.64<br>L4 4.39<br>L5 3.56</p></div>
+<div class="box new"><p class="bt">전환 빈도</p><p class="bd">평온/격변 지속일</p><p class="bd">L3 275/59<br>L4 36/8<br>L5 9.5/2</p></div>
+<div class="box new"><p class="bt">전환 크기</p><p class="bd">격변/평온 변동비</p><p class="bd">L3 2.50<br>L4 2.70<br>L5 3.19</p></div>
+</div>
+<x-connector class="varr" head="end"></x-connector>
+<div class="box"><p class="bt">하루 변동 2.11%, 평균 0으로 고정</p><p class="bd">바뀌는 것은 변동의 모양뿐, 크기는 같다</p></div>
+<x-connector class="varr" head="end"></x-connector>
+<div class="box final"><p class="bt">17개 시나리오 × 계열 100개</p><p class="bd">L1(특성 없음) + 4개 특성 × L2~L5</p></div>
+</div>
+<img class="fig" src="/_blob/56097154573452ce62485bf94d2f0103" alt="같은 난수로 만든 한 계열의 L1과 네 특성의 L5 비교. 군집은 큰 변동이 몰리고, 꼬리는 극단값이 흩어지고, 전환 빈도는 짧은 격변이 자주 오고, 전환 크기는 격변 구간 변동이 커진다" style="width:500px;height:563px;">
+</div>
+<div class="check"><p class="ck">확인</p><p class="cktext">정답 분포를 낸 오라클 모형은 17개 시나리오 모두 커버리지 79.3~80.2% · 3σ 초과일 L1 0.27% → 꼬리 L5 1.39% · 전환 빈도 L5만 실측 최대의 2배 · 본문 3.2절 표 3-3, 표 3-4, 그림 3-2</p></div>
+<p class="foot-l">김승민 · 석사학위논문 심사</p><p class="foot-r"></p>
+<aside>합성 데이터는 이렇게 만들었습니다. 계열마다 난수를 한 번만 뽑고, 모든 시나리오가 그 난수를 함께 씁니다. 그 위에 특성을 하나씩 얹었습니다. 군집은 오늘의 변동이 어제에 따라 정해지게 하는 GARCH 방식, 꼬리는 정규분포 대신 t분포, 국면 전환은 평온기와 격변기가 번갈아 오게 했고, 빈도와 크기를 따로 나눴습니다. 세기는 임의로 정하지 않고 실제 10종목에서 잰 값을 썼습니다. 가장 약한 종목이 L3, 중앙값이 L4, 가장 센 종목이 L5이고, L2는 L1과 L3의 중간입니다. 전환 빈도의 L5만 실측 최대의 2배로 범위를 일부러 넘겼습니다. 하루 변동은 10종목 중앙값인 2.11%, 평균은 0으로 모두 같게 고정했습니다. 그래서 L1과 L5의 차이는 우연이 아니라 그 특성 하나 때문이라고 말할 수 있습니다. 오른쪽 그림이 같은 난수로 만든 한 계열을 L1과 각 특성의 L5로 비교한 것입니다. 데이터가 의도대로 만들어졌는지도 확인했고, 참 분포를 아는 오라클 모형을 같은 절차로 채점하니 17개 시나리오 모두 79.3에서 80.2%가 나와 채점 절차도 맞습니다. 이후에 80%에서 벗어난 만큼은 모델의 몫입니다.</aside>
+</section>

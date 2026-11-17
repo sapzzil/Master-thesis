@@ -1,0 +1,37 @@
+<section id="concl">
+<div class="head">
+<div class="head-l">
+<p class="chap">7. 결론</p>
+<h2 class="title">7.1 결론</h2>
+</div>
+<div class="nav">
+<p class="nav-label">지금 위치</p>
+<div class="nav-row"><p class="chip">도입</p><p class="chip">설계</p><p class="chip">RQ1</p><p class="chip">RQ2</p><p class="chip">RQ3</p><p class="chip on">결론</p></div>
+</div>
+</div>
+<hr class="rule">
+<p class="lead">따라서 TSFM 예측구간은 모델·설정을 점검하고 보정을 거쳐 위험 측정에 써야 한다</p>
+<div class="bar"><p class="bar-t">세 질문의 답</p></div>
+<div class="eq3">
+<div class="box"><p class="bt">진단 · RQ1·RQ2</p><p class="bd">평균 커버리지 수준은 모델·입력 설정이 정한다(75~88%). 특성의 영향은 대부분 3%p 이내, 실제 주가도 같다</p></div>
+<div class="box ok"><p class="bt">처방 · RQ3</p><p class="bd">재학습 없는 보정으로 모든 경우 평균 80% 복원. 대가는 5~48% 넓은 구간</p></div>
+<div class="box prob"><p class="bt">남는 것</p><p class="bd">금융 특성은 "언제 틀리는가"에 작용한다. 평온·격변 시기의 차이와 극단 구간은 보정이 일부만 메운다</p></div>
+</div>
+<div class="bar"><p class="bar-t">새 TSFM을 위험 관리에 들이는 절차</p><p class="tag">C1~C4</p></div>
+<div class="flow">
+<div class="box gray"><p class="bt">새 모델·입력 설정</p><p class="bd">라이브러리 기본값 포함</p></div>
+<x-connector class="arr" head="end"></x-connector>
+<div class="box new"><p class="bt">합성 L1 점검</p><p class="bd">크게 어긋나면 탈락 · C1</p></div>
+<x-connector class="arr" head="end"></x-connector>
+<div class="box fix"><p class="bt">사후보정 붙이기</p><p class="bd">재학습 없음 · C2</p></div>
+<x-connector class="arr" head="end"></x-connector>
+<div class="box final"><p class="bt">위험 측정에 사용</p><p class="bd">VaR·투자 비중 · C4</p></div>
+</div>
+<div class="flow">
+<p class="memo" style="flex:1;">방향 예측(수익률 맞히기)에는 쓰지 않는다: 분포 정확도는 RW 수준, 방향 적중률 49~52%</p>
+<div class="box prob" style="flex:1;"><p class="bt">극단 구간은 따로 점검 · C3</p><p class="bd">98%·99% 구간에서는 꼬리·전환이 커버리지를 낮춘다</p></div>
+</div>
+<div class="check"><p class="ck">확인</p><p class="cktext">평균 수준은 모델과 설정이 정하고, 금융 특성은 언제 틀리는지에 작용한다 · 본문 7.1절 표 7-1</p></div>
+<p class="foot-l">김승민 · 석사학위논문 심사</p><p class="foot-r"></p>
+<aside>결론입니다. 80% 구간의 평균 커버리지 수준은 금융 특성보다 모델과 입력 설정이 정했습니다. 특성이 없는 데이터에서도 75에서 88%로 갈렸고, 특성을 강하게 해도 대부분 3%p 안에서만 움직였고, 실제 주가에서도 같았습니다. 이 오차는 재학습 없는 사후보정으로 모든 경우 평균 80%로 되돌릴 수 있었고, 대가는 5에서 48% 넓은 구간이었습니다. 다만 금융 특성이 중요하지 않다는 뜻은 아닙니다. 평온한 시기와 변동이 큰 시기의 차이, 그리고 극단 구간에서는 특성이 크게 작용했고, 보정은 그 차이를 일부만 메웠습니다. 정확한 결론은 "평균 수준은 모델과 설정이 정하고, 금융 특성은 언제 틀리는지에 작용한다"입니다. 그래서 새 TSFM을 위험 관리에 들일 때는, 라이브러리 기본값까지 포함해 모델과 설정을 합성 데이터로 먼저 점검하고, 사후보정을 붙이고, 수익률 예측이 아니라 위험 측정에 쓰고, 극단 구간은 따로 점검하는 절차를 제안합니다.</aside>
+</section>

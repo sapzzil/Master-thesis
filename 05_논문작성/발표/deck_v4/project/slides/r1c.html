@@ -1,0 +1,43 @@
+<section id="r1c">
+<div class="head">
+<div class="head-l">
+<p class="chap">4. RQ1 진단: 오차는 어디서 오는가</p>
+<h2 class="title">4.3 꼬리의 역설</h2>
+</div>
+<div class="nav">
+<p class="nav-label">지금 위치</p>
+<div class="nav-row"><p class="chip">도입</p><p class="chip">설계</p><p class="chip on">RQ1</p><p class="chip">RQ2</p><p class="chip">RQ3</p><p class="chip">결론</p></div>
+</div>
+</div>
+<hr class="rule">
+<p class="lead">꼬리가 두꺼우면 80% 구간은 오히려 더 맞고 98% 구간에서는 덜 맞아, 구간 수준에 따라 결론이 뒤집힌다</p>
+<div class="bar"><p class="bar-t">분산이 같은 정규분포와 꼬리가 두꺼운 분포(ν = 3.56)</p><p class="tag">N3 · C3</p></div>
+<div class="body2">
+<div class="vflow" style="width:940px;">
+<svg aria-label="분산이 같은 정규분포와 t분포의 확률밀도. t분포가 가운데에 더 몰리고 양 끝 꼬리도 더 두껍다. 가운데 80% 구간은 초록, 99% 바깥 꼬리는 빨강으로 칠함" width="900" height="380" viewBox="0 0 900 380">
+<rect x="306" y="0" width="288" height="372" fill="#2E7D4F" fill-opacity="0.10"/>
+<rect x="0" y="0" width="160" height="372" fill="#C0392B" fill-opacity="0.10"/>
+<rect x="740" y="0" width="160" height="372" fill="#C0392B" fill-opacity="0.10"/>
+<path d="M306 0 V372 M594 0 V372" stroke="#2E7D4F" stroke-width="2" stroke-dasharray="8 6"/>
+<path d="M160 0 V372 M740 0 V372" stroke="#C0392B" stroke-width="2" stroke-dasharray="8 6"/>
+<path d="M0 371 H900" stroke="#7F8CA6" stroke-width="2"/>
+<path d="M0,370 L11,370 L23,370 L34,370 L45,370 L56,369 L68,369 L79,369 L90,369 L101,368 L112,367 L124,366 L135,365 L146,364 L158,362 L169,359 L180,357 L191,353 L202,349 L214,344 L225,338 L236,331 L248,323 L259,314 L270,303 L281,292 L292,280 L304,267 L315,253 L326,239 L338,225 L349,210 L360,196 L371,183 L382,170 L394,159 L405,149 L416,141 L428,135 L439,132 L450,131 L461,132 L472,135 L484,141 L495,149 L506,159 L518,170 L529,183 L540,196 L551,210 L562,225 L574,239 L585,253 L596,267 L608,280 L619,292 L630,303 L641,314 L652,323 L664,331 L675,338 L686,344 L698,349 L709,353 L720,357 L731,359 L742,362 L754,364 L765,365 L776,366 L788,367 L799,368 L810,369 L821,369 L832,369 L844,369 L855,370 L866,370 L878,370 L889,370 L900,370" fill="none" stroke="#7F8CA6" stroke-width="4"/>
+<path d="M0,369 L11,368 L23,368 L34,368 L45,368 L56,368 L68,367 L79,367 L90,367 L101,366 L112,366 L124,365 L135,364 L146,364 L158,363 L169,361 L180,360 L191,358 L202,357 L214,354 L225,351 L236,348 L248,344 L259,339 L270,333 L281,326 L292,317 L304,307 L315,294 L326,279 L338,261 L349,240 L360,216 L371,189 L382,160 L394,130 L405,100 L416,73 L428,52 L439,38 L450,33 L461,38 L472,52 L484,73 L495,100 L506,130 L518,160 L529,189 L540,216 L551,240 L562,261 L574,279 L585,294 L596,307 L608,317 L619,326 L630,333 L641,339 L652,344 L664,348 L675,351 L686,354 L698,357 L709,358 L720,360 L731,361 L742,363 L754,364 L765,364 L776,365 L788,366 L799,366 L810,367 L821,367 L832,367 L844,368 L855,368 L866,368 L878,368 L889,368 L900,369" fill="none" stroke="#1D3461" stroke-width="5"/>
+</svg>
+<div class="legend"><p class="lg" style="background:#E7EAF0;">회색 = 정규(L1)</p><p class="lg" style="background:#1D3461;color:#FFFFFF;">남색 = 꼬리 L5</p><p class="lg" style="background:#EAF5E1;">초록 = 가운데 80%</p><p class="lg" style="background:#FBEDEB;">빨강 = 99% 바깥</p></div>
+</div>
+<div class="side">
+<table class="tbl">
+<tr><th>이론 커버리지(%)</th><th>80%</th><th>95%</th><th>99%</th></tr>
+<tr><td>정규(L1)</td><td>80.0</td><td>95.0</td><td>99.0</td></tr>
+<tr><td>꼬리 L5</td><td>86.6</td><td>95.2</td><td>97.8</td></tr>
+</table>
+<div class="box ok left"><p class="bt">80% 구간: 가운데에 더 몰려 더 맞음</p><p class="bd">RW 1년 실측 86.3% (이론 86.6%)</p></div>
+<div class="box prob left"><p class="bt">98% 구간: 꼬리 때문에 덜 맞음</p><p class="bd">Chronos-2: 꼬리 4개 조건 중 3개 −0.8~−1.0%p, 국면 전환 8개 모두 −0.6~−1.0%p</p></div>
+<div class="box prob left"><p class="bt">작아 보여도 크다</p><p class="bd">99%에서 1.2%p 하락 = 한도 초과일 1% → 2.2%</p></div>
+</div>
+</div>
+<div class="check"><p class="ck">확인</p><p class="cktext">C3: 80% 구간 하나로 꼬리 위험을 판단하면 틀린다 · 국면 전환이 섞인 데이터도 전체로는 꼬리가 두꺼운 분포라 같은 원리 · 본문 4.3.2절 표 4-3, 표 4-4</p></div>
+<p class="foot-l">김승민 · 석사학위논문 심사</p><p class="foot-r"></p>
+<aside>그러면 꼬리가 두꺼워지면 왜 커버리지가 올라갔을까요. 모델이 꼬리를 잘 다뤄서가 아니라 80% 구간이 가진 수학적 성질 때문입니다. 그림은 분산을 똑같이 맞춘 정규분포와 꼬리가 두꺼운 분포입니다. 꼬리가 두꺼운 분포는 가끔 큰 값이 나오는 대신 평소에는 가운데에 더 몰립니다. 그래서 분산으로 그린 80% 구간, 초록 부분에는 더 많이 들어옵니다. 이론적으로 계산하면 80% 구간은 86.6%로 올라가고, 95%에서는 거의 같고, 99% 구간에서는 97.8%로 오히려 떨어집니다. RW는 이 이론값을 그대로 따라 86.3%였습니다. 극단 분위수를 직접 내는 Chronos-2로 98% 구간을 확인해 보니 꼬리는 네 조건 중 세 조건에서, 국면 전환은 여덟 조건 모두에서 실제로 커버리지를 떨어뜨렸습니다. 99%에서 1.2%p 하락은 작아 보이지만 한도를 넘는 날이 1%에서 2.2%로 두 배 넘게 늘어난다는 뜻입니다. 그래서 80% 구간 결과를 극단 위험에 그대로 적용하면 안 되고, 이것이 기여 C3의 평가 관점입니다.</aside>
+</section>

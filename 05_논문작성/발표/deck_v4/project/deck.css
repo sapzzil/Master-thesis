@@ -175,6 +175,65 @@ section {
 .cc { font-size: 24px; font-weight: 700; color: #FFFFFF; background: var(--green); border-radius: 6px; padding: 0px 10px; }
 .row-t { display: flex; flex-direction: row; align-items: center; gap: 12px; }
 
+/* ---------- 9장 이후: 그림·차트 공통 ---------- */
+.fig { border: 1.5px solid var(--line-gray); border-radius: 10px; background: #FFFFFF; object-fit: contain; }
+.body2 { display: flex; flex-direction: row; gap: 24px; align-items: stretch; flex: 1; }
+.side { display: flex; flex-direction: column; gap: 12px; flex: 1; }
+.side .box { flex: 1; }
+.kpi { font-size: 44px; font-weight: 900; color: var(--navy); text-align: center; line-height: 1.1; }
+.box.ok .kpi { color: var(--green); }
+.box.prob .kpi { color: var(--red); }
+.tbl { font-size: 26px; color: var(--text); width: 100%; }
+.eq4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; }
+.eq4 .box { justify-content: flex-start; }
+.vflow { display: flex; flex-direction: column; align-items: stretch; gap: 6px; }
+.vflow .varr { height: 28px; }
+.feat4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; }
+.legend { display: flex; flex-direction: row; gap: 24px; align-items: center; }
+.lg { font-size: 24px; color: var(--text); padding: 2px 12px; border-radius: 6px; }
+.ftag { font-size: 24px; font-weight: 700; color: #FFFFFF; background: var(--navy); border-radius: 6px; padding: 0px 10px; white-space: nowrap; }
+
+/* G1 오차 분해 막대 */
+.g1 { display: flex; flex-direction: row; height: 120px; border-radius: 10px; overflow: hidden; }
+.g1-a { flex: 90; background: var(--navy-deep); display: flex; align-items: center; padding: 0px 24px; }
+.g1-b { flex: 7; background: var(--red); display: flex; align-items: center; justify-content: center; }
+.g1-c { flex: 3; background: #C9CED6; }
+.g1-t { font-size: 34px; font-weight: 900; color: #FFFFFF; }
+.g1-s { font-size: 26px; font-weight: 900; color: #FFFFFF; }
+
+/* D7 보정 순환 격자 */
+.d7 { display: grid; grid-template-columns: 1fr 52px 1fr 52px 1fr 52px 1fr; grid-template-rows: auto 44px auto; column-gap: 6px; row-gap: 6px; }
+.d7 .arr, .d7 .arrl { align-self: center; justify-self: center; }
+.d7 .varr { justify-self: center; height: 40px; border-width: 4px; }
+.d7 .arrl { width: 48px; border-width: 4px; }
+.arrl { width: 44px; height: 0px; color: var(--orange); border-width: 3px; }
+.varr.or { color: var(--orange); }
+.c3 { grid-column: 5; } .c4 { grid-column: 7; } .c6 { grid-column: 6; }
+
+/* 범위 막대 차트 (G2, G3) */
+.rchart { display: flex; flex-direction: column; gap: 6px; }
+.rrow { display: flex; flex-direction: row; align-items: center; gap: 16px; }
+.rlab { width: 300px; font-size: 24px; font-weight: 700; color: var(--navy); text-align: right; }
+.rlab-s { font-size: 24px; font-weight: 400; font-weight: 500; color: var(--sub); }
+.rhost { position: relative; width: 1100px; height: 48px; background: var(--blue-bg); border-radius: 6px; }
+.rhost.tall { height: 44px; }
+.rbar { position: absolute; top: 10px; height: 32px; border-radius: 4px; }
+.rhost.tall .rbar { top: 8px; height: 28px; }
+.rbar.pre { background: #B9C0CE; }
+.rbar.post { background: var(--navy-deep); }
+.rbar.fixc { background: var(--orange); }
+.rline { position: absolute; top: 0px; width: 3px; height: 52px; background: var(--green); }
+.rhost.tall .rline { height: 44px; }
+.rval { position: absolute; top: 8px; width: 200px; font-size: 24px; font-weight: 700; color: var(--navy); }
+.raxis { position: relative; width: 1100px; height: 36px; }
+.rtick { position: absolute; top: 0px; width: 80px; font-size: 24px; color: var(--sub); text-align: center; }
+
+/* 기여·한계 행 */
+.rows { display: flex; flex-direction: column; gap: 12px; flex: 1; }
+.row3 { display: grid; grid-template-columns: 300px 1fr 220px; gap: 12px; flex: 1; }
+.row3l { display: grid; grid-template-columns: 260px 1fr 44px 520px; gap: 12px; flex: 1; align-items: stretch; }
+.row3l .arr { align-self: center; }
+
 /* ---------- 바닥글 ---------- */
 .foot-l { position: absolute; left: 80px; bottom: 36px; width: 900px; font-size: 24px; color: #8A93A0; }
 .foot-r { position: absolute; right: 80px; bottom: 36px; width: 120px; font-size: 24px; color: #8A93A0; text-align: right; }

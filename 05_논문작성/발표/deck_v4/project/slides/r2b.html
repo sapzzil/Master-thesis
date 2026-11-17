@@ -1,0 +1,32 @@
+<section id="r2b">
+<div class="head">
+<div class="head-l">
+<p class="chap">5. RQ2 실증: 실제로도 그런가</p>
+<h2 class="title">5.2 분포 정확도</h2>
+</div>
+<div class="nav">
+<p class="nav-label">지금 위치</p>
+<div class="nav-row"><p class="chip">도입</p><p class="chip">설계</p><p class="chip">RQ1</p><p class="chip on">RQ2</p><p class="chip">RQ3</p><p class="chip">결론</p></div>
+</div>
+</div>
+<hr class="rule">
+<p class="lead">분포 정확도는 가장 단순한 기준(RW)을 넘지 못해, TSFM의 쓸모는 수익률 예측이 아니라 위험 측정에 있다</p>
+<div class="bar"><p class="bar-t">RW 대비 분위수 손실 개선율(H5) · 진한 막대 = Holm 보정 후 유의</p></div>
+<div class="body2">
+<img class="fig" src="/_blob/def479a213821ed534c66e50bfaf2beb" alt="16개 TSFM 조합의 RW 대비 분위수 손실 개선율. 대부분 음수로 RW보다 나쁘고, 1년·수익률 조합만 0 근처" style="width:780px;height:541px;">
+<div class="side">
+<table class="tbl">
+<tr><th>16개 조합</th><th>개수</th><th>개선율</th></tr>
+<tr><td>RW보다 유의하게 나쁨</td><td>12</td><td>−0.8 ~ −9.8%</td></tr>
+<tr><td>차이 없음(1년·수익률)</td><td>3</td><td>−0.1 ~ +0.3%</td></tr>
+<tr><td>유의하게 나으나 실질 기준 미만</td><td>1</td><td>+0.9%</td></tr>
+</table>
+<div class="box prob left"><p class="bt">H5 미지지</p><p class="bd">실질 기준(2%)을 넘어 RW보다 나은 조합은 없다</p></div>
+<div class="box gray left"><p class="bt">GARCH-t와 비교(추가 분석)</p><p class="bd">GARCH-t 1년이 19개 중 손실 최소. TSFM 1년 조합 8개 모두 그보다 큼(수익률 0.4~1.5%, 가격 2.2~5.1%)</p></div>
+<div class="box left"><p class="bt">왜 RW가 강한가</p><p class="bd">일별 수익률은 방향을 거의 예측할 수 없어 "중심 0, 폭은 최근 변동"이 이미 정답에 가깝다</p></div>
+</div>
+</div>
+<div class="check"><p class="ck">확인</p><p class="cktext">달력 월 단위 t검정, Holm 보정 · 모델 공개 이후 기간만 봐도 같은 양상(표 5-3) · 점 예측 연구의 한계가 분포 예측에서도 나타남 · 본문 5.2~5.3절, 그림 5-2</p></div>
+<p class="foot-l">김승민 · 석사학위논문 심사</p><p class="foot-r"></p>
+<aside>다음은 분포 전체의 정확도입니다. 가설 H5는 TSFM이 RW보다 분위수 손실이 작다는 것이었는데, 지지되지 않았습니다. 16개 조합 중 12개에서 TSFM의 손실이 RW보다 유의하게 컸고, 1년·수익률 조합 3개는 차이가 없었으며, Chronos-2 1년·수익률만 0.9% 나았지만 실질 기준 2%에는 못 미쳤습니다. 미리 정한 가설은 아니지만 GARCH-t와도 같은 방법으로 비교했는데, GARCH-t가 19개 중 손실이 가장 작았고 TSFM 1년 조합은 모두 그보다 컸습니다. 수익률 입력에서는 0.4에서 1.5%로 작은 차이였습니다. RW가 강한 이유는, 일별 수익률은 방향을 거의 예측할 수 없어서 "중심은 0, 폭은 최근 변동 크기"라는 답이 이미 정답에 가깝기 때문입니다. 정리하면 TSFM은 수익률을 맞히는 도구로서는 기존의 단순한 방법보다 낫지 않습니다. 그렇다면 TSFM 구간을 위험 측정에 쓰려면 어떻게 해야 하는가가 RQ3의 질문입니다.</aside>
+</section>
