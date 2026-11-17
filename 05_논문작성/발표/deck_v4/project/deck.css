@@ -120,13 +120,30 @@ section {
 .d1-b .bd { font-size: 24px; line-height: 1.32; }
 
 /* ---------- 요약 표 ---------- */
-.sumgrid { display: grid; grid-template-columns: 210px 330px 1fr 470px; grid-template-rows: 1fr 1fr 1fr; gap: 12px; flex: 1; }
+.sumgrid { display: grid; grid-template-columns: 190px 360px 1fr 420px; grid-template-rows: 1fr 1fr 1fr; gap: 12px; flex: 1; }
 .rqlab { display: flex; flex-direction: column; justify-content: center; align-items: center; background: var(--navy-deep); border-radius: 10px; padding: 8px; }
 .rqlab-t { font-size: 32px; font-weight: 900; color: #FFFFFF; }
 .rqlab-s { font-size: 26px; color: #D6E0EE; }
-.ans { font-size: 30px; font-weight: 700; color: var(--navy); line-height: 1.4; text-align: left; }
-.num { font-size: 54px; font-weight: 900; color: var(--navy); text-align: center; line-height: 1.1; }
+.ans { font-size: 28px; font-weight: 700; color: var(--navy); line-height: 1.4; text-align: left; }
+.num { font-size: 46px; font-weight: 900; color: var(--navy); text-align: center; line-height: 1.1; }
 .box.ok .num { color: var(--green); }
+
+/* 촘촘한 격자 안 글자는 한 단계 작게: 실제 글꼴(Noto Sans KR)이 넓어 넘치지 않도록 */
+.sumgrid .bt, .d2 .bt { font-size: 26px; }
+.sumgrid .bd, .d2 .bd { font-size: 24px; line-height: 1.32; }
+.sumgrid .box, .d2 .box { padding: 8px 12px; }
+.lane { font-size: 24px; }
+
+/* ---------- 새로운 점 / 기여 두 기둥 ---------- */
+.pillars { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; flex: 1; }
+.pillar { display: flex; flex-direction: column; gap: 12px; border-radius: 14px; padding: 14px 18px 18px; }
+.pillar.n { border: 2.5px solid var(--purple); background: #FCFAFE; }
+.pillar.c { border: 2.5px solid var(--green); background: #FBFDF9; }
+.pillar .box { flex: 1; justify-content: center; }
+.pillar-h { font-size: 30px; font-weight: 900; }
+.pillar.n .pillar-h { color: var(--purple); }
+.pillar.c .pillar-h { color: var(--green); }
+.pillar-s { font-size: 24px; color: var(--sub); }
 
 /* ---------- 같은 크기 3칸 ---------- */
 .eq3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
