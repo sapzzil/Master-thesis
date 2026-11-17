@@ -1,8 +1,8 @@
 <section id="bg1">
 <div class="head">
 <div class="head-l">
-<p class="chap">1. 서론</p>
-<h2 class="title">1.1 연구 배경 <span class="part">(1/2)</span></h2>
+<p class="chap">1. 연구 배경</p>
+<h2 class="title">1.1 TSFM 예측구간과 위험 관리</h2>
 </div>
 <div class="nav">
 <p class="nav-label">지금 위치</p>
@@ -10,34 +10,36 @@
 </div>
 </div>
 <hr class="rule">
-<p class="lead">TSFM은 추가 학습 없이 내일의 분포를 내준다. 그 분포의 양 끝이 위험 한도가 되므로,<br>구간이 틀리면 투자 결정이 틀린다</p>
+<p class="lead">TSFM은 추가 학습 없이 내일의 분포를 내준다. 그 분포의 양 끝이 위험 한도가 되므로, 구간이 틀리면 투자 결정이 틀린다</p>
 <div class="bar"><p class="bar-t">TSFM의 예측구간이 투자 결정이 되기까지</p></div>
 <div class="flow">
 <div class="box"><p class="bt">과거 수익률</p><p class="bd">최근 21일 또는 252일</p></div>
 <x-connector class="arr" head="end"></x-connector>
-<div class="box"><p class="bt">TSFM</p><p class="bd">Chronos · TimesFM · Moirai<br>추가 학습 없이 바로 예측</p></div>
+<div class="box"><p class="bt">TSFM</p><p class="bd">Chronos·TimesFM·Moirai</p></div>
 <x-connector class="arr" head="end"></x-connector>
-<div class="box"><p class="bt">분위수 9개</p><p class="bd">내일 수익률의<br>10%, 20%, …, 90% 지점</p></div>
+<div class="box"><p class="bt">분위수 9개</p><p class="bd">내일의 10%~90% 지점</p></div>
 <x-connector class="arr" head="end"></x-connector>
-<div class="box"><p class="bt">80% 예측구간</p><p class="bd">10%와 90% 분위수를<br>양 끝으로</p></div>
+<div class="box"><p class="bt">80% 예측구간</p><p class="bd">10%·90% 분위수가 양 끝</p></div>
 <x-connector class="arr" head="end"></x-connector>
-<div class="box final"><p class="bt">위험 한도·투자 비중</p><p class="bd">VaR, 손절 기준,<br>포지션 크기</p></div>
+<div class="box final"><p class="bt">위험 한도·투자 비중</p><p class="bd">VaR, 손절 기준</p></div>
 </div>
-<div class="flow">
-<p class="memo">예) 오늘 100원 → 내일 97.3~102.7원(80% 구간)<br>→ 1억 원 투자 시 "내일 270만 원 넘게 잃을 확률 10%"</p>
-<div class="box prob"><p class="bt">구간이 틀리면</p><p class="bd">좁으면 한도를 넘는 날이 약속보다 잦고,<br>넓으면 투자를 필요 이상 줄인다</p></div>
+<div class="bar"><p class="bar-t">같은 날 구간에 따라 달라지는 결정 · 예) 오늘 100원, 1억 원 투자</p></div>
+<div class="eq3">
+<div class="box ok"><p class="bt">맞는 구간</p><p class="bd">97.3~102.7원 (±2.7%)<br>한도 초과가 실제로도 열흘에 하루</p></div>
+<div class="box prob"><p class="bt">좁은 구간</p><p class="bd">98.5~101.5원 (±1.5%)<br>한도 초과가 잦다 → 위험을 작게 봄</p></div>
+<div class="box prob"><p class="bt">넓은 구간</p><p class="bd">95~105원 (±5%)<br>한도 초과가 거의 없다 → 투자를 과하게 줄임</p></div>
 </div>
 <div class="group">
 <p class="gt">흔한 방식과의 차이</p>
 <div class="flow">
-<div class="box gray"><p class="bt">기존 방식</p><p class="bd">종목마다 모형을 정해 추정하거나<br>신경망을 새로 학습</p></div>
+<div class="box gray"><p class="bt">기존 방식</p><p class="bd">종목마다 모형을 추정하거나 학습</p></div>
 <x-connector class="arr big" head="end"></x-connector>
-<div class="box"><p class="bt">TSFM</p><p class="bd">공개 모델을 내려받아<br>과거 값만 넣으면 예측</p></div>
+<div class="box"><p class="bt">TSFM</p><p class="bd">내려받아 과거 값만 넣으면 예측</p></div>
 <x-connector class="arr big" head="end"></x-connector>
-<div class="box ok"><p class="bt">남는 질문</p><p class="bd">금융에서 그 구간을<br>그대로 믿어도 되나?</p></div>
+<div class="box ok"><p class="bt">남는 질문</p><p class="bd">금융에서 그 구간을 그대로 믿어도 되나?</p></div>
 </div>
 </div>
 <div class="check"><p class="ck">확인</p><p class="cktext">은행 시장위험 규정(바젤)도 VaR 모형을 "한도를 넘은 날이 약속한 비율만큼인가"로 사후 점검한다 · 본문 1.1절, 2.4절</p></div>
 <p class="foot-l">김승민 · 석사학위논문 심사</p><p class="foot-r"></p>
-<aside>배경입니다. TSFM은 많은 시계열로 미리 학습해 두고, 새 데이터에는 추가 학습 없이 바로 예측을 내는 모델입니다. Chronos, TimesFM, Moirai 같은 모델이 2024년 이후 잇달아 공개됐습니다. 이 모델들은 숫자 하나만 내지 않고 내일 수익률의 분포를 분위수 9개로 냅니다. 그 양 끝, 10%와 90% 분위수를 이으면 80% 예측구간이 됩니다. 금융에서는 이 구간이 그대로 결정이 됩니다. 1억 원을 투자했고 구간이 −2.7%에서 +2.7%라면 "내일 270만 원 넘게 잃을 확률은 10%"라는 위험 한도가 정해지고, 이 숫자로 투자 금액, 손실 대비 자금, 손절 기준을 정합니다. 구간이 좁으면 한도를 넘는 날이 약속보다 잦고, 넓으면 투자를 필요 이상 줄이게 됩니다. 기존에는 종목마다 모형을 추정하거나 학습했지만 TSFM은 내려받아 바로 쓸 수 있어서 편합니다. 그만큼 "그 구간을 그대로 믿어도 되나"가 남는 질문입니다.</aside>
+<aside>배경입니다. TSFM은 많은 시계열로 미리 학습해 두고, 새 데이터에는 추가 학습 없이 바로 예측을 내는 모델입니다. Chronos, TimesFM, Moirai 같은 모델이 2024년 이후 잇달아 공개됐습니다. 이 모델들은 숫자 하나만 내지 않고 내일 수익률의 분포를 분위수 9개로 냅니다. 그 양 끝을 이으면 80% 예측구간이 되고, 금융에서는 이 구간이 그대로 위험 한도와 투자 비중이 됩니다. 오늘 100원인 주식에 1억 원을 투자했다고 하면, 구간이 97.3에서 102.7원으로 맞게 나왔을 때 "내일 270만 원 넘게 잃을 확률 10%"가 실제로도 열흘에 하루입니다. 구간이 좁게 나오면 한도를 넘는 날이 약속보다 잦아서 위험을 작게 본 채로 더 걸게 되고, 넓게 나오면 위험을 과하게 잡아 투자를 필요 이상 줄이게 됩니다. 기존에는 종목마다 모형을 추정하거나 학습했지만 TSFM은 내려받아 바로 쓸 수 있습니다. 그만큼 "그 구간을 그대로 믿어도 되나"가 남는 질문입니다.</aside>
 </section>

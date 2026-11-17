@@ -26,10 +26,10 @@ body { font-family: 'Noto Sans KR', Arial, sans-serif; color: var(--text); }
 
 section {
   background: #FFFFFF;
-  padding: 52px 80px 112px;
+  padding: 52px 80px 104px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 20px;
   counter-increment: page;
 }
 
@@ -47,7 +47,7 @@ section {
 .chip { font-size: 24px; color: #8A93A0; border: 1.5px solid #C9CED6; border-radius: 6px; padding: 2px 12px; background: #FFFFFF; white-space: nowrap; }
 .chip.on { background: var(--orange); border: 1.5px solid var(--orange); color: #FFFFFF; font-weight: 700; }
 
-.lead { font-size: 32px; font-weight: 700; color: var(--navy); line-height: 1.45; }
+.lead { font-size: 34px; font-weight: 700; color: var(--navy); line-height: 1.45; }
 
 /* ---------- 블록 제목 띠 ---------- */
 .bar { display: flex; flex-direction: row; justify-content: space-between; align-items: center; background: var(--blue-light); border-left: 8px solid var(--navy); padding: 6px 18px; }
@@ -56,8 +56,8 @@ section {
 
 /* ---------- 상자 ---------- */
 .box { display: flex; flex-direction: column; justify-content: center; gap: 4px; background: #FFFFFF; border: 2px solid var(--blue); border-radius: 10px; padding: 10px 14px; }
-.bt { font-size: 27px; font-weight: 700; color: var(--navy); text-align: center; line-height: 1.25; }
-.bd { font-size: 24px; color: var(--sub); text-align: center; line-height: 1.35; }
+.bt { font-size: 29px; font-weight: 700; color: var(--navy); text-align: center; line-height: 1.25; }
+.bd { font-size: 26px; color: var(--sub); text-align: center; line-height: 1.38; }
 .box.final { background: var(--navy-deep); border: 2px solid var(--navy-deep); }
 .box.final .bt { color: #FFFFFF; }
 .box.final .bd { color: #D6E0EE; }
@@ -100,7 +100,7 @@ section {
 
 /* ---------- 레인 도식 공통 ---------- */
 .lane { font-size: 26px; font-weight: 700; color: var(--navy); background: var(--blue-light); border-radius: 8px; padding: 8px 10px; text-align: center; line-height: 1.3; display: flex; align-items: center; justify-content: center; }
-.d2 { display: grid; grid-template-columns: 190px 420px 44px 300px 44px 330px 44px 1fr; column-gap: 8px; row-gap: 14px; align-items: stretch; background: var(--blue-bg); border-radius: 12px; padding: 14px; }
+.d2 { display: grid; grid-template-columns: 190px 400px 44px 310px 44px 340px 44px 1fr; grid-template-rows: 1fr 1fr 1fr; column-gap: 8px; row-gap: 14px; align-items: stretch; flex: 1; background: var(--blue-bg); border-radius: 12px; padding: 14px; }
 .d2 .arr { align-self: center; }
 .d2-me { grid-column: 8; grid-row: 1 / 4; }
 
@@ -115,11 +115,41 @@ section {
 .d1-b { position: absolute; width: 320px; height: 104px; box-sizing: border-box; padding: 6px 10px; gap: 2px; }
 .d1-c4 { width: 300px; }
 
+/* D1 상자는 좌표 고정이라 글자 크기를 따로 고정 */
+.d1-b .bt { font-size: 27px; }
+.d1-b .bd { font-size: 24px; line-height: 1.32; }
+
+/* ---------- 요약 표 ---------- */
+.sumgrid { display: grid; grid-template-columns: 210px 330px 1fr 470px; grid-template-rows: 1fr 1fr 1fr; gap: 12px; flex: 1; }
+.rqlab { display: flex; flex-direction: column; justify-content: center; align-items: center; background: var(--navy-deep); border-radius: 10px; padding: 8px; }
+.rqlab-t { font-size: 32px; font-weight: 900; color: #FFFFFF; }
+.rqlab-s { font-size: 26px; color: #D6E0EE; }
+.ans { font-size: 30px; font-weight: 700; color: var(--navy); line-height: 1.4; text-align: left; }
+.num { font-size: 54px; font-weight: 900; color: var(--navy); text-align: center; line-height: 1.1; }
+.box.ok .num { color: var(--green); }
+
+/* ---------- 같은 크기 3칸 ---------- */
+.eq3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+.eq3 .box { justify-content: flex-start; }
+
 /* ---------- 3단 카드 ---------- */
 .cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
 .col { display: flex; flex-direction: column; gap: 10px; }
 .varr { width: 0px; height: 36px; color: var(--arrow); border-width: 3px; align-self: center; }
 .qtext { font-size: 26px; color: var(--text); line-height: 1.45; text-align: left; }
+
+/* ---------- RQ 격자: 행 높이를 세 칸이 공유 ---------- */
+.rqgrid { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr auto auto auto; column-gap: 24px; row-gap: 10px; flex: 1; }
+.rqgrid .varr { justify-self: center; }
+
+/* ---------- 새로운 점 ↔ 기여 짝 ---------- */
+.ncgrid { display: grid; grid-template-columns: 1fr 64px 1fr; grid-template-rows: auto 1fr 1fr 1fr auto; column-gap: 8px; row-gap: 12px; flex: 1; }
+.nch { font-size: 30px; font-weight: 900; padding: 4px 0px; }
+.nch.n { color: var(--purple); border-bottom: 3px solid var(--purple); }
+.nch.c { color: var(--green); border-bottom: 3px solid var(--green); }
+.ncarr { width: 56px; height: 0px; color: var(--arrow); border-width: 4px; align-self: center; justify-self: center; }
+.ncspan { grid-column: 1 / 4; }
+.ev { font-size: 24px; color: var(--navy); font-weight: 500; text-align: left; }
 
 /* ---------- 2단 묶음 ---------- */
 .cols2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
