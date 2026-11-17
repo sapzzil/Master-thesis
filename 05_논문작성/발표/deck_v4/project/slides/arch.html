@@ -1,0 +1,54 @@
+<section id="arch">
+<div class="head">
+<div class="head-l">
+<p class="chap">3. 연구 설계</p>
+<h2 class="title">연구 설계 개요</h2>
+</div>
+<div class="nav">
+<p class="nav-label">지금 위치</p>
+<div class="nav-row"><p class="chip">도입</p><p class="chip on">설계</p><p class="chip">RQ1</p><p class="chip">RQ2</p><p class="chip">RQ3</p><p class="chip">결론</p></div>
+</div>
+</div>
+<hr class="rule">
+<p class="lead">실측 세기로 만든 합성 데이터와 실제 주가에, 같은 예측·채점·보정 절차를 적용한다</p>
+<div class="bar"><p class="bar-t">연구 전체 구조 · 가설·판정 기준·코드·단계값은 실행 전에 git 커밋으로 고정</p><p class="tag">N2</p></div>
+<div class="d1">
+<div class="d1-bg"></div>
+<div class="d1-lane" style="top:6px;"><p class="d1-lt">실제 주식</p></div>
+<div class="d1-lane" style="top:136px;"><p class="d1-lt">합성 데이터</p></div>
+<div class="d1-lane" style="top:266px;"><p class="d1-lt">예측·채점</p></div>
+<div class="d1-lane" style="top:396px;"><p class="d1-lt">사후보정</p></div>
+<hr class="d1-sep" style="top:130px;">
+<hr class="d1-sep" style="top:260px;">
+<hr class="d1-sep" style="top:390px;">
+<svg class="d1-svg" aria-label="연구 구조의 흐름 화살표" width="1760" height="520" viewBox="0 0 1760 520">
+<defs>
+<marker id="hg" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto"><path d="M0,0 L16,8 L0,16 z" fill="#7F8CA6"/></marker>
+<marker id="hp" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto"><path d="M0,0 L16,8 L0,16 z" fill="#6B3FA0"/></marker>
+<marker id="ho" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto"><path d="M0,0 L16,8 L0,16 z" fill="#E46C0A"/></marker>
+</defs>
+<path d="M560 65 H636" stroke="#7F8CA6" stroke-width="3" fill="none" marker-end="url(#hg)"/>
+<path d="M400 117 V141" stroke="#6B3FA0" stroke-width="4" fill="none" marker-end="url(#hp)"/>
+<path d="M560 195 H636" stroke="#7F8CA6" stroke-width="3" fill="none" marker-end="url(#hg)"/>
+<path d="M960 65 H1000 V300 H964" stroke="#7F8CA6" stroke-width="3" fill="none" marker-end="url(#hg)"/>
+<path d="M960 195 H1000" stroke="#7F8CA6" stroke-width="3" fill="none"/>
+<path d="M960 350 H1036" stroke="#7F8CA6" stroke-width="3" fill="none" marker-end="url(#hg)"/>
+<path d="M1360 325 H1436" stroke="#7F8CA6" stroke-width="3" fill="none" marker-end="url(#hg)"/>
+<path d="M800 377 V455 H1036" stroke="#E46C0A" stroke-width="3" fill="none" marker-end="url(#ho)"/>
+<path d="M1360 455 H1436" stroke="#E46C0A" stroke-width="3" fill="none" marker-end="url(#ho)"/>
+</svg>
+<p class="d1-bus">두 환경에<br>같은 절차</p>
+<div class="box d1-b" style="left:240px;top:13px;"><p class="bt">10종목 특성 측정</p><p class="bd">군집·꼬리·전환 빈도·크기</p></div>
+<div class="box d1-b" style="left:640px;top:13px;"><p class="bt">실제 주가</p><p class="bd">2017~2026 매 거래일<br>24,132건</p></div>
+<div class="box new d1-b" style="left:240px;top:143px;"><p class="bt">단계값 L1~L5</p><p class="bd">실측 최약·중앙·최강<br>= L3·L4·L5</p></div>
+<div class="box d1-b" style="left:640px;top:143px;"><p class="bt">합성 데이터</p><p class="bd">17개 시나리오 × 100계열<br>같은 난수</p></div>
+<div class="box d1-b" style="left:640px;top:273px;"><p class="bt">매일 다음 날 예측</p><p class="bd">TSFM 4종 × 입력 4<br>+ RW · GARCH-t</p></div>
+<div class="box d1-b" style="left:1040px;top:273px;"><p class="bt">80일 단위 채점</p><p class="bd">준비 20일 + 채점 60일<br>커버리지·분위수 손실</p></div>
+<div class="box final d1-b d1-c4" style="left:1440px;top:273px;"><p class="bt">RQ1 진단 · RQ2 실증</p><p class="bd">합성에서 원인,<br>실제에서 확인</p></div>
+<div class="box fix d1-b" style="left:1040px;top:403px;"><p class="bt">ACI-CQR 사후보정</p><p class="bd">재학습 없이<br>구간만 매일 조정</p></div>
+<div class="box final d1-b d1-c4" style="left:1440px;top:403px;"><p class="bt">RQ3 처방</p><p class="bd">보정 후 커버리지와<br>구간 폭</p></div>
+</div>
+<div class="check"><p class="ck">확인</p><p class="cktext">누출 점검 1,200건 · 오라클 79.3~80.2% · 보정기 참조 구현과 200회 일치 · 독립 재계산 최대 차이 1.5×10⁻¹⁴ · 보라 = 실측 세기 연결, 주황 = 보정 · 본문 3장, 3.7절</p></div>
+<p class="foot-l">김승민 · 석사학위논문 심사</p><p class="foot-r"></p>
+<aside>연구 전체 구조입니다. 레인 네 개로 보시면 됩니다. 맨 위 실제 주식 레인에서 먼저 미국 5종목, 한국 5종목의 금융 특성 세기를 잽니다. 변동성 군집, 꼬리, 국면 전환의 빈도와 크기입니다. 이 측정값이 보라색 화살표를 따라 합성 데이터의 단계값이 됩니다. 10종목 중 가장 약한 값이 L3, 중앙값이 L4, 가장 강한 값이 L5입니다. 이 점이 합성 진단을 실제와 연결하는 이 연구의 방법상 새로운 점입니다. 합성 데이터는 17개 시나리오에 계열 100개씩, 모두 같은 난수로 만듭니다. 실제 주가는 2017년부터 2026년까지 매 거래일 24,132건입니다. 두 환경 모두 같은 절차로 들어갑니다. TSFM 4종을 입력 설정 4가지로, 기준 모형 RW와 GARCH-t와 함께 매일 다음 날을 예측하고, 80일 단위로 채점합니다. 합성에서는 원인을 가리고 실제에서는 확인하는 것이 RQ1과 RQ2입니다. 같은 예측 구간에 재학습 없는 사후보정을 붙여 RQ3에 답합니다. 가설, 판정 기준, 코드, 단계값은 실행 전에 커밋으로 고정했고, 실행 전후로 누출 점검, 정답 분포를 낸 오라클 검증, 독립 재계산까지 맞췄습니다.</aside>
+</section>

@@ -1,0 +1,33 @@
+<section id="summary">
+<div class="head">
+<div class="head-l">
+<p class="chap">요약</p>
+<h2 class="title">한 장 요약</h2>
+</div>
+<div class="nav">
+<p class="nav-label">지금 위치</p>
+<div class="nav-row"><p class="chip on">도입</p><p class="chip">설계</p><p class="chip">RQ1</p><p class="chip">RQ2</p><p class="chip">RQ3</p><p class="chip">결론</p></div>
+</div>
+</div>
+<hr class="rule">
+<p class="lead">TSFM의 금융 예측구간은 금융 특성이 아니라 모델과 설정 때문에 틀어지고,<br>재학습 없는 보정으로 바로잡힌다</p>
+<div class="bar"><p class="bar-t">연구 흐름</p></div>
+<div class="flow">
+<div class="box"><p class="bt">① 특성 세기 측정</p><p class="bd">실제 10종목</p></div>
+<x-connector class="arr" head="end"></x-connector>
+<div class="box new"><p class="bt">② 합성 데이터 실험</p><p class="bd">17개 시나리오 × 100계열</p></div>
+<x-connector class="arr" head="end"></x-connector>
+<div class="box"><p class="bt">③ 실제 주가 실증</p><p class="bd">10종목, 2017~2026</p></div>
+<x-connector class="arr" head="end"></x-connector>
+<div class="box final"><p class="bt">④ 사후보정</p><p class="bd">재학습 없음</p></div>
+</div>
+<div class="bar"><p class="bar-t">결과</p></div>
+<div class="flow">
+<div class="box"><p class="bd">진단 · RQ1·RQ2</p><p class="big">75~88%</p><p class="bd">특성이 없는 데이터에서도 커버리지가 갈림.<br>특성의 영향은 대부분 3%p 이내</p></div>
+<div class="box ok"><p class="bd">처방 · RQ3</p><p class="big">80% 복원</p><p class="bd">합성 340개·실제 19개 모두 평균 복원.<br>대가: 구간 폭 5~48% 증가</p></div>
+<div class="box gray"><p class="bd">쓰임새</p><p class="big">RW 수준</p><p class="bd">분포 정확도는 단순 기준과 같음.<br>수익률 예측이 아니라 위험 측정에 쓴다</p></div>
+</div>
+<div class="check"><p class="ck">확인</p><p class="cktext">새로운 점: 구간의 신뢰성을 원인까지 진단(N1·N2) · 기여: 실제 적용 전 점검과 재학습 없는 보정 절차(C1·C2) · 본문 1.4절</p></div>
+<p class="foot-l">김승민 · 석사학위논문 심사</p><p class="foot-r"></p>
+<aside>결론부터 말씀드리겠습니다. 세 가지입니다. 첫째, 사전학습 시계열 모델, 줄여서 TSFM이 내는 80% 예측구간은 금융 특성이 하나도 없는 가장 쉬운 데이터에서도 모델과 입력 설정에 따라 75%에서 88%까지 갈렸습니다. 금융 특성을 실제 종목 중 가장 강한 수준까지 높여도 대부분 3%p 안에서만 움직였습니다. 평균적으로 얼마나 맞느냐는 금융 특성보다 어떤 모델을 어떤 입력으로 쓰느냐가 정합니다. 둘째, 이 오차는 모델을 다시 학습시키지 않는 사후보정으로 모든 경우에 평균 80%로 되돌릴 수 있었습니다. 다만 구간이 이상적인 구간보다 5에서 48% 넓어집니다. 셋째, 분포 전체의 정확도는 가장 단순한 기준인 RW 수준이었습니다. 그래서 TSFM은 수익률을 맞히는 데보다, 점검과 보정을 거쳐 위험을 재는 데 쓰는 것이 맞다는 결론입니다. 연구는 실제 종목에서 특성의 세기를 재고, 그 세기로 만든 합성 데이터에서 원인을 가린 뒤, 실제 주가로 확인하고, 마지막에 보정을 검증하는 순서로 진행했습니다.</aside>
+</section>
