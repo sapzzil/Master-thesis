@@ -22,7 +22,7 @@
   --arrow: #7F8CA6;
 }
 
-body { font-family: 'Noto Sans KR', Arial, sans-serif; color: var(--text); }
+body { font-family: 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', Arial, sans-serif; color: var(--text); }
 
 section {
   background: #FFFFFF;
@@ -128,7 +128,7 @@ section {
 .num { font-size: 46px; font-weight: 900; color: var(--navy); text-align: center; line-height: 1.1; }
 .box.ok .num { color: var(--green); }
 
-/* 촘촘한 격자 안 글자는 한 단계 작게: 실제 글꼴(Noto Sans KR)이 넓어 넘치지 않도록 */
+/* 촘촘한 격자 안 글자는 한 단계 작게: 글꼴 차이로 넘치지 않도록 */
 .sumgrid .bt, .d2 .bt { font-size: 26px; }
 .sumgrid .bd, .d2 .bd { font-size: 24px; line-height: 1.32; }
 .sumgrid .box, .d2 .box { padding: 8px 12px; }
