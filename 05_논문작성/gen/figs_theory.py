@@ -63,10 +63,10 @@ axs[0].fill_between(d, -base_hi, base_hi, color="gray", alpha=0.18, label="원�
 axs[0].plot(d, HI, color="#1f77b4", lw=1.2, label="보정한 구간 상·하단"); axs[0].plot(d, -HI, color="#1f77b4", lw=1.2)
 axs[0].scatter(d[err == 1], y[err == 1], color="#d62728", s=10, marker="x", label="보정 구간 이탈")
 axs[0].scatter(d[err == 0], y[err == 0], color="#555555", s=4)
-axs[0].axvline(100, color="k", lw=0.6, ls=":"); axs[0].text(101, axs[0].get_ylim()[1] * 0.85, "변동이 두 배로 커짐", fontsize=8)
+axs[0].axvline(100, color="k", lw=0.6, ls=":"); axs[0].text(103, axs[0].get_ylim()[1] * 0.85, "변동이 두 배로 커짐", fontsize=8)
 axs[0].set_ylabel("수익률(%)"); axs[0].legend(fontsize=7.5, ncol=3, loc="lower left")
 axs[1].plot(d, A, color="#2ca02c", lw=1.2); axs[1].axhline(alpha, color="k", lw=0.6, ls="--")
-axs[1].set_ylabel("α_t"); axs[1].set_xlabel("날짜")
+axs[1].set_ylabel(r"$\alpha_t$", fontsize=11); axs[1].set_xlabel("날짜")
 fig.tight_layout(); fig.savefig(F + "fig2_4_ACI_조정.png"); plt.close()
 print("fig2_3 cov first/second half", 1 - err[20:100].mean(), 1 - err[100:].mean())
 
@@ -118,8 +118,9 @@ fig, ax = plt.subplots(figsize=(7, 3.2))
 ax.plot(x, pdf, color="#333", lw=1.4)
 ax.fill_between(x, pdf, where=(x >= -z) & (x <= z), color="#1f77b4", alpha=0.18, label="80% 예측구간")
 ax.fill_between(x, pdf, where=(x < -z), color="#d62728", alpha=0.35, label="하위 10% (VaR 10%보다 큰 손실)")
-for q, nm in [(-z, "0.1 분위수\n= VaR 10%"), (0, "0.5 분위수\n(중앙값)"), (z, "0.9 분위수")]:
-    ax.axvline(q, color="#555", lw=0.8, ls="--"); ax.text(q, 0.43, nm, ha="center", fontsize=8)
+# 라벨이 점선과 겹치지 않도록 선 옆에 둔다(왼쪽 선은 왼편, 나머지는 오른편)
+for q, nm, ha in [(-z, "0.1 분위수\n= VaR 10%", "right"), (0, "0.5 분위수\n(중앙값)", "left"), (z, "0.9 분위수", "left")]:
+    ax.axvline(q, color="#555", lw=0.8, ls="--"); ax.text(q + (-0.07 if ha == "right" else 0.07), 0.47, nm, ha=ha, va="top", fontsize=8)
 ax.set_ylim(0, 0.5); ax.set_xlabel("다음 날 수익률(표준화)"); ax.set_ylabel("확률밀도"); ax.legend(fontsize=8, loc="center right")
 fig.tight_layout(); fig.savefig(F + "figB_분위수_VaR.png"); plt.close()
 
