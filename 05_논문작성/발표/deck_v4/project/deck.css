@@ -143,7 +143,8 @@ section {
 .pillar-h { font-size: 30px; font-weight: 900; }
 .pillar.n .pillar-h { color: var(--purple); }
 .pillar.c .pillar-h { color: var(--green); }
-.pillar-s { font-size: 24px; color: var(--sub); }
+.pillar-s { font-size: 24px; font-weight: 500; color: var(--sub); }
+.pillar .box { padding: 8px 14px; }
 
 /* ---------- 같은 크기 3칸 ---------- */
 .eq3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
@@ -156,7 +157,7 @@ section {
 .qtext { font-size: 26px; color: var(--text); line-height: 1.45; text-align: left; }
 
 /* ---------- RQ 격자: 행 높이를 세 칸이 공유 ---------- */
-.rqgrid { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr auto auto auto; column-gap: 24px; row-gap: 10px; flex: 1; }
+.rqgrid { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto 1fr auto auto; column-gap: 24px; row-gap: 10px; flex: 1; }
 .rqgrid .varr { justify-self: center; }
 
 /* ---------- 새로운 점 ↔ 기여 짝 ---------- */
@@ -233,6 +234,13 @@ section {
 .row3 { display: grid; grid-template-columns: 300px 1fr 220px; gap: 12px; flex: 1; }
 .row3l { display: grid; grid-template-columns: 260px 1fr 44px 520px; gap: 12px; flex: 1; align-items: stretch; }
 .row3l .arr { align-self: center; }
+
+/* 히트맵 표시 */
+.hm { position: relative; width: 1060px; height: 598px; }
+.hm-row { position: absolute; left: 82px; top: 11px; width: 774px; height: 31px; border: 3px dashed var(--navy); box-sizing: border-box; }
+.hm-cell { position: absolute; top: 9px; width: 44px; height: 35px; border: 4px solid var(--red); box-sizing: border-box; }
+.syn .bt { font-size: 26px; }
+.syn .bd { font-size: 24px; line-height: 1.32; }
 
 /* ---------- 바닥글 ---------- */
 .foot-l { position: absolute; left: 80px; bottom: 36px; width: 900px; font-size: 24px; color: #8A93A0; }

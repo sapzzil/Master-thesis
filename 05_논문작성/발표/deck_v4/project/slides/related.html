@@ -13,40 +13,30 @@
 <p class="lead">그런데 선행연구는 점 예측만 평가했거나 TSFM을 다루지 않아, TSFM 금융 예측구간의 진단과 교정은 비어 있다</p>
 <div class="bar"><p class="bar-t">선행연구의 세 갈래와 빈자리</p><p class="tag">N1 · N2</p></div>
 <div class="d2">
+<p class="lane">합성 데이터<br>진단</p>
+<div class="box"><p class="bt">FinStressTS(2026)<br>Wang 외(2025)</p><p class="bd">특성을 조절한 합성 데이터</p></div>
+<x-connector class="arr" head="end"></x-connector>
+<div class="box gray"><p class="bt">학습형 모델 진단</p><p class="bd">세기는 연구자가 정함, CRPS만 평가</p></div>
+<x-connector class="arr" head="end"></x-connector>
+<div class="box gap"><p class="bt">빈자리 ①</p><p class="bd">사전학습 TSFM의 구간</p></div>
+<x-connector class="arr" head="end"></x-connector>
+<div class="box new d2-me"><p class="bt">본 연구</p><p class="bd">세 빈자리를<br>한 연구에서</p><p class="bd">① → RQ1 진단<br>② → RQ2 실증<br>③ → RQ3 처방</p></div>
 <p class="lane">금융 TSFM<br>평가</p>
-<div class="box"><p class="bt">Rahimikia 외(2025)<br>Noguer i Alonso 외(2026)</p></div>
+<div class="box"><p class="bt">Rahimikia 외(2025)<br>Noguer i Alonso 외(2026)</p><p class="bd">94개국 / 미국 5종목</p></div>
 <x-connector class="arr" head="end"></x-connector>
 <div class="box gray"><p class="bt">점 예측 정확도</p><p class="bd">R², MAE</p></div>
 <x-connector class="arr" head="end"></x-connector>
-<div class="box gap"><p class="bt">빈자리</p><p class="bd">예측구간 커버리지</p></div>
-<x-connector class="arr" head="end"></x-connector>
-<div class="box new d2-me"><p class="bt">본 연구</p><p class="bd">세 빈자리를<br>한 연구에서</p><p class="bd">RQ1 진단<br>RQ2 실증<br>RQ3 처방</p></div>
-<p class="lane">합성 데이터<br>진단</p>
-<div class="box"><p class="bt">FinStressTS(2026)<br>Wang 외(2025)</p></div>
-<x-connector class="arr" head="end"></x-connector>
-<div class="box gray"><p class="bt">학습형 모델 진단</p><p class="bd">CRPS만 평가</p></div>
-<x-connector class="arr" head="end"></x-connector>
-<div class="box gap"><p class="bt">빈자리</p><p class="bd">사전학습 TSFM의 구간</p></div>
+<div class="box gap"><p class="bt">빈자리 ②</p><p class="bd">예측구간 커버리지</p></div>
 <x-connector class="arr" head="end"></x-connector>
 <p class="lane">콘포멀<br>사후보정</p>
-<div class="box"><p class="bt">Romano 외(2019)<br>Gibbs·Candès(2021)</p></div>
+<div class="box"><p class="bt">Romano 외(2019)<br>Gibbs·Candès(2021)</p><p class="bd">CQR, ACI</p></div>
 <x-connector class="arr" head="end"></x-connector>
 <div class="box gray"><p class="bt">보정 방법론</p><p class="bd">일반 예측 모델 대상</p></div>
 <x-connector class="arr" head="end"></x-connector>
-<div class="box gap"><p class="bt">빈자리</p><p class="bd">TSFM 금융 구간에서 검증</p></div>
+<div class="box gap"><p class="bt">빈자리 ③</p><p class="bd">TSFM 금융 구간에서 검증</p></div>
 <x-connector class="arr" head="end"></x-connector>
-</div>
-<div class="group">
-<p class="gt">흔한 방식과의 차이</p>
-<div class="flow">
-<div class="box gray"><p class="bt">기존 금융 TSFM 평가</p><p class="bd">점 예측 오차 비교에서 끝남</p></div>
-<x-connector class="arr big" head="end"></x-connector>
-<div class="box new"><p class="bt">본 연구</p><p class="bd">구간 커버리지 → 원인 진단</p></div>
-<x-connector class="arr big" head="end"></x-connector>
-<div class="box ok"><p class="bt">그리고 교정</p><p class="bd">재학습 없는 보정까지 검증</p></div>
-</div>
 </div>
 <div class="check"><p class="ck">확인</p><p class="cktext">Noguer i Alonso·Franklin(2026): CRPS·보정 곡선·분위수 커버리지는 "현재의 MAE 전용 벤치마크에 포함되지 않는다"(p. 13) · 본문 2.6절 표 2-1</p></div>
 <p class="foot-l">김승민 · 석사학위논문 심사</p><p class="foot-r"></p>
-<aside>선행연구는 세 갈래로 나뉩니다. 첫째, 금융에 TSFM을 적용한 연구입니다. Rahimikia 외는 94개 국가·지역의 일별 수익률에서, Noguer i Alonso와 Franklin은 미국 대형주 5종목에서 TSFM을 평가했지만, 둘 다 점 예측 정확도만 봤습니다. Noguer i Alonso와 Franklin은 커버리지 같은 확률 지표가 현재 벤치마크에 들어 있지 않다고 직접 밝혔습니다. 둘째, 합성 데이터로 예측 모델의 약점을 진단하는 연구입니다. FinStressTS는 금융 특성을 하나씩 조절해 진단했지만, 대상은 그 데이터로 학습하는 모델이었고 사전학습 TSFM은 평가하지 않았습니다. 확률 예측도 CRPS로만 봤고 커버리지는 따로 보지 않았습니다. 셋째, 콘포멀 예측을 이용한 사후보정 연구는 방법 자체를 다뤘고, TSFM의 금융 구간에서 검증된 적은 없습니다. 본 연구는 이 세 빈자리가 만나는 곳, 즉 사전학습 TSFM의 금융 예측구간이 왜 틀어지는지 진단하고 재학습 없이 고칠 수 있는지까지 다룹니다.</aside>
+<aside>선행연구는 세 갈래로 나뉩니다. 첫째, 합성 데이터로 예측 모델의 약점을 진단하는 연구입니다. FinStressTS는 금융 특성을 하나씩 조절해 진단했지만, 대상은 그 데이터로 학습하는 모델이었고 사전학습 TSFM은 평가하지 않았습니다. 특성 세기도 연구자가 정했고, 확률 예측은 CRPS로만 봤습니다. 둘째, 금융에 TSFM을 적용한 연구입니다. Rahimikia 외는 94개 국가·지역의 일별 수익률에서, Noguer i Alonso와 Franklin은 미국 대형주 5종목에서 TSFM을 평가했지만, 둘 다 점 예측 정확도만 봤습니다. Noguer i Alonso와 Franklin은 커버리지 같은 확률 지표가 현재 벤치마크에 들어 있지 않다고 직접 밝혔습니다. 셋째, 콘포멀 예측을 이용한 사후보정 연구는 방법 자체를 다뤘고, TSFM의 금융 구간에서 검증된 적은 없습니다. 본 연구는 이 세 빈자리를 한 연구에서 채웁니다. 첫째 빈자리가 RQ1, 둘째가 RQ2, 셋째가 RQ3입니다.</aside>
 </section>
