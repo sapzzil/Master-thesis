@@ -1,0 +1,24 @@
+<section id="qa01">
+<div class="head">
+<div class="head-l">
+<p class="chap">부록 · 예상 질문과 답</p>
+<h2 class="title">Q01 점 예측인가, 분포인가</h2>
+</div>
+<div class="nav">
+<p class="nav-label">지금 위치</p>
+<div class="nav-row"><p class="chip">도입</p><p class="chip">설계</p><p class="chip">RQ1</p><p class="chip">RQ2</p><p class="chip">RQ3</p><p class="chip">결론</p><p class="chip on">부록</p></div>
+</div>
+</div>
+<hr class="rule">
+<p class="lead">출력은 분포(분위수 9개)이고, 구간 안에 들어가야 하는 것은 다음 날 실제 가격이다</p>
+<div class="bar"><p class="bar-t">모델은 점 예측을 내나, 분포를 내나? 무엇이 구간 안에 들어가야 하나?</p><p class="tag">기본 개념</p></div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;grid-auto-rows:1fr;gap:16px;flex:1;">
+<div class="box left" style="padding:14px 22px;gap:10px;"><p class="bt" style="font-size:31px;">출력은 분포 하나</p><p class="bd" style="font-size:28px;color:#2B2F36;line-height:1.5;">분위수 9개. 가운데 값이 점 예측, 10%·90% 분위수가 80% 구간의 양 끝</p></div>
+<div class="box left" style="padding:14px 22px;gap:10px;"><p class="bt" style="font-size:31px;">1단계: 구간 만들기</p><p class="bd" style="font-size:28px;color:#2B2F36;line-height:1.5;">Chronos-T5는 내일 값을 200번 뽑아 줄 세운 뒤 20번째·180번째 값을 양 끝으로. 나머지 세 모델은 분위수를 바로 출력</p></div>
+<div class="box left ok" style="padding:14px 22px;gap:10px;"><p class="bt" style="font-size:31px;">2단계: 채점 = 커버리지</p><p class="bd" style="font-size:28px;color:#2B2F36;line-height:1.5;">다음 날 실제 가격이 어제 낸 구간 안이면 "맞음". 매일 반복해 맞은 날의 비율을 낸다. 실제 주가 채점일 17,700건</p></div>
+</div>
+<p class="memo">모델이 뽑은 값의 80%가 구간 안에 드는 것은 그렇게 만들었으니 당연하다. 검증이 되는 것은 다음 날 실제 가격뿐이다.</p>
+<div class="check"><p class="ck">근거</p><p class="cktext">본문 2.3절, 3.4절, 표 A-1</p></div>
+<p class="foot-l">김승민 · 석사학위논문 심사</p><p class="foot-r"></p>
+<aside>모델의 출력은 숫자 하나가 아니라 내일 하루에 대한 분포이고, 분위수 9개로 나타냅니다. 점 예측은 그 분포의 가운데 값을 꺼내 쓰는 것이고, 80% 구간은 10%와 90% 분위수, 양 끝입니다. 구간을 만드는 과정은 모델마다 다릅니다. Chronos-T5는 내일 값을 200번 뽑아서 줄 세우고 아래에서 10%째와 90%째 값을 잡고, 나머지 세 모델은 분위수를 바로 냅니다. 모델이 뽑은 값의 80%가 구간 안에 드는 건 그렇게 만들었으니 당연하고, 아무것도 검증해 주지 않습니다. 검증은 다음 날 실제로 찍힌 가격이 그 구간 안에 들어왔는지를 매일 세서, 들어온 날의 비율을 내는 것입니다. 이것이 커버리지이고, 실제 주가에서는 준비 기간을 뺀 채점일을 종목과 날짜를 합쳐 17,700건 셌습니다.</aside>
+</section>

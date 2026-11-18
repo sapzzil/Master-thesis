@@ -1,0 +1,27 @@
+<section id="qa03">
+<div class="head">
+<div class="head-l">
+<p class="chap">부록 · 예상 질문과 답</p>
+<h2 class="title">Q03 RW 모델과 L1 데이터</h2>
+</div>
+<div class="nav">
+<p class="nav-label">지금 위치</p>
+<div class="nav-row"><p class="chip">도입</p><p class="chip">설계</p><p class="chip">RQ1</p><p class="chip">RQ2</p><p class="chip">RQ3</p><p class="chip">결론</p><p class="chip on">부록</p></div>
+</div>
+</div>
+<hr class="rule">
+<p class="lead">L1은 데이터, RW는 예측 방법이다. 같은 랜덤워크 가정에서 나와 이름이 겹친다</p>
+<div class="bar"><p class="bar-t">RW 모델과 합성 데이터 L1은 무엇이 다른가? RW를 "모형"이라 불러도 되나?</p><p class="tag">기본 개념</p></div>
+<table class="tbl" style="font-size:27px;">
+<tr><th>구분</th><th>본문 이름</th><th>무엇</th></tr>
+<tr><td>데이터</td><td>기준 상태 L1</td><td>특성 없는 랜덤워크 수익률. 여기에 특성을 하나씩 얹음</td></tr>
+<tr><td>모델</td><td>과거변동(RW)</td><td>과거 21일·252일 수익률의 평균·표준편차로 내일의 정규분포를 그리는 예측 방법</td></tr>
+</table>
+<div style="display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:16px;flex:1;">
+<div class="box left" style="padding:14px 22px;gap:10px;"><p class="bt" style="font-size:31px;">같은 가정, 다른 것</p><p class="bd" style="font-size:28px;color:#2B2F36;line-height:1.5;">둘 다 "주가는 방향 없이 움직인다"는 가정에서 나왔다. 그래서 L1 데이터에서는 RW가 거의 정답을 낸다</p></div>
+<div class="box left ok" style="padding:14px 22px;gap:10px;"><p class="bt" style="font-size:31px;">모형이라 부를 수 있나</p><p class="bd" style="font-size:28px;color:#2B2F36;line-height:1.5;">학습은 없지만 내일의 분포를 내놓는 랜덤워크 모형이라 비교 기준이 된다. 본문은 "과거 변동 기준선"으로 부름</p></div>
+</div>
+<div class="check"><p class="ck">근거</p><p class="cktext">본문 3.2.5절, 3.4절 · 비교 모델은 RW와 GARCH-t 두 개</p></div>
+<p class="foot-l">김승민 · 석사학위논문 심사</p><p class="foot-r"></p>
+<aside>이름이 비슷해서 헷갈릴 수 있습니다. L1은 데이터입니다. 매일 같은 크기의 정규분포에서 따로 뽑은 수익률이라 가격으로 보면 랜덤워크이고, 여기에 금융 특성을 하나씩 얹어 다른 시나리오를 만들었습니다. RW는 모델입니다. 과거 21일이나 252일 수익률의 평균과 표준편차를 구해서 내일 수익률을 그 정규분포로 예측하는 가장 단순한 방법입니다. 둘 다 "주가는 방향 없이 움직인다"는 랜덤워크 가정에서 나와서 이름이 겹치고, 그래서 L1 데이터에서는 RW가 거의 정답을 냅니다. 학습이 없는 계산이지만 내일의 분포를 내놓는 랜덤워크 모형이라 비교 기준으로 둘 수 있고, 본문에서는 "과거 변동 기준선"이라고 불렀습니다. 비교 모델은 이 RW와, 변동성 군집을 반영하는 GARCH-t 두 개입니다.</aside>
+</section>

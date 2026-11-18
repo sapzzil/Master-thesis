@@ -1,0 +1,24 @@
+<section id="qa08">
+<div class="head">
+<div class="head-l">
+<p class="chap">부록 · 예상 질문과 답</p>
+<h2 class="title">Q08 Chronos-T5 설정 변경</h2>
+</div>
+<div class="nav">
+<p class="nav-label">지금 위치</p>
+<div class="nav-row"><p class="chip">도입</p><p class="chip">설계</p><p class="chip">RQ1</p><p class="chip">RQ2</p><p class="chip">RQ3</p><p class="chip">결론</p><p class="chip on">부록</p></div>
+</div>
+</div>
+<hr class="rule">
+<p class="lead">예측을 잘라 내는 생성 제약 하나만 풀었고, 바꾸기 전 결과도 실었다. 다른 모델 판정은 그대로다</p>
+<div class="bar"><p class="bar-t">결과를 본 뒤 Chronos-T5 설정을 바꾼 것이 결론에 유리하게 작용하지 않았나?</p><p class="tag">실험 절차</p></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:16px;flex:1;">
+<div class="box left prob" style="padding:14px 22px;gap:10px;"><p class="bt" style="font-size:31px;">발견</p><p class="bd" style="font-size:28px;color:#2B2F36;line-height:1.5;">커버리지 14%라는 비정상 값 → 점검 실험으로 원인 확인. 가격 입력·값의 크기와 무관, 평균 0 근처 입력에서만</p></div>
+<div class="box left" style="padding:14px 22px;gap:10px;"><p class="bt" style="font-size:31px;">바꾼 범위</p><p class="bd" style="font-size:28px;color:#2B2F36;line-height:1.5;">과제·난수 시드·채점·분석 코드는 그대로, 수익률 조건 2개만 다시 예측. 바꾸기 전 결과는 부록 A.3에</p></div>
+<div class="box left ok" style="padding:14px 22px;gap:10px;"><p class="bt" style="font-size:31px;">결론에 미친 영향</p><p class="bd" style="font-size:28px;color:#2B2F36;line-height:1.5;">Chronos-T5가 다른 모델과 같은 방향을 보이게 됐을 뿐. 다른 세 모델 판정은 하나도 안 바뀜. 결론은 바꾸기 전 결과로도 같다</p></div>
+<div class="box left gray" style="padding:14px 22px;gap:10px;"><p class="bt" style="font-size:31px;">바꾸지 않은 것</p><p class="bd" style="font-size:28px;color:#2B2F36;line-height:1.5;">TimesFM 출력 방식은 권장 설정이고 꺼도 과대가 일부만 줄어 그대로 둠. 기준은 "예측을 잘라 내는 제약인가"</p></div>
+</div>
+<div class="check"><p class="ck">근거</p><p class="cktext">본문 3.4절, 부록 A.1~A.3 · 디펜스 D1-1, D1-2</p></div>
+<p class="foot-l">김승민 · 석사학위논문 심사</p><p class="foot-r"></p>
+<aside>실험 과정에서 Chronos-T5 수익률 구간의 커버리지가 14%로 비정상인 것을 발견했고, 점검 실험으로 원인을 확인했습니다. 라이브러리의 기본 생성 설정이 모델이 낸 분포를 상위 50칸에서 잘라 내고 있었습니다. 모델의 예측을 그대로 평가하려면 풀어야 하는 제약이라 그 하나만 풀었고, 과제와 난수 시드, 채점과 분석 코드는 그대로 두고 수익률 조건 두 개만 다시 예측했습니다. 바꾸기 전 결과도 부록에 함께 실었습니다. 다른 세 모델의 판정은 하나도 바뀌지 않았고, Chronos-T5에서 바뀐 것도 다른 모델과 같은 방향이 드러난 것이라 결론을 유리하게 만든 것이 아닙니다. 결론은 바꾸기 전 결과로도 같습니다. 반면 TimesFM의 분위수 출력 방식은 라이브러리의 권장 방식이고 꺼도 과대가 일부만 줄어 그대로 뒀습니다. 기준은 "모델의 예측을 잘라 내는 제약인가"였습니다.</aside>
+</section>

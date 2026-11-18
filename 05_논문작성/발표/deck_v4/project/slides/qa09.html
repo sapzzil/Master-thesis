@@ -1,0 +1,25 @@
+<section id="qa09">
+<div class="head">
+<div class="head-l">
+<p class="chap">부록 · 예상 질문과 답</p>
+<h2 class="title">Q09 TimesFM 1년·가격의 과대</h2>
+</div>
+<div class="nav">
+<p class="nav-label">지금 위치</p>
+<div class="nav-row"><p class="chip">도입</p><p class="chip">설계</p><p class="chip">RQ1</p><p class="chip">RQ2</p><p class="chip">RQ3</p><p class="chip">결론</p><p class="chip on">부록</p></div>
+</div>
+</div>
+<hr class="rule">
+<p class="lead">추세 때문은 아니다. 평균 0인 합성 데이터에서도 같은 크기로 나타났고, 원인은 일부만 밝혔다</p>
+<div class="bar"><p class="bar-t">TimesFM-2.5 1년·가격은 왜 88%로 넓나? 강세장 추세 때문 아닌가?</p><p class="tag">결과 해석</p></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:16px;flex:1;">
+<div class="box left" style="padding:14px 22px;gap:10px;"><p class="bt" style="font-size:31px;">추세가 없어도 같다</p><p class="bd" style="font-size:28px;color:#2B2F36;line-height:1.5;">합성 17개 시나리오 모두 86.8~88.4%, 실제 87.7%</p></div>
+<div class="box left" style="padding:14px 22px;gap:10px;"><p class="bt" style="font-size:31px;">TimesFM 고유</p><p class="bd" style="font-size:28px;color:#2B2F36;line-height:1.5;">같은 패치 방식의 Moirai-2는 같은 조건에서 79.7%로 정상</p></div>
+<div class="box left gray" style="padding:14px 22px;gap:10px;"><p class="bt" style="font-size:31px;">영향 없는 것</p><p class="bd" style="font-size:28px;color:#2B2F36;line-height:1.5;">입력 정규화 끄기·크기 변환·로그 가격: 87.4~87.7%로 그대로</p></div>
+<div class="box left prob" style="padding:14px 22px;gap:10px;"><p class="bt" style="font-size:31px;">일부만 설명</p><p class="bd" style="font-size:28px;color:#2B2F36;line-height:1.5;">연속 분위수 헤드를 끄면 합성 83.4%, 실제 84.3%. 나머지 원인은 향후 연구</p></div>
+</div>
+<p class="memo">실무적으로는 이런 경우를 실제 데이터에 쓰기 전에 합성 점검으로 가려낼 수 있다는 것이 이 연구의 주장이다.</p>
+<div class="check"><p class="ck">근거</p><p class="cktext">본문 4.2절, 표 4-1, 5.1절, 부록 A.4 · 디펜스 D4</p></div>
+<p class="foot-l">김승민 · 석사학위논문 심사</p><p class="foot-r"></p>
+<aside>강세장 추세 때문은 아닙니다. 평균이 0인, 즉 추세가 전혀 없는 합성 데이터에서도 17개 시나리오 모두 86.8에서 88.4%로 같은 크기의 과대가 나타났고, 실제 주가에서도 87.7%였습니다. 입력 창을 정규화하는 같은 패치 방식인 Moirai-2는 같은 조건에서 79.7%로 정상이어서 TimesFM 고유의 현상으로 봅니다. 추가 점검에서 입력 정규화를 끄거나, 크기를 바꾸거나, 로그 가격을 넣어도 87%대로 같았고, 연속 분위수 헤드라는 출력 방식을 끄면 합성 83.4%, 실제 84.3%로 일부만 줄었습니다. 그래서 원인의 일부는 출력 방식에 있지만 나머지는 분리하지 못했고, 향후 연구로 남겼습니다. 실무적으로는 이렇게 크게 어긋나는 경우를 실제 데이터에 쓰기 전에 합성 점검으로 미리 가려낼 수 있다는 것이 이 연구의 주장입니다.</aside>
+</section>
