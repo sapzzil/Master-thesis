@@ -120,5 +120,32 @@ for master in prs.slide_masters:
     xml = re.sub(r'<a:folHlink><a:srgbClr val="[0-9A-Fa-f]{6}"/></a:folHlink>', '<a:folHlink><a:srgbClr val="1D3461"/></a:folHlink>', xml)
     theme_part._blob = xml.encode('utf-8')
 
+# 부록 장(28~43쪽)에 "← 보던 장으로" 단추: PowerPoint의 '마지막으로 본 슬라이드' 동작
+from pptx.util import Emu, Pt
+from pptx.dml.color import RGBColor
+from pptx.enum.shapes import MSO_SHAPE
+from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
+PX = prs.slide_width / 1920  # 슬라이드 1920px 기준
+BACK = 'ppaction://hlinkshowjump?jump=lastslideviewed'
+for page in range(28, 44):
+    s = slides[page - 1]
+    btn = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Emu(int(470 * PX)), Emu(int(1010 * PX)), Emu(int(290 * PX)), Emu(int(46 * PX)))
+    btn.name = 'back-to-last-viewed'
+    btn.fill.solid(); btn.fill.fore_color.rgb = RGBColor(0x1D, 0x34, 0x61)
+    btn.line.fill.background()
+    tf = btn.text_frame; tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
+    tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+    para = tf.paragraphs[0]; para.alignment = PP_ALIGN.CENTER
+    run = para.add_run(); run.text = '← 보던 장으로'
+    f = run.font; f.size = Pt(12.5); f.bold = True; f.color.rgb = RGBColor(0xFF, 0xFF, 0xFF); f.name = 'Malgun Gothic'
+    rpr = run._r.get_or_add_rPr()
+    ea = etree.SubElement(rpr, f'{{{A}}}ea'); ea.set('typeface', 'Malgun Gothic')
+    # 도형 전체에 동작(글자 위를 눌러도 작동). 글자에 걸면 링크색으로 바뀌어 흰 글자가 사라지므로 걸지 않음
+    for parent in (btn._element.find('.//{http://schemas.openxmlformats.org/presentationml/2006/main}cNvPr'),):
+        h = etree.SubElement(parent, f'{{{A}}}hlinkClick')
+        h.set(f'{{{R}}}id', '')
+        h.set('action', BACK)
+    count.setdefault('back', 0); count['back'] += 1
+
 prs.save(dst)
 print(count)
