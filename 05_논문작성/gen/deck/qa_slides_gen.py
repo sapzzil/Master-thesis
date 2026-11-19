@@ -15,7 +15,7 @@ NAV = ('<div class="nav">\n<p class="nav-label">지금 위치</p>\n<div class="n
 
 
 def head(title):
-    return (f'<div class="head">\n<div class="head-l">\n<p class="chap">부록 · 예상 질문과 답</p>\n<h2 class="title">{title}</h2>\n</div>\n'
+    return (f'<div class="head">\n<div class="head-l">\n<p class="chap">부록 · 부가 설명과 예상 질문</p>\n<h2 class="title">{title}</h2>\n</div>\n'
             f'{NAV}\n</div>\n<hr class="rule">')
 
 
@@ -45,7 +45,7 @@ def slide(sid, title, lead, question, tag, body, check, memo=None):
         parts.append(f'<p class="memo">{memo}</p>')
     parts += [f'<div class="check"><p class="ck">근거</p><p class="cktext">{check}</p></div>',
               '<p class="foot-l">김승민 · 석사학위논문 심사</p><p class="foot-r"></p>'
-              + f'<p class="foot-q">본편  {" · ".join(str(x) for x in REV[str(int(sid[2:]))])}쪽  ·  목록 28쪽</p>',
+              + f'<p class="foot-q">◀ 본편 {" · ".join(str(x) for x in REV[str(int(sid[2:]))])}쪽의 부가 설명  ·  부록 목록 28쪽</p>',
               f'<aside>{notes[sid]}</aside>', '</section>', '']
     open(OUT + sid + '.html', 'w', encoding='utf-8').write('\n'.join(parts))
 
@@ -72,11 +72,11 @@ cells = '\n'.join(
     f'<div class="box left" style="padding:6px 14px;"><div class="row-t"><p class="ftag">{q}</p><p class="bt" style="font-size:26px;flex:1;">{t}</p>'
     f'<p class="note" style="font-size:24px;white-space:nowrap;">{28 + int(q[1:])}쪽</p></div></div>'
     for q, t, _ in qs)
-appx = ['<section id="appx">', head('예상 질문 15개'),
-        '<p class="lead">받을 만한 질문 15개를 골라, 한 장에 한 질문씩 답과 근거를 정리했다</p>',
+appx = ['<section id="appx">', head('부록 목록'),
+        '<p class="lead">본편에서 줄인 설명과 받을 만한 질문 15개를, 한 장에 하나씩 답과 근거로 정리했다</p>',
         '<div class="bar"><p class="bar-t">질문 목록 · Q01~Q06 기본 개념과 합성 데이터, Q07~Q15 설계와 결과의 타당성</p><p class="tag">부록</p></div>',
         f'<div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(8,1fr);grid-auto-flow:column;gap:10px 20px;flex:1;">\n{cells}\n</div>',
-        '<div class="check"><p class="ck">이동</p><p class="cktext">발표 중 쪽 번호를 누르고 Enter를 치면 그 장으로 바로 간다 · 본편 각 장 아래에 관련 질문 쪽, 부록 각 장 아래에 관련 본편 쪽 · 말로 하는 답은 발표자 노트에</p></div>',
+        '<div class="check"><p class="ck">이동</p><p class="cktext">발표 중 쪽 번호 + Enter로 바로 이동 · 본편 각 장 아래 "자세히 ▶ 부록"이 이 목록의 장을, 부록 각 장 아래 "◀ 본편"이 돌아갈 장을 가리킴 · 말로 하는 답은 발표자 노트에</p></div>',
         '<p class="foot-l">김승민 · 석사학위논문 심사</p><p class="foot-r"></p>',
         f'<aside>{notes["appx"]}</aside>', '</section>', '']
 open(OUT + 'appx.html', 'w', encoding='utf-8').write('\n'.join(appx))
