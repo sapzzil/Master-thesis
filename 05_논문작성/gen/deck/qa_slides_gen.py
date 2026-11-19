@@ -45,7 +45,7 @@ def slide(sid, title, lead, question, tag, body, check, memo=None):
         parts.append(f'<p class="memo">{memo}</p>')
     parts += [f'<div class="check"><p class="ck">근거</p><p class="cktext">{check}</p></div>',
               '<p class="foot-l">김승민 · 석사학위논문 심사</p><p class="foot-r"></p>'
-              + f'<p class="foot-q">◀ 본편 {" · ".join(str(x) for x in REV[str(int(sid[2:]))])}쪽의 부가 설명  ·  부록 목록 28쪽</p>',
+              + f'<p class="foot-q">← 본편 {" · ".join(str(x) for x in REV[str(int(sid[2:]))])}쪽의 부가 설명  ·  부록 목록 28쪽</p>',
               f'<aside>{notes[sid]}</aside>', '</section>', '']
     open(OUT + sid + '.html', 'w', encoding='utf-8').write('\n'.join(parts))
 
@@ -76,7 +76,7 @@ appx = ['<section id="appx">', head('부록 목록'),
         '<p class="lead">본편에서 줄인 설명과 받을 만한 질문 15개를, 한 장에 하나씩 답과 근거로 정리했다</p>',
         '<div class="bar"><p class="bar-t">질문 목록 · Q01~Q06 기본 개념과 합성 데이터, Q07~Q15 설계와 결과의 타당성</p><p class="tag">부록</p></div>',
         f'<div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(8,1fr);grid-auto-flow:column;gap:10px 20px;flex:1;">\n{cells}\n</div>',
-        '<div class="check"><p class="ck">이동</p><p class="cktext">발표 중 쪽 번호 + Enter로 바로 이동 · 본편 각 장 아래 "자세히 ▶ 부록"이 이 목록의 장을, 부록 각 장 아래 "◀ 본편"이 돌아갈 장을 가리킴 · 말로 하는 답은 발표자 노트에</p></div>',
+        '<div class="check"><p class="ck">이동</p><p class="cktext">발표 중 쪽 번호 + Enter로 바로 이동 · 본편 각 장 아래 "자세히 → 부록"이 이 목록의 장을, 부록 각 장 아래 "← 본편"이 돌아갈 장을 가리킴 · 말로 하는 답은 발표자 노트에</p></div>',
         '<p class="foot-l">김승민 · 석사학위논문 심사</p><p class="foot-r"></p>',
         f'<aside>{notes["appx"]}</aside>', '</section>', '']
 open(OUT + 'appx.html', 'w', encoding='utf-8').write('\n'.join(appx))
