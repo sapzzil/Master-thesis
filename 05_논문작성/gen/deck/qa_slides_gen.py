@@ -2,6 +2,7 @@ import json, html
 Q = '/tmp/claude-0/-home-claude/fa74dbd6-df2f-598d-89dd-28a1a0c58d47/scratchpad/qa/'
 OUT = '/tmp/claude-0/-home-claude/fa74dbd6-df2f-598d-89dd-28a1a0c58d47/scratchpad/deck2/project/slides/'
 notes = json.load(open(Q + 'notes.json', encoding='utf-8'))
+REV = json.load(open(Q + 'rev.json'))
 
 # 발표자 노트 수정(원고 대조 결과)
 notes['qa01'] = notes['qa01'].replace('실제 주가에서는 종목과 날짜를 합쳐 17,700건을 셌습니다.',
@@ -43,7 +44,8 @@ def slide(sid, title, lead, question, tag, body, check, memo=None):
     if memo:
         parts.append(f'<p class="memo">{memo}</p>')
     parts += [f'<div class="check"><p class="ck">근거</p><p class="cktext">{check}</p></div>',
-              '<p class="foot-l">김승민 · 석사학위논문 심사</p><p class="foot-r"></p>',
+              '<p class="foot-l">김승민 · 석사학위논문 심사</p><p class="foot-r"></p>'
+              + f'<p class="foot-q">본편  {" · ".join(str(x) for x in REV[str(int(sid[2:]))])}쪽  ·  목록 28쪽</p>',
               f'<aside>{notes[sid]}</aside>', '</section>', '']
     open(OUT + sid + '.html', 'w', encoding='utf-8').write('\n'.join(parts))
 
@@ -67,13 +69,14 @@ qs = [('Q01', '모델은 점 예측을 내나, 분포를 내나', '기본 개념
       ('Q14', '왜 10종목, 2017년, 다음 날인가', '데이터와 범위'),
       ('Q15', '외부 변수 없이 자기 과거만 보는 예측이 의미 있나', '입력 정보')]
 cells = '\n'.join(
-    f'<div class="box left" style="padding:6px 14px;"><div class="row-t"><p class="ftag">{q}</p><p class="bt" style="font-size:26px;">{t}</p></div></div>'
+    f'<div class="box left" style="padding:6px 14px;"><div class="row-t"><p class="ftag">{q}</p><p class="bt" style="font-size:26px;flex:1;">{t}</p>'
+    f'<p class="note" style="font-size:24px;white-space:nowrap;">{28 + int(q[1:])}쪽</p></div></div>'
     for q, t, _ in qs)
 appx = ['<section id="appx">', head('예상 질문 15개'),
         '<p class="lead">받을 만한 질문 15개를 골라, 한 장에 한 질문씩 답과 근거를 정리했다</p>',
         '<div class="bar"><p class="bar-t">질문 목록 · Q01~Q06 기본 개념과 합성 데이터, Q07~Q15 설계와 결과의 타당성</p><p class="tag">부록</p></div>',
         f'<div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(8,1fr);grid-auto-flow:column;gap:10px 20px;flex:1;">\n{cells}\n</div>',
-        '<div class="check"><p class="ck">근거</p><p class="cktext">각 장의 발표자 노트에 말로 하는 답(30초~1분)을 적어 둠 · 전체 목록은 디펜스 예상질문 초안(43문항)</p></div>',
+        '<div class="check"><p class="ck">이동</p><p class="cktext">발표 중 쪽 번호를 누르고 Enter를 치면 그 장으로 바로 간다 · 본편 각 장 아래에 관련 질문 쪽, 부록 각 장 아래에 관련 본편 쪽 · 말로 하는 답은 발표자 노트에</p></div>',
         '<p class="foot-l">김승민 · 석사학위논문 심사</p><p class="foot-r"></p>',
         f'<aside>{notes["appx"]}</aside>', '</section>', '']
 open(OUT + 'appx.html', 'w', encoding='utf-8').write('\n'.join(appx))

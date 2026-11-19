@@ -243,7 +243,8 @@ section {
 .syn .bd { font-size: 24px; line-height: 1.32; }
 
 /* ---------- 바닥글 ---------- */
-.foot-l { position: absolute; left: 80px; bottom: 36px; width: 900px; font-size: 24px; color: #8A93A0; }
+.foot-l { position: absolute; left: 80px; bottom: 36px; width: 700px; font-size: 24px; color: #8A93A0; }
+.foot-q { position: absolute; right: 220px; bottom: 34px; width: 900px; font-size: 24px; font-weight: 700; color: var(--navy); text-align: right; }
 .foot-r { position: absolute; right: 80px; bottom: 36px; width: 120px; font-size: 24px; color: #8A93A0; text-align: right; }
 .foot-r::after { content: counter(page); }
 
