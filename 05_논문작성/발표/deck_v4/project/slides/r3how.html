@@ -1,8 +1,8 @@
 <section id="r3how">
 <div class="head">
 <div class="head-l">
-<p class="chap">6. RQ3 처방: 고칠 수 있는가</p>
-<h2 class="title">6.1 사후보정 방법</h2>
+<p class="chap">RQ3 처방: 고칠 수 있는가</p>
+<h2 class="title">사후보정 방법</h2>
 </div>
 <div class="nav">
 <p class="nav-label">지금 위치</p>
@@ -11,13 +11,13 @@
 </div>
 <hr class="rule">
 <p class="lead">커버리지 오차는 모델을 그대로 두고, 나온 구간만 매일 이탈 기록에 맞춰 조정해 고친다</p>
-<div class="bar"><p class="bar-t">ACI-CQR: 매일 도는 순서 · 모델은 건드리지 않음(재학습 없음)</p><p class="tag">C2</p></div>
+<div class="bar"><p class="bar-t">ACI-CQR: 매일 도는 순서 · 모델은 건드리지 않음(재학습 없음)</p><p class="tag">N3</p></div>
 <div class="d7">
 <div class="box"><p class="bt">① 원래 구간</p><p class="bd">TSFM의 10%·90% 분위수</p></div>
 <x-connector class="arr" head="end"></x-connector>
 <div class="box"><p class="bt">② 이탈 점수 기록</p><p class="bd">구간 밖으로 나간 거리 ÷ 구간 폭</p></div>
 <x-connector class="arr" head="end"></x-connector>
-<div class="box"><p class="bt">③ 구간 조정</p><p class="bd">기록 중 k번째 점수 × 폭만큼 넓히거나 좁힘</p></div>
+<div class="box"><p class="bt">③ 구간 조정</p><p class="bd">k번째 점수 × 폭만큼 넓히거나 좁힘</p></div>
 <x-connector class="arr" head="end"></x-connector>
 <div class="box final"><p class="bt">④ 보정 구간</p><p class="bd">그날의 위험 측정에 사용</p></div>
 <x-connector class="varr or c3" from="bl" head="end"></x-connector>
@@ -28,12 +28,9 @@
 </div>
 <div class="group">
 <p class="gt">흔한 방식과의 차이</p>
-<div class="flow">
-<div class="box gray"><p class="bt">일괄 확대</p><p class="bd">몇 배로 넓힐지 결과를 봐야 앎</p></div>
-<x-connector class="arr big" head="end"></x-connector>
-<div class="box"><p class="bt">사후보정</p><p class="bd">그날까지의 실제값만 사용</p></div>
-<x-connector class="arr big" head="end"></x-connector>
-<div class="box ok"><p class="bt">배율을 몰라도 80%</p><p class="bd">좁은 구간은 넓히고 넓은 구간은 좁힘</p></div>
+<div class="cols2">
+<div class="box gray"><p class="bt">일괄 확대</p><p class="bd">몇 배로 넓힐지 결과를 봐야 앎(좁혀야 할 때도 있음)</p></div>
+<div class="box ok"><p class="bt">사후보정: 배율을 몰라도 80%</p><p class="bd">그날까지의 실제값만 써서 좁은 구간은 넓히고 넓은 구간은 좁힘</p></div>
 </div>
 </div>
 <div class="check"><p class="ck">확인</p><p class="cktext">콘포멀 분위수 회귀(Romano 외 2019) + 적응형 콘포멀 추론(Gibbs·Candès 2021)의 결합, 새 방법 아님 · α = 0.20, γ = 0.05 실험 전 고정 · 준비 20일은 기록만 · 본문 3.5절, 2.5절</p></div>

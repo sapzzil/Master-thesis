@@ -259,3 +259,18 @@ section {
 .cover-desc { font-size: 32px; color: var(--sub); }
 .cover-who { font-size: 32px; font-weight: 700; color: var(--navy); }
 .cover-date { font-size: 28px; color: var(--sub); }
+
+/* 3쪽: 선행연구 대비 차별성 표 + 기여 4칸 */
+.nv { display: grid; grid-template-columns: 210px 1fr 48px 1fr; column-gap: 10px; row-gap: 10px; border: 2.5px solid var(--purple); background: #FCFAFE; border-radius: 14px; padding: 12px 18px 16px; }
+.nv-h { font-size: 24px; font-weight: 700; color: var(--sub); padding: 0px 4px; }
+.nv-k { display: flex; flex-direction: column; justify-content: center; gap: 4px; }
+.nv-k .bt { font-size: 27px; text-align: left; color: var(--purple); }
+.nv .box { padding: 8px 14px; }
+.nv .bd { font-size: 24px; line-height: 1.33; text-align: left; }
+.nv .box.new .bd { color: var(--text); }
+.nv .arr { align-self: center; }
+.nv-h { padding: 0px 4px; margin: 0px; line-height: 1.1; }
+.cv { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; border: 2.5px solid var(--green); background: #FBFDF9; border-radius: 14px; padding: 12px 18px 16px; flex: 1; }
+.cv .pillar-h, .nv .pillar-h { grid-column: 1 / -1; }
+.cv .box { justify-content: flex-start; padding: 10px 14px; }
+.cv .bd { font-size: 24px; line-height: 1.33; text-align: left; }

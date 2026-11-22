@@ -10,20 +10,19 @@
 </div>
 </div>
 <hr class="rule">
-<p class="lead">"평균적으로 얼마나 맞나"는 설정이 정하고, "언제 틀리나"는 특성이 좌우한다</p>
+<p class="lead">80% 구간의 평균 수준은 설정이 정한다. 다만 극단 구간에서는 특성이 작용하므로, 결론은 80% 구간 기준으로 한정했다</p>
 <div class="bar"><p class="bar-t">그래서 정말 금융 특성보다 모델 설정이 더 중요하다고 할 수 있나?</p><p class="tag">결론의 범위</p></div>
 <table class="tbl" style="font-size:27px;">
 <tr><th>기준</th><th>모델·설정의 영향</th><th>금융 특성의 영향</th></tr>
 <tr><td>평균 커버리지(80% 구간)</td><td>75~88%로 갈림</td><td>대부분 3%p 이내</td></tr>
 <tr><td>실제 주가 변동 분해</td><td>92%</td><td>종목 차이 1%</td></tr>
-<tr><td>시기별 커버리지(실제)</td><td>-</td><td>평온·변동기 차이 평균 10.1%p(최대 22.8%p)</td></tr>
 <tr><td>98% 극단 구간(Chronos-2)</td><td>-</td><td>꼬리 −0.8~−1.0%p(4개 중 3개), 전환 −0.6~−1.0%p(8개 모두)</td></tr>
 </table>
 <div style="display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:16px;flex:1;">
-<div class="box left" style="padding:14px 22px;gap:10px;"><p class="bt" style="font-size:31px;">설정 문제 = 늘 5분 빠른 시계</p><p class="bd" style="font-size:28px;color:#2B2F36;line-height:1.5;">평균이 한쪽으로 어긋난다. 합성 점검으로 미리 보이고, 사후보정으로 평균 80%가 된다</p></div>
-<div class="box left prob" style="padding:14px 22px;gap:10px;"><p class="bt" style="font-size:31px;">금융 특성 = 날씨가 나쁠 때만 틀리는 시계</p><p class="bd" style="font-size:28px;color:#2B2F36;line-height:1.5;">평소엔 맞다가 변동이 큰 시기와 극단 구간에서 드러난다. 보정이 일부만 메운다</p></div>
+<div class="box left" style="padding:14px 22px;gap:10px;"><p class="bt" style="font-size:31px;">80% 구간 평균: 설정이 정한다</p><p class="bd" style="font-size:28px;color:#2B2F36;line-height:1.5;">특성 없는 데이터에서 이미 75~88%로 갈리고 특성은 대부분 3%p 이내. 합성 점검으로 미리 보이고, 보정으로 80%가 된다</p></div>
+<div class="box left prob" style="padding:14px 22px;gap:10px;"><p class="bt" style="font-size:31px;">극단 구간: 특성이 작용한다</p><p class="bd" style="font-size:28px;color:#2B2F36;line-height:1.5;">Chronos-2의 98% 구간에서는 꼬리·전환이 커버리지를 낮춘다. 그래서 "특성은 중요하지 않다"가 아니라 "80% 구간 평균에서는 설정이 더 크다"</p></div>
 </div>
-<div class="check"><p class="ck">근거</p><p class="cktext">표 4-1, 4-2, 4-4, 5.1절, 표 6-4 · 통째로 "특성이 덜 중요하다"고 말하면 과장</p></div>
+<div class="check"><p class="ck">근거</p><p class="cktext">표 4-1, 4-2, 4-4, 5.1절, 7.3절 한계 1 · 통째로 "특성이 덜 중요하다"고 말하면 과장</p></div>
 <p class="foot-l">김승민 · 석사학위논문 심사</p><p class="foot-r"></p><p class="foot-q">← 본편 15 · 16 · 24쪽의 부가 설명  ·  부록 목록 28쪽</p>
-<aside>반은 맞고 반은 아니라고 답하겠습니다. 평균적으로 얼마나 맞느냐를 기준으로 하면 설정이 더 중요합니다. 특성이 없는 데이터에서도 모델과 입력에 따라 75에서 88%로 13%p나 벌어졌고, 특성을 가장 강하게 해도 대부분 3%p 안에서만 움직였습니다. 실제 주가에서도 변동의 92%가 모델과 조합 차이였습니다. 하지만 언제 틀리느냐를 기준으로 하면 특성이 크게 작용합니다. 실제 주가에서 평온한 달과 변동이 큰 달의 커버리지 차이가 평균 10%p, 크게는 22.8%p였고, Chronos-2의 98% 극단 구간에서는 꼬리와 국면 전환이 커버리지를 실제로 떨어뜨렸습니다. 비유하면 설정 문제는 늘 5분 빠른 시계이고, 금융 특성은 평소엔 맞다가 날씨가 나쁠 때 크게 틀리는 시계입니다. 그래서 정확한 결론은 "평균 수준은 설정이 정하고, 금융 특성은 언제 틀리는지에 작용한다"입니다.</aside>
+<aside>80% 구간의 평균 커버리지를 기준으로 하면 그렇습니다. 특성이 없는 데이터에서도 모델과 입력에 따라 75에서 88%로 13%p나 벌어졌고, 특성을 가장 강하게 해도 대부분 3%p 안에서만 움직였습니다. 실제 주가에서도 커버리지 변동의 92%가 모델과 조건의 차이였고 종목 차이는 1%였습니다. 하지만 통째로 "금융 특성은 덜 중요하다"고 말하면 과장입니다. Chronos-2의 98% 극단 구간에서는 꼬리와 국면 전환이 커버리지를 실제로 떨어뜨렸습니다. 그래서 논문에서도 이 결론을 80% 구간과 평균 커버리지에 한정했고, 극단 위험에 그대로 적용할 수 없다고 한계로 밝혔습니다.</aside>
 </section>

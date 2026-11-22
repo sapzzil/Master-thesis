@@ -1,8 +1,8 @@
 <section id="limits">
 <div class="head">
 <div class="head-l">
-<p class="chap">7. 결론</p>
-<h2 class="title">7.3 한계와 향후 연구</h2>
+<p class="chap">결론</p>
+<h2 class="title">한계와 향후 연구</h2>
 </div>
 <div class="nav">
 <p class="nav-label">지금 위치</p>
@@ -10,16 +10,16 @@
 </div>
 </div>
 <hr class="rule">
-<p class="lead">다만 극단 구간, 위기 수준, 다른 자산과 여러 날 앞 예측은 이 연구가 확인하지 못했다</p>
+<p class="lead">다만 극단 구간, 여러 날 앞 예측과 다른 자산, 외부 변수는 이 연구가 확인하지 못했다</p>
 <div class="bar"><p class="bar-t">이 연구가 말하지 못하는 것 → 향후 연구</p></div>
 <div class="rows">
-<div class="row3l"><div class="box prob"><p class="bt">80% 구간 중심</p></div><div class="box left"><p class="bd">극단 구간(98%)은 Chronos-2 한 모델로만 확인</p></div><x-connector class="arr" head="end"></x-connector><div class="box ok left"><p class="bd">극단 분위수를 내는 다른 모델에서 재검증</p></div></div>
-<div class="row3l"><div class="box prob"><p class="bt">특성의 범위</p></div><div class="box left"><p class="bd">대형주 실측 범위 안(전환 빈도만 넘음). 위기 수준의 특성, 특성끼리의 결합은 미실험</p></div><x-connector class="arr" head="end"></x-connector><div class="box ok left"><p class="bd">위기 수준·결합 시나리오</p></div></div>
-<div class="row3l"><div class="box prob"><p class="bt">표본</p></div><div class="box left"><p class="bd">다음 날 예측, 미국·한국 대형주 10종목</p></div><x-connector class="arr" head="end"></x-connector><div class="box ok left"><p class="bd">여러 날 앞 예측, 다른 자산</p></div></div>
-<div class="row3l"><div class="box prob"><p class="bt">모델·입력</p></div><div class="box left"><p class="bd">Chronos-T5 base, Moirai small. 종가 단변량(거래량은 일부 확인)</p></div><x-connector class="arr" head="end"></x-connector><div class="box ok left"><p class="bd">TimesFM 1년·가격 과대 원인 규명</p></div></div>
-<div class="row3l"><div class="box prob"><p class="bt">보정</p></div><div class="box left"><p class="bd">평균만 맞춘다. 위반 몰림·분포 정확도는 그대로, 폭 효율 개선 여지</p></div><x-connector class="arr" head="end"></x-connector><div class="box ok left"><p class="bd">시기에 따라 다르게 보정하는 조건부 보정</p></div></div>
+<div class="row3l"><div class="box prob"><p class="bt">구간 수준</p></div><div class="box left"><p class="bd">주분석은 80% 구간. 극단 구간(98%)은 Chronos-2 한 모델로만 확인</p></div><x-connector class="arr" head="end"></x-connector><div class="box ok left"><p class="bd">극단 분위수를 내는 다른 모델에서 재검증</p></div></div>
+<div class="row3l"><div class="box prob"><p class="bt">표본</p></div><div class="box left"><p class="bd">다음 날 예측, 미국·한국 대형주 10종목. 특성 세기도 이 종목들의 실측 범위 안</p></div><x-connector class="arr" head="end"></x-connector><div class="box ok left"><p class="bd">여러 날 앞 예측, 다른 자산군</p></div></div>
+<div class="row3l"><div class="box prob"><p class="bt">모델</p></div><div class="box left"><p class="bd">Chronos-T5 base, Moirai small, 미세조정 모델 제외. TimesFM 1년·가격 과대 원인은 일부만 규명</p></div><x-connector class="arr" head="end"></x-connector><div class="box ok left"><p class="bd">금융 데이터로 학습한 모델과 비교, TimesFM 과대 원인 규명</p></div></div>
+<div class="row3l"><div class="box prob"><p class="bt">입력 정보</p></div><div class="box left"><p class="bd">종가 단변량. 거래량은 Chronos-2 하나로만 확인</p></div><x-connector class="arr" head="end"></x-connector><div class="box ok left"><p class="bd">실현·내재변동성 등 외부 변수</p></div></div>
+<div class="row3l"><div class="box prob"><p class="bt">보정</p></div><div class="box left"><p class="bd">평균만 맞춘다. 위반 몰림·분포 정확도는 그대로, 폭 효율은 대조군보다 낮음</p></div><x-connector class="arr" head="end"></x-connector><div class="box ok left"><p class="bd">폭 효율 개선, 시기에 따라 다르게 보정하는 조건부 보정</p></div></div>
 </div>
 <div class="check"><p class="ck">확인</p><p class="cktext">본문 7.3~7.4절</p></div>
 <p class="foot-l">김승민 · 석사학위논문 심사</p><p class="foot-r"></p><p class="foot-q">자세히 → 부록 Q13 학습 데이터 누출(41쪽) · Q14 종목·기간 선정(42쪽) · Q15 외부 변수(43쪽)</p>
-<aside>한계도 분명히 말씀드리겠습니다. 첫째, 주분석은 80% 구간이고 극단 구간은 Chronos-2 한 모델로만 확인했습니다. 둘째, 특성의 세기는 대형주 10종목에서 실측한 범위 안입니다. 전환 빈도만 그 너머까지 했고, 위기 수준의 더 강한 특성이나 특성이 함께 작용하는 경우는 실험하지 않았습니다. 셋째, 다음 날 예측과 미국·한국 대형주 10종목에 한정됩니다. 넷째, 계산 자원 때문에 Chronos-T5는 base, Moirai는 small 크기만 썼고, 입력은 종가 하나뿐입니다. 다섯째, 보정은 평균 수준만 맞추고, 위반이 몰려 오는 문제와 분포 전체의 정확도는 그대로 둡니다. 향후 연구로는 극단 분위수를 내는 다른 모델에서의 재검증, 위기 수준과 결합 시나리오, 여러 날 앞 예측과 다른 자산, TimesFM 1년·가격이 넓게 나오는 원인, 그리고 시기에 따라 다르게 보정하는 방법을 생각하고 있습니다.</aside>
+<aside>한계도 분명히 말씀드리겠습니다. 첫째, 주분석은 80% 구간이고 극단 구간은 극단 분위수를 내는 Chronos-2 한 모델로만 확인했습니다. 둘째, 다음 날 예측과 미국·한국 대형주 10종목에 한정되고, 합성 데이터의 세기도 이 종목들에서 잰 범위 안입니다. 셋째, 계산 자원 때문에 Chronos-T5는 base, Moirai는 small 크기만 썼고, 금융 데이터로 미세조정한 모델은 다루지 않았습니다. TimesFM 1년·가격이 넓게 나오는 원인도 일부만 밝혔습니다. 넷째, 입력은 종가 하나뿐이고 거래량은 Chronos-2 하나로만 확인했습니다. 다섯째, 보정은 평균 수준만 맞추고, 위반이 몰려 오는 문제와 분포 전체의 정확도는 그대로 두며, 폭 효율은 결과를 보고 정한 일괄 확대보다 낮았습니다. 향후 연구로는 극단 분위수를 내는 다른 모델에서의 재검증, 여러 날 앞 예측과 다른 자산, 금융 데이터로 학습한 모델과의 비교와 TimesFM 과대 원인 규명, 외부 변수, 그리고 폭 효율과 시기별 보정을 생각하고 있습니다.</aside>
 </section>

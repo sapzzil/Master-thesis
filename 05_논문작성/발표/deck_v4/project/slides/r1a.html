@@ -1,8 +1,8 @@
 <section id="r1a">
 <div class="head">
 <div class="head-l">
-<p class="chap">4. RQ1 진단: 오차는 어디서 오는가</p>
-<h2 class="title">4.1 특성 없는 데이터</h2>
+<p class="chap">RQ1 진단: 오차는 어디서 오는가</p>
+<h2 class="title">특성 없는 데이터</h2>
 </div>
 <div class="nav">
 <p class="nav-label">지금 위치</p>
@@ -11,9 +11,9 @@
 </div>
 <hr class="rule">
 <p class="lead">그러나 특성이 전혀 없는 데이터에서도 커버리지는 이미 75~88%로 갈렸다</p>
-<div class="bar"><p class="bar-t">시나리오(행) × 모델·입력(열)별 보정 전 커버리지</p><p class="tag">N3</p></div>
+<div class="bar"><p class="bar-t">시나리오(행) × 모델·입력(열)별 보정 전 커버리지</p></div>
 <div class="body2">
-<div class="hm"><img class="fig" src="/_blob/5d00ba3718e5adb99582ec855d86f03e" alt="합성 데이터 17개 시나리오와 16개 모델·입력 조합별 보정 전 커버리지 히트맵. 맨 윗줄 L1에서 이미 75%에서 88%까지 갈리고, 색은 열 방향으로 바뀌며 행 방향으로는 거의 바뀌지 않는다" style="width:1060px;height:598px;"><div class="hm-row"></div><div class="hm-cell" style="left:120px;"></div><div class="hm-cell" style="left:505px;"></div></div>
+<div class="hm"><img class="fig" src="/_blob/5d00ba3718e5adb99582ec855d86f03e" alt="합성 데이터 17개 시나리오와 16개 모델·조건별 보정 전 커버리지 히트맵. 맨 윗줄 L1에서 이미 75%에서 88%까지 갈리고, 색은 열 방향으로 바뀌며 행 방향으로는 거의 바뀌지 않는다" style="width:1060px;height:598px;"><div class="hm-row"></div><div class="hm-cell" style="left:120px;"></div><div class="hm-cell" style="left:505px;"></div></div>
 <div class="side">
 <div class="box"><p class="kpi">75~88%</p><p class="bd">맨 윗줄 L1(특성 없음)의 커버리지<br>16개 중 절반이 맞는 범위 78~82% 밖</p></div>
 <p class="memo">빨간 칸: Chronos-T5 한 달·가격 75%,<br>TimesFM-2.5 1년·가격 88% · 점선 = L1 줄</p>
@@ -21,7 +21,7 @@
 <div class="box ok"><p class="bt">색은 열마다 다르다</p><p class="bd">위아래(특성 강도)로는<br>거의 같은 색</p></div>
 </div>
 </div>
-<div class="check"><p class="ck">확인</p><p class="cktext">L1에는 특성이 없으므로 여기서 생긴 차이는 금융 특성 탓일 수 없다 · 시나리오당 100계열 × 60일 = 6,000건 · 본문 4.1절 표 4-1, 그림 4-1</p></div>
+<div class="check"><p class="ck">확인</p><p class="cktext">L1에는 특성이 없으므로 여기서 생긴 차이는 금융 특성 탓일 수 없다 · 시나리오당 100계열 × 60일 = 6,000건 · 본문 4.2절 표 4-1, 그림 4-1</p></div>
 <p class="foot-l">김승민 · 석사학위논문 심사</p><p class="foot-r"></p><p class="foot-q">자세히 → 부록 Q09 TimesFM 과대 원인(37쪽)</p>
-<aside>RQ1의 첫 번째 결과입니다. 그림의 행은 시나리오, 열은 모델과 입력 조합입니다. 맨 윗줄 L1은 금융 특성이 하나도 없는, 가장 쉬운 데이터입니다. 그런데도 커버리지가 낮게는 Chronos-T5 한 달·가격 75%, 높게는 TimesFM-2.5 1년·가격 88%까지 벌어졌고, 16개 중 절반이 78에서 82% 밖이었습니다. 같은 모델도 입력에 따라 달라서, TimesFM-2.5는 1년 과거를 가격으로 넣으면 88%, 수익률로 넣으면 79%였습니다. 그리고 그림을 보시면 색이 열마다, 즉 모델과 입력에 따라 뚜렷하게 다르고, 같은 열에서 위아래로, 즉 특성을 바꿔도 거의 바뀌지 않습니다. 이 데이터에는 특성이 없으니 여기서 생긴 차이는 금융 특성 탓일 수 없고, 모델과 입력 설정에서 왔다고 볼 수밖에 없습니다.</aside>
+<aside>RQ1의 첫 번째 결과입니다. 그림의 행은 시나리오, 열은 모델과 입력 조건입니다. 맨 윗줄 L1은 금융 특성이 하나도 없는, 가장 쉬운 데이터입니다. 그런데도 커버리지가 낮게는 Chronos-T5 한 달·가격 75%, 높게는 TimesFM-2.5 1년·가격 88%까지 벌어졌고, 16개 중 절반이 78에서 82% 밖이었습니다. 같은 모델도 입력에 따라 달라서, TimesFM-2.5는 1년 과거를 가격으로 넣으면 88%, 수익률로 넣으면 79%였습니다. 그리고 그림을 보시면 색이 열마다, 즉 모델과 입력에 따라 뚜렷하게 다르고, 같은 열에서 위아래로, 즉 특성을 바꿔도 거의 바뀌지 않습니다. 이 데이터에는 특성이 없으니 여기서 생긴 차이는 금융 특성 탓일 수 없고, 모델과 입력 설정에서 왔다고 볼 수밖에 없습니다.</aside>
 </section>

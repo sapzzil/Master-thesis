@@ -10,23 +10,31 @@
 </div>
 </div>
 <hr class="rule">
-<p class="lead">이 연구는 TSFM 예측구간을 원인까지 진단하고 실측 기반 합성 통제로 실제와 잇는 점이 새롭고, 실제 적용 전 점검·보정 절차를 남긴다</p>
-<div class="pillars">
-<div class="pillar n">
-<p class="pillar-h">선행연구와 다른 점 <span class="pillar-s">Novelty</span></p>
-<div class="box new left"><div class="row-t"><p class="nc">N1</p><p class="bt">질문</p></div><p class="bd">점 예측이 아니라 예측구간이 맞는지를 묻고, 틀린다면 원인까지 진단한다</p></div>
-<div class="box new left"><div class="row-t"><p class="nc">N2</p><p class="bt">방법</p></div><p class="bd">특성 세기를 실제 종목에서 재고 같은 난수로 특성 하나씩만 바꿔, 합성 결과를 실제 주가와 직접 비교한다</p></div>
-<div class="box new left"><div class="row-t"><p class="nc">N3</p><p class="bt">발견</p></div><p class="bd">오차의 주된 출처는 금융 특성이 아니라 모델과 입력 설정이다(기존 관점과 반대). 꼬리 효과는 구간 수준에 따라 뒤집힌다</p></div>
+<p class="lead">세 갈래 선행연구를 TSFM 금융 예측구간에서 하나로 잇고, 실제 적용 전 점검 방법을 남긴다</p>
+<div class="nv">
+<p class="pillar-h" style="color: var(--purple);">선행연구와 다른 점 <span class="pillar-s">Novelty</span></p>
+<p class="nv-h"></p><p class="nv-h">선행연구</p><p class="nv-h"></p><p class="nv-h">이 연구</p>
+<div class="nv-k"><div class="row-t"><p class="nc">N1</p><p class="bt">진단 방식</p></div></div>
+<div class="box gray left"><p class="bd">학습형 모델을 합성 데이터로 진단, 특성 세기는 연구자가 정함(FinStressTS)</p></div>
+<x-connector class="arr" head="end"></x-connector>
+<div class="box new left"><p class="bd">사전학습 TSFM을 진단, 세기는 실제 10종목에서 측정해 합성 결과를 실제 주가와 직접 비교</p></div>
+<div class="nv-k"><div class="row-t"><p class="nc">N2</p><p class="bt">평가 대상</p></div></div>
+<div class="box gray left"><p class="bd">금융 TSFM을 점 예측 정확도(R<sup>2</sup>, MAE)로만 평가(Rahimikia 외, Noguer i Alonso·Franklin)</p></div>
+<x-connector class="arr" head="end"></x-connector>
+<div class="box new left"><p class="bd">예측구간이 맞는지(커버리지)와 분포 정확도를 평가하고, 틀리면 원인을 가림</p></div>
+<div class="nv-k"><div class="row-t"><p class="nc">N3</p><p class="bt">보정 검증</p></div></div>
+<div class="box gray left"><p class="bd">콘포멀 사후보정은 일반 예측 모델용 방법으로 제안(Romano 외, Gibbs·Candès)</p></div>
+<x-connector class="arr" head="end"></x-connector>
+<div class="box new left"><p class="bd">TSFM 금융 구간에 재학습 없이 적용해 효과와 대가(구간 폭)를 수치로 확인</p></div>
 </div>
-<div class="pillar c">
-<p class="pillar-h">이 연구가 남기는 것 <span class="pillar-s">Contribution</span></p>
-<div class="box ok left"><div class="row-t"><p class="cc">C1</p><p class="bt">점검 절차</p></div><p class="bd">크게 어긋나는 모델·설정을 실제 적용 전에 합성으로 가려낸다</p></div>
-<div class="box ok left"><div class="row-t"><p class="cc">C2</p><p class="bt">처방 검증</p></div><p class="bd">재학습 없는 보정의 효과·대가·남는 문제를 수치로 보인다</p></div>
-<div class="box ok left"><div class="row-t"><p class="cc">C3</p><p class="bt">평가 관점</p></div><p class="bd">80% 구간 하나로 꼬리 위험을 판단하면 틀린다</p></div>
-<div class="box ok left"><div class="row-t"><p class="cc">C4</p><p class="bt">실증·실무</p></div><p class="bd">4종 × 입력 4개 × 두 시장 결과 전부 보고, 실무 지침 3가지</p></div>
+<div class="cv">
+<p class="pillar-h" style="color: var(--green);">이 연구가 남기는 것 <span class="pillar-s">Contribution</span></p>
+<div class="box ok left"><div class="row-t"><p class="cc">C1</p><p class="bt">방법론</p></div><p class="bd">실측 세기의 합성 실험을 실제 적용 전 점검 절차로 씀(실제와 평균 1.1%p)</p></div>
+<div class="box ok left"><div class="row-t"><p class="cc">C2</p><p class="bt">평가 관점</p></div><p class="bd">꼬리가 두꺼우면 80% 구간은 더 맞고 98% 구간은 덜 맞음</p></div>
+<div class="box ok left"><div class="row-t"><p class="cc">C3</p><p class="bt">실증</p></div><p class="bd">TSFM 4종 × 입력 4개 × 두 시장, 사전 고정한 가설로 전 조건 보고</p></div>
+<div class="box ok left"><div class="row-t"><p class="cc">C4</p><p class="bt">실무</p></div><p class="bd">설정 점검·사후보정의 필요와 VaR·비중 규칙에서의 차이</p></div>
 </div>
-</div>
-<div class="check"><p class="ck">확인</p><p class="cktext">ACI-CQR은 기존 방법(Romano 외 2019, Gibbs·Candès 2021)의 결합이며 새 보정 방법을 제안한 것은 아님 · 근거는 뒤의 결과 장과 결론의 기여 장에서 · 본문 1.4절, 7.2절</p></div>
+<div class="check"><p class="ck">확인</p><p class="cktext">핵심 발견: 오차의 주된 출처는 금융 특성이 아니라 모델과 입력 설정 · ACI-CQR은 기존 방법의 결합 · 본문 1.4절, 표 2-1</p></div>
 <p class="foot-l">김승민 · 석사학위논문 심사</p><p class="foot-r"></p>
-<aside>본론에 앞서 이 연구의 차별성과 기여를 먼저 말씀드리겠습니다. 왼쪽은 선행연구와 무엇이 다른가, 오른쪽은 이 연구가 무엇을 남기는가입니다. 근거는 뒤에서 하나씩 보여드리겠습니다. 새로운 점은 세 가지입니다. 첫째 질문입니다. 금융 TSFM 연구가 점 예측만 볼 때, 예측구간이 맞는지를 묻고 틀린다면 원인까지 진단했습니다. 둘째 방법입니다. 합성 데이터의 특성 세기를 연구자가 정하지 않고 실제 종목에서 재서 정했고, 같은 난수로 특성 하나씩만 바꿨습니다. 그래서 합성 결과를 실제 주가와 직접 비교할 수 있습니다. 셋째 발견입니다. 오차의 주된 출처가 금융 특성이 아니라 모델과 설정이라는 것인데, 실험 전에 세운 기존 관점의 가설이 기각되면서 나온 결과입니다. 꼬리의 효과가 구간 수준에 따라 뒤집힌다는 것도 발견했습니다. 기여는 네 가지입니다. 크게 어긋나는 모델과 설정을 실제에 쓰기 전에 가려내는 점검 절차, 재학습 없는 보정의 효과와 대가를 함께 보인 처방 검증, 80% 구간만 보고 꼬리 위험을 판단하면 안 된다는 평가 관점, 그리고 결과를 전부 보고한 실증과 실무 지침입니다. 각 기여의 근거 숫자는 결론에서 다시 모아 보여드리겠습니다. 보정 방법 자체는 기존 두 방법의 결합입니다.</aside>
+<aside>본론에 앞서 이 연구의 차별성과 기여를 먼저 말씀드리겠습니다. 위쪽은 선행연구와 무엇이 다른가, 아래쪽은 이 연구가 무엇을 남기는가입니다. 새로운 점은 선행연구의 세 갈래와 하나씩 짝을 이룹니다. 첫째 진단 방식입니다. FinStressTS 같은 합성 진단 연구는 학습형 모델을 대상으로 하고 특성 세기를 연구자가 정했습니다. 이 연구는 사전학습 TSFM을 진단했고, 세기를 실제 10종목에서 재서 정했기 때문에 합성 결과를 실제 주가와 직접 비교할 수 있습니다. 둘째 평가 대상입니다. 금융 TSFM 연구는 점 예측 정확도만 봤습니다. 이 연구는 예측구간이 맞는지와 분포 정확도를 보고, 틀리면 원인을 가렸습니다. 셋째 보정 검증입니다. 콘포멀 보정은 일반 예측 모델을 위한 방법으로 제안되었습니다. 이 연구는 그것을 TSFM의 금융 구간에 재학습 없이 붙여 효과와 대가를 수치로 확인했습니다. 보정 방법 자체는 기존 두 방법의 결합입니다. 기여는 논문에 적은 네 가지입니다. 방법론으로는 실측 세기의 합성 실험을 실제에 쓰기 전의 점검 절차로 쓸 수 있다는 것, 평가 관점으로는 80% 구간 하나만 보고 꼬리 위험을 판단하면 안 된다는 것, 실증으로는 네 모델과 네 입력을 두 시장에서 같은 절차로 평가하고 모든 조건을 보고한 것, 실무로는 설정 점검과 사후보정이 필요하고 실제 규칙에서 차이를 만든다는 것입니다. 이 모든 것의 바탕이 되는 핵심 발견은, 오차의 주된 출처가 금융 특성이 아니라 모델과 설정이라는 점입니다.</aside>
 </section>

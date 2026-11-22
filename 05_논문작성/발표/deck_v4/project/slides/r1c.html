@@ -1,8 +1,8 @@
 <section id="r1c">
 <div class="head">
 <div class="head-l">
-<p class="chap">4. RQ1 진단: 오차는 어디서 오는가</p>
-<h2 class="title">4.4 꼬리의 역설</h2>
+<p class="chap">RQ1 진단: 오차는 어디서 오는가</p>
+<h2 class="title">꼬리의 역설</h2>
 </div>
 <div class="nav">
 <p class="nav-label">지금 위치</p>
@@ -10,8 +10,8 @@
 </div>
 </div>
 <hr class="rule">
-<p class="lead">특성 중 꼬리는 80% 구간에서는 오히려 커버리지를 높이고 98% 구간에서는 낮춰, 구간 수준에 따라 효과가 뒤집힌다</p>
-<div class="bar"><p class="bar-t">분산이 같은 정규분포와 꼬리가 두꺼운 분포(ν = 3.56)</p><p class="tag">N3 · C3</p></div>
+<p class="lead">꼬리는 80% 구간에서는 오히려 커버리지를 높이고, 98·99% 같은 극단 구간에서는 낮춘다</p>
+<div class="bar"><p class="bar-t">분산이 같은 정규분포와 꼬리가 두꺼운 분포(ν = 3.56)</p><p class="tag">C2</p></div>
 <div class="body2">
 <div class="vflow" style="width:940px;">
 <svg aria-label="분산이 같은 정규분포와 t분포의 확률밀도. t분포가 가운데에 더 몰리고 양 끝 꼬리도 더 두껍다. 가운데 80% 구간은 초록, 99% 바깥 꼬리는 빨강으로 칠함" width="900" height="380" viewBox="0 0 900 380">
@@ -33,11 +33,11 @@
 <tr><td>꼬리 L5</td><td>86.6</td><td>95.2</td><td>97.8</td></tr>
 </table>
 <div class="box ok left"><p class="bt">80% 구간: 가운데에 더 몰려 더 맞음</p><p class="bd">RW 1년 실측 86.3% (이론 86.6%)</p></div>
-<div class="box prob left"><p class="bt">98% 구간: 꼬리 때문에 덜 맞음</p><p class="bd">Chronos-2: 꼬리 4개 조건 중 3개 −0.8~−1.0%p, 국면 전환 8개 모두 −0.6~−1.0%p</p></div>
-<div class="box prob left"><p class="bt">작아 보여도 크다</p><p class="bd">99%에서 1.2%p 하락 = 한도 초과일 1% → 2.2%</p></div>
+<div class="box prob left"><p class="bt">99% 구간(이론): 꼬리 때문에 덜 맞음</p><p class="bd">99.0 → 97.8% = 한도 초과일 1% → 2.2%</p></div>
+<div class="box prob left"><p class="bt">98% 구간(실측, Chronos-2)</p><p class="bd">극단 분위수를 내는 유일한 모델. 꼬리 4개 조건 중 3개 −0.8~−1.0%p, 국면 전환 8개 모두 −0.6~−1.0%p</p></div>
 </div>
 </div>
-<div class="check"><p class="ck">확인</p><p class="cktext">C3: 80% 구간 하나로 꼬리 위험을 판단하면 틀린다 · 국면 전환이 섞인 데이터도 전체로는 꼬리가 두꺼운 분포라 같은 원리 · 본문 4.3.2절 표 4-3, 표 4-4</p></div>
+<div class="check"><p class="ck">확인</p><p class="cktext">C2: 구간 하나의 커버리지로 꼬리 위험을 판단하면 잘못된 결론에 이를 수 있다 · 국면 전환이 섞인 데이터도 전체로는 꼬리가 두꺼운 분포라 같은 원리 · 본문 4.3.2절 표 4-3, 표 4-4</p></div>
 <p class="foot-l">김승민 · 석사학위논문 심사</p><p class="foot-r"></p><p class="foot-q">자세히 → 부록 Q06 특성 대 설정(34쪽)</p>
 <aside>앞에서 꼬리가 두꺼워지면 커버리지가 오히려 올라갔다고 말씀드렸는데, 그 이유입니다. 모델이 꼬리를 잘 다뤄서가 아니라 80% 구간이 가진 수학적 성질 때문입니다. 그림은 분산을 똑같이 맞춘 정규분포와 꼬리가 두꺼운 분포입니다. 꼬리가 두꺼운 분포는 가끔 큰 값이 나오는 대신 평소에는 가운데에 더 몰립니다. 그래서 분산으로 그린 80% 구간, 초록 부분에는 더 많이 들어옵니다. 이론적으로 계산하면 80% 구간은 86.6%로 올라가고, 95%에서는 거의 같고, 99% 구간에서는 97.8%로 오히려 떨어집니다. RW는 이 이론값을 그대로 따라 86.3%였습니다. 극단 분위수를 직접 내는 Chronos-2로 98% 구간을 확인해 보니 꼬리는 네 조건 중 세 조건에서, 국면 전환은 여덟 조건 모두에서 실제로 커버리지를 떨어뜨렸습니다. 99%에서 1.2%p 하락은 작아 보이지만 한도를 넘는 날이 1%에서 2.2%로 두 배 넘게 늘어난다는 뜻입니다. 그래서 80% 구간 결과를 극단 위험에 그대로 적용하면 안 되고, 이것이 기여 C3의 평가 관점입니다.</aside>
 </section>
