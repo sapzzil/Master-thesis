@@ -88,8 +88,15 @@ report = []
 for of in sorted(glob.glob(os.path.join(old_dir, '*.md'))):
     nf = os.path.join(new_dir, os.path.basename(of))
     if not os.path.exists(nf): continue
-    A = [l for l in open(of, encoding='utf-8').read().split('\n') if l.strip()]
-    B = [l for l in open(nf, encoding='utf-8').read().split('\n') if l.strip()]
+    def _split(lines):
+        out = []
+        for l in lines:
+            m = re.match(r'^(\*\*(?:그림|표) [^*]+\*\*)\.?\s+(\S.*)$', l)
+            if m: out += [m.group(1), m.group(2)]
+            else: out.append(l)
+        return out
+    A = _split([l for l in open(of, encoding='utf-8').read().split('\n') if l.strip()])
+    B = _split([l for l in open(nf, encoding='utf-8').read().split('\n') if l.strip()])
     if A == B: continue
     sm = difflib.SequenceMatcher(None, A, B, autojunk=False)
     # 각 equal 블록의 텍스트 줄로 cursor를 앞으로 당겨 위치를 고정
