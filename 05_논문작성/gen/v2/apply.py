@@ -77,7 +77,7 @@ cursor = 0
 def find_para(line, start_idx):
     t = display(md_text_of(line)) if not line.strip().startswith('>') else display(md_text_of(line))
     for i in range(start_idx, len(paras)):
-        if paras[i][2].strip() == t.strip():
+        if paras[i][2].replace('\xa0', ' ').strip() == t.replace('\xa0', ' ').strip():
             return i
     raise SystemExit(f'못 찾음: {t[:80]!r}')
 
