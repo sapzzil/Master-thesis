@@ -169,9 +169,9 @@ E = {
      ('연구 기여(C1~C4) 종합, 실무 도입 절차, 연구의 한계 및 의의 (부록 A1~A7 별첨)', '가설 판정 요약, 연구 기여(C1~C4), 실무 도입 절차, 한계와 의의 (부록 A1~A7 별첨)'),
      ('19~20쪽', '19~21쪽')],
  3: [('구간이 너무 좁거나 넓을 때의 실무 손실 (예시: 기준가 100원, 1억 원 투자, 하루 변동 약 2.1%)',
-      '예: 1억 원 투자, 하루 변동(표준편차) 2.1%(본 연구 10종목 중앙값) → 적정 80% 예측구간 = ±1.28 × 2.1% ≈ ±2.7% (±270만 원)'),
+      '하루 수익률이 정규분포(평균 0, 표준편차 σ)를 따를 때 (금액: σ = 2.1%, 1억 원 투자 기준)'),
      ('실제 주가 변동은 모델 예측과 무관함. 모델이 손실을 작게 예상할수록 실제 손실이 예상선을 넘는 날이 잦아짐.',
-      'VaR 10% = 예측구간 아래 끝의 손실 금액,  VaR 위반율 = 실제 손실이 VaR 10%를 넘은 날의 비율')],
+      'σ = 2.1%: 본 연구 10종목 하루 수익률 표준편차의 중앙값.  VaR 위반율: 실제 손실이 VaR 10%(예측구간 아래 끝)를 넘은 날의 비율.')],
  4: [('· 적정 범위(78~82%): 시나리오당 6,000건의 표본 오차(약 ±1%p)보다 큰 실질 기준(±3%p로 넓혀도 결론 같음, 9쪽).',
       '· 적정 범위(78~82%): 6,000건이면 우연히 생기는 흔들림이 약 ±1%p라서, 그보다 넉넉한 ±2%p를 기준으로 삼음(±3%p로 넓혀도 결론 같음, 9쪽).')],
  5: [('Noguer i Alonso 외(2026): 대형주', 'Noguer i Alonso와 Franklin(2026): 대형주'),
@@ -224,13 +224,39 @@ E = {
 GREEN, RED, NAVY = '15803D', 'C0262D', '1B365D'
 
 # ---------- 도형 단위 다시 쓰기 ----------
+def drop_col(ci):
+    def f(s):
+        g = re.search(r'<a:tblGrid>(.*?)</a:tblGrid>', s, re.S)
+        gc = re.findall(r'<a:gridCol\b[^>]*/>|<a:gridCol\b.*?</a:gridCol>', g.group(1), re.S)
+        del gc[ci]
+        s = s[:g.start()] + '<a:tblGrid>' + ''.join(gc) + '</a:tblGrid>' + s[g.end():]
+        def row(m):
+            tr = m.group(0); tcs = list(re.finditer(r'<a:tc\b.*?</a:tc>', tr, re.S))
+            t = tcs[ci]; return tr[:t.start()] + tr[t.end():]
+        return re.sub(r'<a:tr\b.*?</a:tr>', row, s, flags=re.S)
+    return f
+
 def S3(x):
+    x = sub_shape(x, 'name:Table 15', drop_col(1))
     x = sub_shape(x, 'name:Table 15', table_rows([
-        ['예측구간', 'VaR 10%', '커버리지 (목표 80%)', 'VaR 위반율 (목표 10%)'],
-        ['① 적정: −270만 ~ +270만 원', '270만 원', '80%', '10%'],
-        ['② 절반 폭: −135만 ~ +135만 원', '135만 원', '48%', '26% → 위험 과소평가'],
-        ['③ 2배 폭: −540만 ~ +540만 원', '540만 원', '99%', '0.5% → 투자 과도 축소']]))
+        ['80% 예측구간 (아래 끝 = VaR 10%)', '커버리지', 'VaR 위반율'],
+        ['① 적정: ±1.28σ (±270만 원)', '80%', '10%'],
+        ['② 절반 폭: ±0.64σ (±135만 원)', '48%', '26% → 위험 과소평가'],
+        ['③ 2배 폭: ±2.56σ (±540만 원)', '99%', '0.5% → 투자 과도 축소']]))
+    x = sub_shape(x, 'name:Table 15', cols([232, 78, 170]))
+    x = sub_shape(x, 'name:Table 15', lambda s: re.sub(r'(<a:tc>(?:(?!</a:tc>).)*?<a:pPr algn=")l(")', r'\1ctr\2', s, flags=re.S))
+    x = sub_shape(x, 'name:Table 15', geo(47, 212, 480, 150))
+    x = sub_shape(x, 'name:Table 15', heights([34, 42, 42, 42]))
+    x = sub_shape(x, 'name:TextBox 17', set_text(['σ = 2.1%: 본 연구 10종목 하루 수익률 표준편차의 중앙값.  VaR 위반율: 실제 손실이 VaR 10%(예측구간 아래 끝)를 넘은 날의 비율.'], 10.5, b=False))
+    x = sub_shape(x, 'name:TextBox 17', geo(47, 380, 864, 20))
+    x = sub_shape(x, 'name:TextBox 14', lambda s: s.replace('algn="ctr"', 'algn="l"'))
+    x = x.replace('</p:spTree>', PIC3 + '</p:spTree>', 1)
     return x
+
+PIC3 = ('<p:pic><p:nvPicPr><p:cNvPr id="90" name="Picture 90" descr="slide3_var.png"/><p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr><p:nvPr/></p:nvPicPr>'
+        '<p:blipFill><a:blip r:embed="rId90"/><a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr><a:xfrm>'
+        f'<a:off x="{540*EMU}" y="{208*EMU}"/><a:ext cx="{372*EMU}" cy="{int(372*660/1500*EMU)}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr></p:pic>')
+FIG3 = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'figs', 'slide3_예측구간_VaR.png')
 
 def S9(x):
     x = sub_shape(x, 'name:TextBox 7', bump(14))
@@ -470,6 +496,10 @@ def main(src, dst):
             x = re.sub(r' sz="(\d+)"', lambda m: m.group(0) if int(m.group(1)) in (950,) or int(m.group(1)) >= 1400 else ' sz="1400"', x)
         wr(n, x)
     v = fix_verdict_align(make_verdict(x8)); q = make_qa(x1)
+    shutil.copy(FIG3, os.path.join(tmp, 'ppt/media/slide3_var.png'))
+    r3 = os.path.join(tmp, 'ppt/slides/_rels/slide3.xml.rels'); rr = open(r3, encoding='utf8').read()
+    rr = rr.replace('</Relationships>', '<Relationship Id="rId90" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/slide3_var.png"/></Relationships>')
+    open(r3, 'w', encoding='utf8').write(rr)
     # 새 슬라이드 파일
     pres = open(os.path.join(tmp, 'ppt/presentation.xml'), encoding='utf8').read()
     rels = open(os.path.join(tmp, 'ppt/_rels/presentation.xml.rels'), encoding='utf8').read()
@@ -508,7 +538,7 @@ def main(src, dst):
     if os.path.exists(dst): os.remove(dst)
     with zipfile.ZipFile(dst, 'w', zipfile.ZIP_DEFLATED) as zo:
         names = [n for n in z.namelist() if n != '[Content_Types].xml']
-        extra = [f'ppt/slides/slide{k}.xml' for k in new] + [f'ppt/slides/_rels/slide{k}.xml.rels' for k in new]
+        extra = [f'ppt/slides/slide{k}.xml' for k in new] + [f'ppt/slides/_rels/slide{k}.xml.rels' for k in new] + ['ppt/media/slide3_var.png']
         for nm in ['[Content_Types].xml'] + names + extra:
             zo.write(os.path.join(tmp, nm), nm)
     print('done; problems:', BAD if BAD else 0)
