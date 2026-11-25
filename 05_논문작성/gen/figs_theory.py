@@ -21,18 +21,19 @@ axs[0].set_title("전체 모양: t분포는 가운데가 더 높다", fontsize=9
 axs[1].set_ylim(0, 0.025); axs[1].set_title("오른쪽 꼬리 확대: t분포는 극단값이 더 자주 나온다", fontsize=9)
 fig.tight_layout(); fig.savefig(F + "fig2_1_정규_t분포.png"); plt.close()
 
-# 그림 2-2: 예측구간과 커버리지(가상 예시, 40일)
-rng = np.random.default_rng(3)  # 40일 중 32일 포함(80%)이 되는 예시
-n = 40; y = rng.normal(0, 1.0, n)
-lo, hi = -z * 1.0, z * 1.0
-inside = (y >= lo) & (y <= hi)
+# 그림 2-4: 예측구간과 커버리지(가상 예시, 100일, 80일 포함)
+n = 100; lo, hi = -z * 1.0, z * 1.0
+for seed in range(1000):  # 100일 중 정확히 80일이 구간 안에 드는 첫 시드
+    y = np.random.default_rng(seed).normal(0, 1.0, n)
+    inside = (y >= lo) & (y <= hi)
+    if inside.sum() == 80: break
 fig, ax = plt.subplots(figsize=(8, 3.6))
 ax.fill_between([0.5, n + 0.5], lo, hi, color="#1f77b4", alpha=0.15, label="80% 예측구간(0.1~0.9 분위수)")
-ax.scatter(np.arange(1, n + 1)[inside], y[inside], color="#1f77b4", s=22, label="구간 안(포함)")
-ax.scatter(np.arange(1, n + 1)[~inside], y[~inside], color="#d62728", s=30, marker="x", label="구간 밖(이탈)")
+ax.scatter(np.arange(1, n + 1)[inside], y[inside], color="#1f77b4", s=12, label="구간 안(포함)")
+ax.scatter(np.arange(1, n + 1)[~inside], y[~inside], color="#d62728", s=20, marker="x", label="구간 밖(이탈)")
 ax.set_xlim(0.5, n + 0.5); ax.set_xlabel("날짜", fontsize=10); ax.set_ylabel("수익률(%)", fontsize=10)
-ax.tick_params(labelsize=9)
-ax.set_title(f"40일 중 {inside.sum()}일 포함: 커버리지 {inside.mean()*100:.0f}%", fontsize=11)
+ax.set_xticks([1, 20, 40, 60, 80, 100]); ax.tick_params(labelsize=9)
+ax.set_title(f"100일 중 {inside.sum()}일 포함: 커버리지 {inside.mean()*100:.0f}%", fontsize=11)
 ax.legend(fontsize=9, ncol=3, loc="upper center", bbox_to_anchor=(0.5, -0.22), frameon=False)
 fig.tight_layout(); fig.savefig(F + "fig2_3_예측구간_커버리지.png"); plt.close()
 print("fig2_2 coverage", inside.sum(), n)
