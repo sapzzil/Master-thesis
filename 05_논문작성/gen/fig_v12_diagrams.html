@@ -125,4 +125,26 @@ td.k{font-weight:700;color:var(--navy);width:250px}
    <div class="card"><b>C4 실무</b> 점검 → 사후보정 → 용도 제한 절차</div></div>
  </div>
 </div>
+
+<!-- 16쪽 아래: 구간 폭 표 (논문 6.3절) -->
+<div class="fig" id="t16" style="width:900px">
+ <table>
+  <tr><th>보정 후 구간 폭 (합성 데이터)</th><th>오라클 대비</th></tr>
+  <tr><td class="k">TSFM 과거 1년 조건</td><td>1.05~1.24배</td></tr>
+  <tr><td class="k">TSFM 과거 한 달 조건</td><td>1.14~1.48배</td></tr>
+  <tr><td class="k">오라클 모형에 보정 적용</td><td>1.05~1.09배</td></tr>
+ </table>
+ <div class="cap">시나리오별 범위. 오라클 = 데이터를 만든 실제 분포로 낸 구간(80%를 맞추는 가장 좁은 구간)</div>
+</div>
+
+<!-- 17쪽: VaR 백테스트 표 (논문 5.5.3절·6.6절) -->
+<div class="fig" id="t17" style="width:1150px">
+ <table>
+  <tr><th style="text-align:left">VaR 10% 백테스트 (실제 10종목)</th><th>보정 전</th><th></th><th>보정 후</th></tr>
+  <tr><td class="k" style="width:520px">위반율 검정을 8종목 이상 통과한 조건 (19개 중)</td><td style="text-align:center;font-size:22px">8개</td><td style="text-align:center">→</td><td style="text-align:center;font-size:22px;font-weight:700;color:#1F6FB2">14개</td></tr>
+  <tr><td class="k">TimesFM-2.5 1년·가격 위반율<br><span class="small">구간이 넓어 손실 한도를 덜 넘던 조건</span></td><td style="text-align:center">5.5%</td><td style="text-align:center">→</td><td style="text-align:center;font-weight:700">9.0%</td></tr>
+  <tr><td class="k">Moirai-2 한 달·수익률 위반율<br><span class="small">구간이 좁아 손실 한도를 자주 넘던 조건</span></td><td style="text-align:center">11.9%</td><td style="text-align:center">→</td><td style="text-align:center;font-weight:700">10.5%</td></tr>
+ </table>
+ <div class="cap">위반율 = 실제 손실이 VaR 10%(80% 구간 아래 끝)를 넘은 날의 비율, 목표 10%. 위반율 검정 = Kupiec 검정. 탐색 분석</div>
+</div>
 </body></html>
