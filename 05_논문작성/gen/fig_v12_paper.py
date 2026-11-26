@@ -176,11 +176,13 @@ for tl, (m, _, _) in zip(ax.get_yticklabels(), rows):
     tl.set_color(COL[m])
 ax.set_xlim(-12, 4)
 ax.text(0.15, 16.0, "0 = 기준 모형(과거변동 RW)과 같음", fontsize=12, fontweight="bold", va="bottom")
-ax.text(-11.8, 16.0, "← RW보다 손실이 큼 (TSFM이 나쁨)", fontsize=12, color="#555", va="bottom")
+ax.text(-11.8, 16.0, "← RW보다 부정확 (손실이 큼)", fontsize=12.5, color="#555", va="bottom")
+ax.text(3.9, 15.2, "RW보다 정확 →", fontsize=12.5, color="#555", va="bottom", ha="right")
 ax.set_ylim(-0.6, 16.9)
-ax.set_xlabel("RW(같은 과거 길이) 대비 분위수 손실 개선 %\n진한 막대 = 유의(Holm 보정), 옅은 막대 = 유의하지 않음, 회색 띠 = 실질 기준 ±2%")
+ax.set_xlabel("RW(같은 과거 길이) 대비 분위수 손실 개선율 % = 1 − TSFM 손실 ÷ RW 손실\n진한 막대 = 유의(Holm 보정), 옅은 막대 = 유의하지 않음, 회색 띠 = 실질 기준 ±2%")
+fig.text(0.01, 0.005, "참고: GARCH-t는 1년 입력 TSFM 조건 모두보다 손실이 작았음(0.4~5.1%, 논문 5.6절)", fontsize=11.5, color="#555")
 grid(ax, "x"); ax.tick_params(axis="y", length=0)
-fig.tight_layout(); fig.savefig(OUT + "p14_RW대비_정확도.png", facecolor="white"); plt.close()
+fig.tight_layout(rect=(0, .04, 1, 1)); fig.savefig(OUT + "p14_RW대비_정확도.png", facecolor="white"); plt.close()
 
 # ---------- 16쪽: 보정 후 커버리지 (그림 6-1, 모델별 묶음·점선) ----------
 rows = CO[:19][::-1]
@@ -207,3 +209,33 @@ axs[0].tick_params(axis="y", length=0)
 fig.text(0.5, 0.01, "빈 점 = 보정 전, 찬 점 = 보정 후, 회색 띠 = 판정 범위 77~83%", ha="center", fontsize=12, color="#555")
 fig.tight_layout(rect=(0, .03, 1, 1)); fig.savefig(OUT + "p16_보정결과.png", facecolor="white"); plt.close()
 print("ok")
+
+# ---------- 11쪽: 모델·설정과 금융 특성의 영향 비교 (4.2절 이원 분산 분해) ----------
+d = t1[t1.model.isin(TS)].copy(); d["c"] = d.model + d.L.astype(str) + d.input
+
+
+def dec(dd):
+    M = dd.pivot(index="c", columns="scenario", values="cov").values; g = M.mean(); tot = ((M - g) ** 2).sum()
+    r = M.shape[1] * ((M.mean(1) - g) ** 2).sum() / tot; c = M.shape[0] * ((M.mean(0) - g) ** 2).sum() / tot
+    return [r * 100, c * 100, (1 - r - c) * 100]
+
+
+rowsd = [("TSFM 16개 조건 전체", dec(d)), ("TimesFM-2.5 1년·가격 제외", dec(d[d.c != "timesfm25252price"]))]
+fig, ax = plt.subplots(figsize=(12, 3.9))
+cols = ["#1B365D", "#D9480F", "#CBD5E1"]; names = ["모델·입력 조건", "금융 특성(시나리오)", "나머지"]
+for i, (lb, v) in enumerate(rowsd[::-1]):
+    left = 0
+    for j, (x, c) in enumerate(zip(v, cols)):
+        ax.barh(i, x, left=left, color=c, height=.55, edgecolor="white", lw=2)
+        if x > 4:
+            ax.text(left + x / 2, i, f"{x:.0f}%", ha="center", va="center", fontsize=16, fontweight="bold", color="white" if j < 2 else "#333")
+        left += x
+ax.set_yticks([0, 1], [r[0] for r in rowsd[::-1]], fontsize=14)
+ax.set_xlim(0, 100); ax.set_xticks([])
+for s in ("top", "right", "bottom", "left"):
+    ax.spines[s].set_visible(False)
+ax.tick_params(axis="y", length=0)
+ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=c) for c in cols], labels=names, ncol=3, loc="upper center", bbox_to_anchor=(0.5, 1.22), frameon=False, fontsize=13.5)
+fig.text(0.5, 0.01, "합성 데이터 16개 조건 × 17개 시나리오의 커버리지가 달라지는 정도를 나눈 비율 (이원 분산 분해, 논문 4.2절)", ha="center", fontsize=12, color="#555")
+fig.tight_layout(rect=(0, .06, 1, 1)); fig.savefig(OUT + "p11_분해.png", facecolor="white"); plt.close()
+print("ok11")
