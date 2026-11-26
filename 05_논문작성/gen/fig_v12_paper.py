@@ -220,7 +220,7 @@ def dec(dd):
     return [r * 100, c * 100, (1 - r - c) * 100]
 
 
-rowsd = [("TSFM 16개 조건 전체", dec(d)), ("TimesFM-2.5 1년·가격 제외", dec(d[d.c != "timesfm25252price"]))]
+rowsd = [("TSFM 16개 조건", dec(d)), ("가장 크게 벗어난 1개 조건 제외 (15개)", dec(d[d.c != "timesfm25252price"]))]
 fig, ax = plt.subplots(figsize=(12, 3.9))
 cols = ["#1B365D", "#D9480F", "#CBD5E1"]; names = ["모델·입력 조건", "금융 특성(시나리오)", "나머지"]
 for i, (lb, v) in enumerate(rowsd[::-1]):
@@ -236,8 +236,9 @@ for s in ("top", "right", "bottom", "left"):
     ax.spines[s].set_visible(False)
 ax.tick_params(axis="y", length=0)
 ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=c) for c in cols], labels=names, ncol=3, loc="upper center", bbox_to_anchor=(0.5, 1.22), frameon=False, fontsize=13.5)
-fig.text(0.5, 0.01, "합성 데이터 16개 조건 × 17개 시나리오의 커버리지가 달라지는 정도를 나눈 비율 (이원 분산 분해, 논문 4.2절)", ha="center", fontsize=12, color="#555")
-fig.tight_layout(rect=(0, .06, 1, 1)); fig.savefig(OUT + "p11_분해.png", facecolor="white"); plt.close()
+fig.text(0.5, 0.055, "제외한 조건: TimesFM-2.5 1년·가격 (모든 시나리오에서 87~88%)", ha="center", fontsize=12, color="#555")
+fig.text(0.5, 0.005, "합성 데이터 16개 조건 × 17개 시나리오의 커버리지가 달라지는 정도를 나눈 비율 (이원 분산 분해, 논문 4.2절)", ha="center", fontsize=12, color="#555")
+fig.tight_layout(rect=(0, .11, 1, 1)); fig.savefig(OUT + "p11_분해.png", facecolor="white"); plt.close()
 print("ok11")
 
 # ---------- 17쪽: VaR 백테스트 19개 조건 (논문 표 5-6) ----------
