@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>v12 도식 초안</title>
+<style>
+:root{--navy:#1B365D;--ink:#1E293B;--muted:#64748B;--line:#CBD5E1;--fill:#F4F6F9;--blue:#2B6CB0;--orange:#D9480F;--band:#DCEAF7}
+body{margin:0;background:#fff;font-family:'Noto Sans CJK KR',sans-serif;color:var(--ink)}
+.fig{width:1500px;padding:28px 32px;box-sizing:border-box;background:#fff;margin-bottom:30px}
+.cap{font-size:15px;color:var(--muted);margin-top:14px}
+.row{display:flex;align-items:stretch;gap:0}
+.box{border:2px solid var(--navy);border-radius:12px;background:var(--fill);padding:16px 14px;text-align:center;flex:1}
+.box h{display:block;font-weight:700;font-size:21px;color:var(--navy);margin-bottom:8px}
+.box p{margin:4px 0;font-size:16.5px;line-height:1.45}
+.arrow{width:44px;display:flex;align-items:center;justify-content:center;font-size:30px;color:var(--navy);flex:0 0 44px}
+.hl{border-color:var(--orange);background:#FFF4EE}
+.hl h{color:var(--orange)}
+table{border-collapse:separate;border-spacing:0;width:100%;font-size:17px}
+th{background:var(--navy);color:#fff;padding:10px;font-weight:700}
+td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:middle;line-height:1.45}
+td.k{font-weight:700;color:var(--navy);width:250px}
+.no{color:var(--orange);font-weight:700}
+.rq{display:inline-block;background:var(--orange);color:#fff;border-radius:6px;padding:1px 8px;font-weight:700;font-size:15px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px}
+.col h4{margin:0 0 10px;font-size:20px;color:var(--navy);text-align:center;border-bottom:3px solid var(--navy);padding-bottom:6px}
+.card{border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px;font-size:16.5px;line-height:1.45;background:#fff}
+.card b{color:var(--navy)}
+.small{font-size:14.5px;color:var(--muted)}
+</style></head><body>
+
+<!-- 3쪽: TSFM 예측구간의 위험 관리 활용 (위쪽 띠) -->
+<div class="fig" id="d03">
+ <div class="row">
+  <div class="box"><h>과거 수익률</h><p>한 종목의 일별 수익률<br>(과거 21일 또는 252일)</p></div>
+  <div class="arrow">→</div>
+  <div class="box"><h>TSFM</h><p>미리 학습된 모델<br>추가 학습 없이 예측</p></div>
+  <div class="arrow">→</div>
+  <div class="box"><h>분위수 9개</h><p>다음 날 수익률의<br>10%, 20%, …, 90% 분위수</p></div>
+  <div class="arrow">→</div>
+  <div class="box"><h>80% 예측구간</h><p>10% 분위수 ~ 90% 분위수<br>(명목 커버리지 80%)</p></div>
+  <div class="arrow">→</div>
+  <div class="box hl"><h>VaR 10%</h><p>구간의 아래 끝<br>= 하루 손실 한도</p></div>
+ </div>
+</div>
+
+<!-- 4쪽: 금융 TSFM 연구에서 확인되지 않은 것 -->
+<div class="fig" id="d04">
+ <table>
+  <tr><th>연구 갈래</th><th>한 것</th><th>하지 않은 것</th></tr>
+  <tr><td class="k">금융 TSFM 평가<br><span class="small">Rahimikia 외(2025), Noguer i Alonso·Franklin(2026), Upadhyay(2026)</span></td>
+      <td>제로샷 TSFM의 금융 수익률 점 예측 정확도 비교<br>→ 단순 기준을 크게 넘지 못함</td>
+      <td class="no">수익률 예측구간의 커버리지</td></tr>
+  <tr><td class="k">합성 데이터 진단<br><span class="small">FinStressTS(Sun 외, 2026)</span></td>
+      <td>금융 구조를 하나씩 조절한 합성 데이터로<br>학습형 예측 모델의 약점 진단</td>
+      <td class="no">사전학습 TSFM, 예측구간의 커버리지</td></tr>
+  <tr><td class="k">사후보정<br><span class="small">CQR(Romano 외, 2019), ACI(Gibbs·Candès, 2021)</span></td>
+      <td>모델과 무관하게 구간의 커버리지를 맞추는 방법</td>
+      <td class="no">금융 TSFM 예측구간에 적용·검증</td></tr>
+ </table>
+</div>
+
+<!-- 6쪽: 실험 전체 구성 -->
+<div class="fig" id="d06">
+ <div class="row" style="gap:18px">
+  <div style="flex:1.05;display:flex;flex-direction:column;gap:14px">
+   <div class="box" style="flex:none"><h>합성 데이터</h><p>실제 10종목에서 잰 강도로 금융 특성을 하나씩 넣음</p><p>L1(특성 없음) + 4개 특성 × L2~L5 = <b>17개 시나리오 × 100계열</b></p></div>
+   <div class="box" style="flex:none"><h>실제 10종목</h><p>미국 5 · 한국 5 대형주, 2017~2026년</p><p>평가 <b>17,700건</b></p></div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="box" style="flex:1.1"><h>모델 6개 (19개 모델·조건)</h>
+   <p>TSFM 4개 × 입력 조건 4개 = 16<br><span class="small">Chronos-T5, Chronos-2, TimesFM-2.5, Moirai-2<br>과거 21일·252일 × 수익률·가격 입력</span></p>
+   <p>기준 모형: RW(21일·252일), GARCH-t(252일) = 3</p>
+   <p style="margin-top:10px">같은 절차: <b>80일 단위</b>(준비 20일 + 평가 60일)<br>매일 다음 날 80% 예측구간</p></div>
+  <div class="arrow">→</div>
+  <div style="flex:1;display:flex;flex-direction:column;gap:10px">
+   <div class="box" style="flex:1"><h><span class="rq">RQ1</span> 진단</h><p>합성 데이터: 커버리지 오차가 금융 특성과 모델·설정 중 어디에서 커지는가</p></div>
+   <div class="box" style="flex:1"><h><span class="rq">RQ2</span> 실증</h><p>실제 10종목: 커버리지와 분포 정확도, 합성 결과와 비교</p></div>
+   <div class="box" style="flex:1"><h><span class="rq">RQ3</span> 사후보정</h><p>두 데이터: ACI-CQR로 80% 복원과 구간 폭</p></div>
+  </div>
+ </div>
+ <div class="row" style="margin-top:18px;gap:14px">
+  <div class="card" style="flex:1;margin:0"><b>커버리지</b> 78~82%를 적정으로 판정 <span class="small">(6,000건 표본 오차 약 ±1%p)</span></div>
+  <div class="card" style="flex:1;margin:0"><b>분포 정확도</b> 분위수 손실, RW 대비 개선율</div>
+  <div class="card" style="flex:1;margin:0"><b>위험 관리</b> VaR 10% 위반율 검정 (탐색 분석)</div>
+ </div>
+</div>
+
+<!-- 15쪽: ACI-CQR 보정 방법 -->
+<div class="fig" id="d15">
+ <div class="row">
+  <div class="box"><h>① 이탈 기록</h><p>매일 실제값이 구간에서<br>얼마나 벗어났는지를<br>구간 폭 대비 점수로 기록</p></div>
+  <div class="arrow">→</div>
+  <div class="box"><h>② 구간 양 끝 조정</h><p>기록된 점수로<br>오늘 구간의 양 끝을<br>넓히거나 좁힘</p></div>
+  <div class="arrow">→</div>
+  <div class="box"><h>③ 목표 갱신</h><p>실제값을 확인한 뒤<br>벗어났으면 다음 구간을 넓게,<br>계속 들어오면 좁게</p></div>
+  <div class="arrow">↺</div>
+  <div class="box hl" style="flex:0.9"><h>모델은 그대로</h><p>재학습 없음<br>모델 출력 구간만 사용<br>α = 0.20, γ = 0.05 고정</p></div>
+ </div>
+ <div class="cap">논문 3.5.1절: 이탈 점수 s<sub>t</sub> = max(l<sub>t</sub> − y<sub>t</sub>, y<sub>t</sub> − u<sub>t</sub>) / (u<sub>t</sub> − l<sub>t</sub>), α<sub>t+1</sub> = clip(α<sub>t</sub> + γ(α − err<sub>t</sub>), 0.02, 0.50)</div>
+</div>
+
+<!-- 18쪽: 실무 도입 절차 -->
+<div class="fig" id="d18">
+ <div class="row">
+  <div class="box"><h>① 합성 데이터로 점검</h><p>실측 강도로 만든 합성 데이터에서<br>모델·입력 설정의 커버리지 확인</p><p class="small">예: TimesFM-2.5 1년·가격 88%,<br>Chronos-T5 기본 설정 14~16%를 미리 발견</p></div>
+  <div class="arrow">→</div>
+  <div class="box"><h>② 사후보정을 붙여 사용</h><p>ACI-CQR로 평균 커버리지를 80%로</p><p class="small">재학습 없음, 계산 비용 거의 없음<br>VaR 검정 통과 8개 → 14개</p></div>
+  <div class="arrow">→</div>
+  <div class="box hl"><h>③ 용도 제한</h><p>방향 예측에는 쓰지 않음<br>위험 측정에 쓸 때도 정확도는<br>기준 모형(RW) 수준임을 전제</p></div>
+ </div>
+</div>
+
+<!-- 19쪽: 결론과 연구 기여 -->
+<div class="fig" id="d19">
+ <div class="grid3">
+  <div class="col"><h4>연구 질문</h4>
+   <div class="card"><b>RQ1 진단</b><br>금융 특성이 강해질수록 커버리지가 낮아지는가?</div>
+   <div class="card"><b>RQ2 실증</b><br>실제 주가에서 커버리지와 분포 정확도는?</div>
+   <div class="card"><b>RQ3 사후보정</b><br>재학습 없이 80%로 되돌릴 수 있는가?</div></div>
+  <div class="col"><h4>답</h4>
+   <div class="card">모델·설정의 영향이 더 컸다<br><span class="small">L1에서도 75~88%, 차이의 90%는 모델·조건, 7%는 특성</span></div>
+   <div class="card">합성 결과와 가까웠고, 정확도는 RW보다 높지 않았다<br><span class="small">차이 평균 1.1%p, 16개 중 12개가 RW보다 손실 큼</span></div>
+   <div class="card">모든 조건의 평균 커버리지가 80%로 돌아왔다<br><span class="small">구간 폭은 오라클보다 5~48% 넓음</span></div></div>
+  <div class="col"><h4>기여</h4>
+   <div class="card"><b>C1 방법론</b> 실측 기반 합성 데이터로 실제 적용 전 점검</div>
+   <div class="card"><b>C2 평가 관점</b> 꼬리가 80%와 98~99% 구간의 커버리지를 반대로 바꿈</div>
+   <div class="card"><b>C3 실증</b> 최신 TSFM 4종, 미국·한국 대형주, 사전 고정 기준</div>
+   <div class="card"><b>C4 실무</b> 점검 → 사후보정 → 용도 제한 절차</div></div>
+ </div>
+</div>
+</body></html>
