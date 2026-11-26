@@ -239,3 +239,29 @@ ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=c) for c in cols], labels=n
 fig.text(0.5, 0.01, "합성 데이터 16개 조건 × 17개 시나리오의 커버리지가 달라지는 정도를 나눈 비율 (이원 분산 분해, 논문 4.2절)", ha="center", fontsize=12, color="#555")
 fig.tight_layout(rect=(0, .06, 1, 1)); fig.savefig(OUT + "p11_분해.png", facecolor="white"); plt.close()
 print("ok11")
+
+# ---------- 17쪽: VaR 백테스트 19개 조건 (논문 표 5-6) ----------
+E=pd.read_csv(str(_R/"04_실험코드/results_v4_t5fix_econ/E3_var.csv")); E.columns=['c','k','v','kp','ind','p']
+def key(m,L,k):
+    nm={"chronos_t5_base":"Chronos-T5","chronos2":"Chronos-2","timesfm25":"TimesFM-2.5","moirai2":"Moirai-2","rw":"과거변동(RW)","garch_t":"GARCH-t"}[m]
+    return f"{nm} {'한 달' if L==21 else '1년'}·{'수익률' if k=='return' else '가격'}"
+rows=CO[:19][::-1]
+fig,axs=plt.subplots(1,2,figsize=(14,8.2),sharey=True,gridspec_kw={'width_ratios':[1.6,1]})
+for i,(m,L,k) in enumerate(rows):
+    kk=key(m,L,k); a=E[(E.c==kk)&(E.k=='원래')].iloc[0]; b=E[(E.c==kk)&(E.k=='보정')].iloc[0]; col=COL[m]
+    ax=axs[0]; ax.annotate("",xy=(b.v,i),xytext=(a.v,i),arrowprops=dict(arrowstyle="->",color=col,lw=1.6))
+    ax.plot(a.v,i,"o",mfc="white",mec=col,ms=7,mew=1.6); ax.plot(b.v,i,"o",color=col,ms=7)
+    ax=axs[1]
+    for x,n,full in ((0,a.kp,False),(1,b.kp,True)):
+        ax.text(x,i,f"{int(n)}",ha="center",va="center",fontsize=13,fontweight="bold" if n>=8 else "normal",color=col if n>=8 else "#999")
+axs[0].axvline(10,color="k",lw=1); axs[0].set_xlim(4,13); axs[0].set_xlabel("VaR 10% 위반율 % (목표 10%, 빈 점 = 보정 전, 찬 점 = 보정 후)")
+axs[0].set_yticks(range(19),[key(*c).replace('과거변동(RW) 1년·수익률','과거변동(RW) 1년').replace('과거변동(RW) 한 달·수익률','과거변동(RW) 한 달').replace('GARCH-t 1년·수익률','GARCH-t 1년') for c in rows],fontsize=12)
+for tl,(m,_,_) in zip(axs[0].get_yticklabels(),rows): tl.set_color(COL[m])
+axs[1].set_xlim(-.6,1.6); axs[1].set_xticks([0,1],["보정 전","보정 후"],fontsize=13); axs[1].set_title("위반율 검정 통과 종목 수 (10종목 중)\n굵게 = 8종목 이상",fontsize=12.5,loc="left")
+n0=(E[E.k=='원래'].kp>=8).sum(); n1=(E[E.k=='보정'].kp>=8).sum()
+axs[1].text(0,19.2,f"{n0}개",ha="center",fontsize=15,fontweight="bold"); axs[1].text(1,19.2,f"{n1}개",ha="center",fontsize=15,fontweight="bold",color="#1f77b4")
+for ax in axs:
+    for yy in (2.5,6.5,10.5,14.5): ax.axhline(yy,color="#999",lw=1,ls=":")
+    grid(ax,"x"); ax.tick_params(axis="y",length=0)
+axs[1].grid(False); axs[1].spines['left'].set_visible(False); axs[0].set_ylim(-.7,19.9)
+fig.tight_layout(); fig.savefig(OUT+"p17_VaR.png",facecolor="white"); plt.close(); print('ok17', n0, n1)
